@@ -422,7 +422,7 @@ def spectra_D2(T, Js, Jas):
 
 #print(" Sum of state for  HD at 375 K : ", sumofstate_HD(375))
 
-#print(" Sum of state for  D2 at 298 K : ", sumofstate_D2(298))
+print(" Sum of state for  D2 at 298 K : ", sumofstate_D2(298))
 
 #********************************************************************
 
