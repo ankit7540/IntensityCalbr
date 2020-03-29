@@ -9,3 +9,5 @@ __pycache__/
 # vscode
 launch.json
 settings.json
+
+test.py
