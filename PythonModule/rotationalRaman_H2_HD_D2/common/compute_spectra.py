@@ -295,10 +295,10 @@ def spectra_H2_o1s1(T, Js, Jas):
     return specH2
     #print("Normalized spectra H2: \n", spectraH2)
     #print(specH2)  # assign normalized intensity
-    #np.savetxt('posnH2.txt', (posnH2), fmt='%+6.6f') #save the band position.
+    #np.savetxt('posnH2.txt', (posnH2), fmt='%+6.6f') #save the band position
     #np.savetxt('spectraH2.txt', (spectraH2), fmt='%+5.11f') #save the band intensity
     #np.savetxt('specH2.txt', (specH2), fmt='%+5.12f') #save the 2D array which has data on
-    #  initial J number, band position, band intensity and the position in abs. wavenumbers
+    #  initial J number, band position, band intensity,position in abs. wavenumbers
 
 #********************************************************************
 #********************************************************************
@@ -329,7 +329,7 @@ def spectra_H2_q1(T, Jmax):
         alpha = ME_alpha_H2_532_Q1[i][4]
         gamma = ME_gamma_H2_532_Q1[i][4]
         print(i, E, popn, position, alpha, gamma)
-        
+
         if i % 2 == 0:
             factor = (popn/sos)*g_even*omega_sc*((omega_sc-position/1e4)**3)*\
                 (bj*(gamma**2)+ alpha**2)
@@ -351,11 +351,11 @@ def spectra_H2_q1(T, Jmax):
 
     normalize1d(spectraH2)
     specH2[:, 2] = spectraH2[:, 0]
-    
-    #save the data 
+
+    #save the data
     np.savetxt('spectraH2_q1_298.txt', (specH2),delimiter='\t',\
-               header=header_str, fmt='%+5.11f') 
-    
+               header=header_str, fmt='%+5.11f')
+
     return specH2
     #print("Normalized spectra H2: \n", spectraH2)
     #print(specH2)  # assign normalized intensity
@@ -394,7 +394,7 @@ def spectra_HD_o1s1(T, Js, Jas):
 
         factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
             *(gamma**2)/sos
- 
+
         specHD[(Jas-1)+i][0] = i
         specHD[(Jas-1)+i][1] = position
         specHD[(Jas-1)+i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -466,7 +466,7 @@ def spectra_HD_q1(T, Jmax):
         alpha = ME_alpha_HD_532_Q1[i][4]
         gamma = ME_gamma_HD_532_Q1[i][4]
         print(i, E, popn, position, alpha, gamma)
-        
+
         factor = (popn/sos)*omega_sc*((omega_sc-position/1e4)**3)*\
                 (bj*(gamma**2)+ alpha**2)
 
@@ -600,7 +600,7 @@ def spectra_D2_q1(T, Jmax):
         alpha = ME_alpha_D2_532_Q1[i][4]
         gamma = ME_gamma_D2_532_Q1[i][4]
         print(i, E, popn, position, alpha, gamma)
-        
+
         if i % 2 == 0:
             factor = (popn/sos)*g_even*omega_sc*((omega_sc-position/1e4)**3)*\
                 (bj*(gamma**2)+ alpha**2)
@@ -633,7 +633,154 @@ def spectra_D2_q1(T, Jmax):
     #np.savetxt('specH2.txt', (specH2), fmt='%+5.12f') #save the 2D array which has data on
     #  initial J number, band position, band intensity and the position in abs. wavenumbers
 
+
+
+#*******************************************************************************
+#*******************************************************************************
+
+def HD_S1(T, JMax, sos):
+    '''compute the intensity for HD upto given JMax and sum of state '''
+
+    specHD = np.zeros(shape=(JMax+1, 4))
+
+    # S1 bands ----------------------------------
+    for i in range(0, JMax+1):
+        E = eJHDv0[i]
+        energy = (-1*E*H*C)
+        popn = (2*i+1)*math.exp(energy/(K*T))
+        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        position = (eJHDv1[i+2]-eJHDv0[i])
+        gamma = ME_gamma_HD_532_S1 [i][4]
+        #print(i, E, popn, position ,gamma)
+
+        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
+            *(gamma**2)/sos
+
+        specHD[i][0] = i
+        specHD[i][1] = position
+        specHD[i][2] = factor  # unnormalized intensity, arbitrary unit
+        specHD[i][3] = omega-position
+
+    return specHD
+
+#*******************************************************************************
+
+def HD_O1(T, JMax, sos):
+    '''compute the intensity for HD upto given JMax and sum of state '''
+
+    specHD = np.zeros(shape=(JMax-1, 4))
+
+    # O1 bands ----------------------------------
+
+    for i in range(JMax, 1, -1):
+        E = eJHDv0[i]
+        energy = (-1*E*H*C)
+        popn = (2*i+1)*math.exp(energy/(K*T))
+        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        position = (eJHDv1[i-2]-eJHDv0[i])
+        gamma = ME_gamma_HD_532_O1[i-2][4]
+
+        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
+            *(gamma**2)/sos
+            
+        #print(JMax-i)    
+
+        specHD[JMax-i][0] = i
+        specHD[JMax-i][1] = position
+        specHD[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
+        specHD[JMax-i][3] = omega-position
+
+    return specHD
+#*******************************************************************************
+
+
+def HD_Q1(T, JMax, sos):
+    '''compute the intensity for HD upto given JMax and sum of state '''
+
+    specHD = np.zeros(shape=(JMax+1, 4))
+
+    # Q-branch ----------------------------------
+    for i in range(0, JMax+1):
+        E = eJHDv0[i]
+        energy = (-1*E*H*C)
+        popn = (2*i+1)*math.exp(energy/(K*T))
+        bj = (i*(i+1))/((2*i-1)*(2*i+3))
+        position = (eJHDv1[i]-eJHDv0[i])
+        alpha = ME_alpha_HD_532_Q1[i][4]
+        gamma = ME_gamma_HD_532_Q1[i][4]
+        #print(i, E, popn, position, alpha, gamma)
+
+        factor = (popn/sos)*omega_sc*((omega_sc-position/1e4)**3)*\
+                (bj*(gamma**2)+ alpha**2)
+
+        specHD[JMax-i][0] = i
+        specHD[JMax-i][1] = position
+        specHD[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
+        specHD[JMax-i][3] = (omega-position)
+
+    return specHD
+#*******************************************************************************
+#*******************************************************************************
+#*******************************************************************************
+
+
+def spectra_series_HD(T, OJ, QJ, SJ, reverse=0):
+    """Compute in intensities and position for rotational Raman bands of HD
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
+
+              reverse=0 or 1, will reverse the output
+
+     """
+
+    sos = sumofstate_HD(T)
+
+    # define arrays for intensity, position and J_{i}
+    print(OJ, QJ, SJ)
+    print(OJ-1+QJ+SJ+1)
+
+    # Q1 bands ----------------------------------
+    #print(HD_S1 (T, 4, sos) )
+    O1=HD_O1(T, 4, sos)
+    Q1=HD_Q1(T, 4, sos)
+    S1=HD_S1(T, 4, sos)
+    
+    print('\n',HD_O1(T, 4, sos))
+
+    print('\n',HD_Q1(T, 4, sos))
+    
+    print('\n',HD_S1(T, 4, sos))
+
+    out=np.concatenate((O1, Q1, S1 ))
+    
+    sp_HD=out[:,2]
+    print(sp_HD)
+    normalize1d(sp_HD)
+    print(sp_HD)
+    
+    return(out)
+
+    # -----------------------------------------------
+
+
+
+    # return the output
+
+    #normalize1d(spectraD2)
+    #specD2[:, 2] = spectraD2[:, 0]
+    #np.savetxt('spectraD2_q1_298.txt', (specD2),delimiter='\t',\
+    #           header=header_str, fmt='%+5.11f') #save the band intensity
+    #return specD2
+    #print("Normalized spectra H2: \n", spectraH2)
+    #print(specH2)  # assign normalized intensity
+    #np.savetxt('posnH2.txt', (posnH2), fmt='%+6.6f') #save the band position.
+    #np.savetxt('spectraH2_q1_298.txt', (spectraH2), fmt='%+5.11f') #save the band intensity
+    #np.savetxt('specH2.txt', (specH2), fmt='%+5.12f') #save the 2D array which has data on
+    #  initial J number, band position, band intensity and the position in abs. wavenumbers
+
 #********************************************************************
+
 
 
 #print(" Sum of state for  H2 at 333 K : ", sumofstate_H2(333))
