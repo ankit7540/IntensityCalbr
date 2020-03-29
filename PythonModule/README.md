@@ -1,14 +1,38 @@
 ## Python module 
 
 Three modules are given.
- - General scheme where experimental intensities and true intensities are available as 1D array
- - Scheme for rotational Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. These are most detailed and include functions for computing the true intensities for a given temperature. If temperature is not needed as a fit variable then computation of spectra at some fixed temperature is also possible.
+ - General scheme (in the 'general' directory) includes the basic example code for the case where experimental intensities and true intensities are available as 1D array.
+ - Scheme for rotational Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. These are most detailed part of the repo and include functions for computing the true intensities for a given temperature. If temperature is not needed as a fit variable then computation of spectra at some fixed temperature is also possible. Refer to the directory 'rotationalRaman_H2_HD_D2' directory and the common directory within.  
 
 # Usage
-User supplied band area data arranged in 2D arrays
+User supplied band area data arranged in 1D arrays are required. These should contain the band positions and experimental band intensities. Theoretical intensities will be computed within the iteration if temperature will be included as a fit parameter.
 
-| area  | error |
-|-------|-------|
-| value | value |
-| ...   | ...   |
-| ...   | ...   |
+Requirements
+----------------
+Python 2.7 or Python 3.x with NumPy, SciPy and math modules
+
+Usage
+----------------
+Following commands are run under the Python interpreter environment. (Alternatively use any Python IDE like Spyder, IDLE or PyCharm). *Spyder3 is has been used while writing and debugging  python  codes given  here.*
+
+***When using Python interpreter in terminal***
+
+1. After cloning the repository and moving in the `python-module` directory,  refer to the readme.  Prepare the required data as mentioned above which will be loaded in the module  as numpy array. If required, change the path to the data files in the code.  
+
+2. Import the python module. If  using python 2.7 add the current folder to path allowing to import the module in the current folder.
+
+```
+   import sys
+
+   sys.path.append("..")
+```
+
+If using Python3, directly import as
+
+  ```
+     import wavelength_sensitivity
+  ```
+
+***When using Python IDE like Spyder***
+
+1. After cloning the repository and moving in the `python-module` directory,  refer to the readme.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. Open the  file in the IDE and make changes  to the file path if required. Run the code.

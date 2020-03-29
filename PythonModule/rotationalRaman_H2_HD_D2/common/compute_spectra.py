@@ -746,18 +746,18 @@ def spectra_series_HD(T, OJ, QJ, SJ, reverse=0):
     Q1=HD_Q1(T, 4, sos)
     S1=HD_S1(T, 4, sos)
     
-    print('\n',HD_O1(T, 4, sos))
+    #print('\n',HD_O1(T, 4, sos))
 
-    print('\n',HD_Q1(T, 4, sos))
+    #print('\n',HD_Q1(T, 4, sos))
     
-    print('\n',HD_S1(T, 4, sos))
+    #print('\n',HD_S1(T, 4, sos))
 
     out=np.concatenate((O1, Q1, S1 ))
     
-    sp_HD=out[:,2]
-    print(sp_HD)
-    normalize1d(sp_HD)
-    print(sp_HD)
+    #sp_HD=out[:,2]
+    #print(sp_HD)
+    #normalize1d(sp_HD)
+    #print(sp_HD)
     
     return(out)
 
@@ -779,7 +779,7 @@ def spectra_series_HD(T, OJ, QJ, SJ, reverse=0):
     #np.savetxt('specH2.txt', (specH2), fmt='%+5.12f') #save the 2D array which has data on
     #  initial J number, band position, band intensity and the position in abs. wavenumbers
 
-#********************************************************************
+#*******************************************************************************
 
 
 
