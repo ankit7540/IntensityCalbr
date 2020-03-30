@@ -1,0 +1,26 @@
+<Logger D:\Owncloud\DriveBackup\Programs_procedures_scripts\git\IntensityCalbr\PythonModule\rotationalRaman_H2_HD_D2\wavelength_sensitivity_main_T_dependent.py (INFO)>
+
+
+------------ Run log ------------
+
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : T = 299.00000000, c1 = 1.04586000
+
+
+	  final_simplex: (array([[294.78150878,  -2.10396887],
+       [294.78150878,  -2.10396887],
+       [294.78150878,  -2.10396887]]), array([335.59959214, 335.59959214, 335.59959214]))
+           fun: 335.5995921363306
+       message: 'Optimization terminated successfully.'
+          nfev: 243
+           nit: 118
+        status: 0
+       success: True
+             x: array([294.78150878,  -2.10396887])
+
+
+ Optimized result : T = 294.78150878, c1 = -2.10396887
+
+ *******************************************

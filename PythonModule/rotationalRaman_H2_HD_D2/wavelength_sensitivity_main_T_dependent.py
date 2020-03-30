@@ -8,16 +8,16 @@ as a model function"""
 
 import numpy as np
 import math
-import compute_spectra
 import scipy.optimize as opt
 import logging
 from datetime import datetime
 
-import cProfile
+from common import compute_series
+
 # ----------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('logfile', 'w+')
+fileh = logging.FileHandler('logfile.txt', 'w+')
 #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
@@ -40,13 +40,13 @@ log.error("------------ Run log ------------\n")
 
 # LOAD EXPERIMENTAL BAND AREA DATA
 
-dataH2 = np.loadtxt("./BA_H2_1.txt")
-dataHD = np.loadtxt("./BA_HD_1.txt")
-dataD2 = np.loadtxt("./BA_D2_1.txt")
-xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
+dataH2 = np.loadtxt("./run1/BA_H2_1.txt")
+dataHD = np.loadtxt("./run1/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run1/BA_D2_1.txt")
+xaxis  = np.loadtxt("./run1/Ramanshift_axis_para.txt")
 
-dataO2 = np.loadtxt("./DataO2_o1s1.txt")
-dataO2_p = np.loadtxt("./DataO2_pR.txt")
+#dataO2 = np.loadtxt("./DataO2_o1s1.txt")
+#dataO2_p = np.loadtxt("./DataO2_pR.txt")
 
 print(dataH2.shape)
 print(dataHD.shape)
@@ -68,6 +68,9 @@ scale_O2_S1O1 = 0.0
 scale_O2_pureRotn= 0.0
 # ----------------------------------------
 
+scenter=3316.3 # center of the spectra
+# (v1-scenter)
+# (v2-scenter)
 #------------------------------------------------
 #                COMMON FUNCTIONS
 #------------------------------------------------
@@ -245,9 +248,9 @@ param_quartic[4]= -0.000001
 #------------------------------------------------
 #------------------------------------------------
 
-computed_D2=compute_spectra.spectra_D2( 298, 7, 7)
-computed_HD=compute_spectra.spectra_HD( 298, 5, 5)
-computed_H2=compute_spectra.spectra_H2( 298, 5, 5)
+computed_D2=compute_series.spectra_D2( 298, 4,6,3)
+computed_HD=compute_series.spectra_HD( 298, 3,3,2)
+computed_H2=compute_series.spectra_H2_c( 298, 3,4)
 
 
 trueR_D2=gen_intensity_mat (computed_D2, 2)
@@ -308,7 +311,7 @@ wMat_HD = 1
 wMat_D2 = 1
 
 #*******************************************************************
-
+#exit(0)
 #*******************************************************************
 # Define the residual function
 #*******************************************************************
@@ -324,9 +327,9 @@ def residual_linear(param):
     #TK = param[0]
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
 
 
     # ------ D2 ------
@@ -364,25 +367,9 @@ def residual_linear(param):
     eHD=clean_mat(eHD)
     eH2=clean_mat(eH2)
 
-    # oxygen----------------------------
-	# - O2 high frequency -
-    ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
-    RHS_O2 = (1.0 + param[0]/scale1 * dataO2[:, 3] )/ (1.0 +\
-             param[0]/scale1 * dataO2[:, 4] )
-    resd_O2 = ( dataO2[:, 5] * scale_O2_S1O1 ) * ((ratio_O2 - RHS_O2)**2)
-	# ------
-
-
-    # - O2 pure rotation -
-    ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
-    RHS_O2p = (1.0 + param[0]/scale1 * dataO2_p[:, 3] )/ (1.0 +\
-             param[0]/scale1 * dataO2_p[:, 4] )
-    resd_O2p = (dataO2_p[:, 5] * scale_O2_pureRotn ) * ((ratio_O2p - RHS_O2p)**2)
-	# ------
-
 
     E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+        np.sum(np.abs(eH2))  
 
     return(E)
 
@@ -399,9 +386,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
 
 
     # ------ D2 ------
@@ -439,30 +426,9 @@ def residual_quadratic(param):
     eHD=clean_mat(eHD)
     eH2=clean_mat(eH2)
 
-    # oxygen----------------------------
-    c1=param[0]
-    c2=param[1]
-
-
-	# - O2 high frequency -
-    ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
-    RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2))/ (1.0 +\
-             c1/scale1 * dataO2[:, 4] + c2/scale2 * (dataO2[:, 4]**2))
-
-    resd_O2 = (dataO2[:, 5] * scale_O2_S1O1 ) * ((ratio_O2 - RHS_O2)**2)
-	# ------
-
-    # - O2 pure rotation -
-    ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
-    RHS_O2p = (1.0 + c1/scale1 * dataO2_p[:, 3] + c2/scale2 * (dataO2_p[:, 3]**2))/ (1.0 +\
-             c1/scale1 * dataO2_p[:, 4] + c2/scale2 * (dataO2_p[:, 4]**2))
-
-
-    resd_O2p = (dataO2_p[:, 5]* scale_O2_pureRotn ) * ((ratio_O2p - RHS_O2p)**2)
-	# ------
 
     E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+        np.sum(np.abs(eH2)) 
 
     return(E)
 
@@ -479,9 +445,9 @@ def residual_cubic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
 
 
     # ------ D2 ------
@@ -520,37 +486,11 @@ def residual_cubic(param):
     eH2=clean_mat(eH2)
 
 
-    # oxygen----------------------------
-    c1=param[0]
-    c2=param[1]
-    c3=param[2]
-
-
-	# - O2 high frequency -
-    ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
-    RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2)+\
-              c3/scale3 * (dataO2[:, 3]**3))/ ( 1.0 + c1/scale1 * dataO2[:, 4] +\
-                          c2/scale2 *(dataO2[:, 4]**2)+ c3/scale3 *( dataO2[:, 4]**3))
-
-    resd_O2 =( dataO2[:, 5]  * scale_O2_S1O1 ) * ((ratio_O2 - RHS_O2)**2)
-	# ------
-
-    # - O2 pure rotation -
-    ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
-    RHS_O2p = (1.0 + c1/scale1 * dataO2_p[:, 3] + c2/scale2 * (dataO2_p[:, 3]**2)+\
-               c3/scale3 * (dataO2_p[:, 3]**3))/ ( 1.0 + c1/scale1 * dataO2_p[:, 4] +\
-                           c2/scale2 * (dataO2_p[:, 4]**2)+ c3/scale3 * ( dataO2_p[:, 4]**3))
-
-    resd_O2p = (dataO2_p[:, 5] * scale_O2_pureRotn  ) * ((ratio_O2p - RHS_O2p)**2)
-	# ------
-
     E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+        np.sum(np.abs(eH2))  
 
 
     return(E)
-
-#*******************************************************************
 
 #***************************************************************
 #***************************************************************
@@ -571,7 +511,7 @@ def run_fit_linear ( init_T, init_k1 ):
           (residual_linear(param_init))))
 
 
-    print("\nOptimization run     \n")
+    print("\nOptimization run: Linear     \n")
     res = opt.minimize(residual_linear, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9})
 
@@ -612,7 +552,7 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
          init_k2, (residual_quadratic(param_init))))
 
 
-    print("\nOptimization run     \n")
+    print("\nOptimization run: Quadratic     \n")
     res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9})
 
@@ -641,11 +581,11 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {3}".format(init_T, init_k1, \
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".format(init_T, init_k1, \
          init_k2, init_k3, (residual_cubic(param_init))))
 
 
-    print("\nOptimization run     \n")
+    print("\nOptimization run : Cubic     \n")
     res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9})
 
@@ -654,7 +594,8 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     optk1 = res.x[1]
     optk2 = res.x[2]
     optk3 = res.x[3]
-    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
+    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".\
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
 
     correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
         +(optk3/scale3)*xaxis**3 # generate the correction curve
@@ -666,9 +607,14 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
 
 #***************************************************************
 
-run_fit_linear(298, 1.04586 )
+run_fit_linear(299, 1.04586 )
 
-run_fit_quadratic(298, -0.931, -0.242 )
+run_fit_quadratic(299, -0.931, -0.242 )
+run_fit_quadratic(299, -2.103, 0.000242 )
+
+run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
+
+run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
 
 #run_fit_linear_T_fixed (1.045)
 

@@ -4,7 +4,7 @@
 import math
 import numpy as np
 
-import utils
+#import utils
 
 # Constants ------------------------------
 K = np.float64(1.38064852e-23) # J/K
@@ -413,9 +413,9 @@ def spectra_D2(T, OJ, QJ, SJ, reverse=0):
 
     # call individual functions ------------------------
 
-    O1=D2_O1(T, 4, sos)
-    Q1=D2_Q1(T, 4, sos)
-    S1=D2_S1(T, 4, sos)
+    O1=D2_O1(T, OJ, sos)
+    Q1=D2_Q1(T, QJ, sos)
+    S1=D2_S1(T, SJ, sos)
     # --------------------------------------------------
     out=np.concatenate((O1, Q1, S1 ))
     return out 
@@ -523,11 +523,37 @@ def spectra_H2(T, OJ, QJ, SJ, reverse=0):
 
     # call individual functions ------------------------
 
-    O1=H2_O1(T, 4, sos)
-    Q1=H2_Q1(T, 4, sos)
-    S1=H2_S1(T, 4, sos)
+    O1=H2_O1(T, OJ, sos)
+    Q1=H2_Q1(T, QJ, sos)
+    S1=H2_S1(T, SJ, sos)
     # --------------------------------------------------
     out=np.concatenate((O1, Q1, S1 ))
+    return out 
+    # --------------------------------------------------
+#******************************************************************************
+    
+#******************************************************************************
+
+#@utils.MeasureTime
+def spectra_H2_c(T, OJ, QJ , reverse=0):
+    """Compute in intensities and position for rotational Raman bands of H2
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
+
+              reverse=0 or 1, will reverse the output
+
+     """
+
+    sos = sumofstate_D2(T)
+
+    # call individual functions ------------------------
+
+    O1=H2_O1(T, OJ, sos)
+    Q1=H2_Q1(T, QJ, sos)
+
+    # --------------------------------------------------
+    out=np.concatenate((O1, Q1 ))
     return out 
     # --------------------------------------------------
 #******************************************************************************
