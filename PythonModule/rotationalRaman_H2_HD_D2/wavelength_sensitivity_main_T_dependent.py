@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 """Module describing the weighted non-linear optimization scheme used to
 determine the wavelength sensitivity of the spectrometer using a  polynomial
 as a model function"""
@@ -13,7 +12,6 @@ import logging
 from datetime import datetime
 
 from common import compute_series
-
 # ----------------------------------------
 
 # Set logging ------------------------------------------
@@ -39,12 +37,13 @@ log.error("------------ Run log ------------\n")
 
 
 # LOAD EXPERIMENTAL BAND AREA DATA
+# Change following paths
 
 dataH2 = np.loadtxt("./run1/BA_H2_1.txt")
 dataHD = np.loadtxt("./run1/BA_HD_1.txt")
 dataD2 = np.loadtxt("./run1/BA_D2_1.txt")
 xaxis  = np.loadtxt("./run1/Ramanshift_axis_para.txt")
-
+# ------------------------------------------------------
 #dataO2 = np.loadtxt("./DataO2_o1s1.txt")
 #dataO2_p = np.loadtxt("./DataO2_pR.txt")
 
@@ -195,7 +194,7 @@ def gen_s_cubic(computed_data, param ):
     return mat
 
 #------------------------------------------------
-def gen_s_quartic(computed_data, param, scale1):
+def gen_s_quartic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as quartic polynomial. Elements are
     the ratio of sensitivity at two wavenumber/wavelength points"""
@@ -404,6 +403,66 @@ def residual_cubic(param):
     return(E)
 
 #***************************************************************
+#*******************************************************************
+
+def residual_quartic(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt to theoretical intensity ratio to the sensitivity  profile
+    modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 + c4*x**4 )
+
+    param : T, c1, c2, c3, c4
+
+    '''
+    TK = param[0]
+    #c1 = param[1]
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+
+
+    # ------ D2 ------
+    trueR_D2=gen_intensity_mat (computed_D2, 2)
+    expt_D2=gen_intensity_mat (dataD2, 0)
+    I_D2=np.divide(expt_D2,trueR_D2 )
+    I_D2=clean_mat(I_D2)
+    # ----------------
+
+    # ------ HD ------
+    trueR_HD=gen_intensity_mat (computed_HD, 2)
+    expt_HD=gen_intensity_mat (dataHD, 0)
+    I_HD=np.divide(expt_HD,trueR_HD )
+    I_HD=clean_mat(I_HD)
+    # ----------------
+
+    # ------ H2 ------
+    trueR_H2=gen_intensity_mat (computed_H2, 2)
+    expt_H2=gen_intensity_mat (dataH2, 0)
+    I_H2=np.divide(expt_H2,trueR_H2 )
+    I_H2=clean_mat(I_H2)
+    # ----------------
+
+    # generate the RHS : sensitivity factor
+    sD2=gen_s_quartic(computed_D2, param)
+    sHD=gen_s_quartic(computed_HD, param)
+    sH2=gen_s_quartic(computed_H2, param)
+
+    # residual matrix
+    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
+    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
+    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+
+    eD2=clean_mat(eD2)
+    eHD=clean_mat(eHD)
+    eH2=clean_mat(eH2)
+
+
+    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
+
+
+    return(E)
+
+#***************************************************************
 #***************************************************************
 # Fit functions
 #***************************************************************
@@ -432,9 +491,9 @@ def run_fit_linear ( init_T, init_k1 ):
     print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,\
       round(optk1, 6) ))
 
-    correction_curve_line= 1+(optk1/scale1)*xaxis     # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*xaxis     # generate the correction curve
 
-    np.savetxt("correction_linearv2.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_linearv2.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_linear', comments='')
 
     print("**********************************************************")
@@ -475,9 +534,9 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
     print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6)\
      ,  round(optk1, 6), round(optk2, 6) ))
 
-    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
 
-    np.savetxt("correction_quadraticv2.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_quadraticv2.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
 
     print("**********************************************************")
@@ -516,10 +575,10 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     print("\nOptimized result : T={0}, k1={1}, k2={2} \n".\
           format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
 
-    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
+    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
         +(optk3/scale3)*xaxis**3 # generate the correction curve
 
-    np.savetxt("correction_cubic.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_cubic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_cubic', comments='')
 
     print("**********************************************************")
@@ -559,10 +618,10 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3}, k4={4} \n".\
           format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
 
-    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
+    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
         +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 # generate the correction curve
 
-    np.savetxt("correction_quartic.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quartic', comments='')
 
     print("**********************************************************")

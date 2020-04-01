@@ -114,7 +114,7 @@ def sumofstate_H2(T):
 #********************************************************************
 
 # compute the temperature dependent sum of state for HD which includes
-#  contributions from the ground and first vibrational state of electronic 
+#  contributions from the ground and first vibrational state of electronic
 #  ground state.
 
 def sumofstate_HD(T):
@@ -158,7 +158,7 @@ def sumofstate_HD(T):
 #******************************************************************************
 #******************************************************************************
 
-# compute the temperature dependent sum of state for D2 which 
+# compute the temperature dependent sum of state for D2 which
 #  includes contributions from the ground and first vibrational state
 #  of electronic ground state.
 
@@ -251,8 +251,8 @@ def HD_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
             *(gamma**2)/sos
-            
-        #print(JMax-i)    
+
+        #print(JMax-i)
 
         specHD[JMax-i][0] = i
         specHD[JMax-i][1] = position
@@ -297,7 +297,7 @@ def spectra_HD(T, OJ, QJ, SJ ):
               QJ = max J state for Q(v=1) bands
               SJ = max J state for S(v=1) bands
 
-              
+
 
      """
 
@@ -311,7 +311,7 @@ def spectra_HD(T, OJ, QJ, SJ ):
     out=np.concatenate((O1, Q1, S1 ))
     return out  # return the output
     # --------------------------------------------------
-    
+
 
 
 #******************************************************************************
@@ -362,7 +362,7 @@ def D2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
             *(gamma**2)/sos
-            
+
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -418,7 +418,7 @@ def spectra_D2(T, OJ, QJ, SJ, reverse=0):
     S1=D2_S1(T, SJ, sos)
     # --------------------------------------------------
     out=np.concatenate((O1, Q1, S1 ))
-    return out 
+    return out
     # --------------------------------------------------
 
 #******************************************************************************
@@ -469,8 +469,8 @@ def H2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
             *(gamma**2)/sos
-            
-        #print(JMax-i)    
+
+        #print(JMax-i)
 
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
@@ -528,10 +528,10 @@ def spectra_H2(T, OJ, QJ, SJ, reverse=0):
     S1=H2_S1(T, SJ, sos)
     # --------------------------------------------------
     out=np.concatenate((O1, Q1, S1 ))
-    return out 
+    return out
     # --------------------------------------------------
 #******************************************************************************
-    
+
 #******************************************************************************
 
 #@utils.MeasureTime
@@ -542,6 +542,9 @@ def spectra_H2_c(T, OJ, QJ , reverse=0):
               SJ = max J state for S(v=1) bands
 
               reverse=0 or 1, will reverse the output
+
+              This does not include S1 bands, specific for the spectral
+              range where no S1 bands observed.
 
      """
 
@@ -554,8 +557,6 @@ def spectra_H2_c(T, OJ, QJ , reverse=0):
 
     # --------------------------------------------------
     out=np.concatenate((O1, Q1 ))
-    return out 
+    return out
     # --------------------------------------------------
 #******************************************************************************
-
-    
