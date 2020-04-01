@@ -565,15 +565,16 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
 
     print("\nOptimization run : Cubic     \n")
     res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2500})
 
     print(res)
     optT = res.x[0]
     optk1 = res.x[1]
     optk2 = res.x[2]
     optk3 = res.x[3]
-    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".\
-          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
+    print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3} \n".\
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
+                 round(optk3, 6)))
 
     correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
         +(optk3/scale3)*xaxis**3 # generate the correction curve
@@ -584,9 +585,11 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     print("**********************************************************")
     # save log -----------
     log.info('\n *******  Optimization run : Cubic  *******')
-    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1, init_k2, init_k3 )
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1,\
+             init_k2, init_k3 )
     log.info('\n\t %s\n', res )
-    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optk1, optk2, optk3 )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n',\
+             optk1, optk2, optk3 )
     log.info(' *******************************************')
     # --------------------
 
@@ -602,12 +605,13 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     param_init = np.array([ init_T, init_k1 , init_k2 , init_k3, init_k4  ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".format(init_T, init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".\
+          format(init_T, init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
 
 
     print("\nOptimization run : Quartic     \n")
     res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1200})
 
     print(res)
     optT = res.x[0]
@@ -616,7 +620,8 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     optk3 = res.x[3]
     optk4 = res.x[4]
     print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3}, k4={4} \n".\
-          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
+                 round(optk3, 6), round(optk4, 6)))
 
     correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
         +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 # generate the correction curve
@@ -627,9 +632,11 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     print("**********************************************************")
     # save log -----------
     log.info('\n *******  Optimization run : Quartic  *******')
-    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1, init_k2, init_k3, init_k4 )
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1,\
+             init_k2, init_k3, init_k4 )
     log.info('\n\t %s\n', res )
-    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optk1, optk2, optk3, opttk4 )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f\n',\
+             optk1, optk2, optk3, optk4 )
     log.info(' *******************************************')
     # --------------------
 
@@ -734,18 +741,12 @@ wMat_D2 = 1
 #exit(0)
 
 
-run_fit_linear(299, 1.04586 )
+#run_fit_linear(299, 1.04586 )
 
-run_fit_quadratic(299, -0.931, -0.242 )
-run_fit_quadratic(299, -2.103, 0.000242 )
+#run_fit_quadratic(299, -0.991, -0.202 )
 
-run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
+run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
 
-run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
+#run_fit_quartic(299, -1.07, -0.275, 0.0025, 0.0014 )
 
-run_fit_quartic(299, -1.096, -0.2192, 0.0025, -0.0003 )
-
-#run_fit_linear_T_fixed (1.045)
-
-print(param_linear)
-#cProfile.run('residual_linear(param_linear)')
+#*******************************************************************
