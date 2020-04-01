@@ -52,7 +52,6 @@ print(dataH2.shape)
 print(dataHD.shape)
 print(dataD2.shape)
 
-
 # Constants ------------------------------
 # these are used for scaling the coefs
 scale1 = 1e4
@@ -60,7 +59,6 @@ scale2 = 1e7
 scale3 = 1e9
 scale4 = 1e12
 # ----------------------------------------
-
 
 # these are used for scaling the weights for O2
 # edit as needed
@@ -105,7 +103,7 @@ def gen_weight(expt_data, factor):
     """To generate the weight matrix from the experimental data 2D array
         expt_data  =  2D array of expt data where
                       0th column is the band area
-
+                      and
                       1st column is the error
     """
     error_mat=np.zeros((expt_data.shape[0],expt_data.shape[0]))
@@ -116,24 +114,23 @@ def gen_weight(expt_data, factor):
                 math.sqrt( (expt_data[i,1]/expt_data[i,0])**2 + \
                      (expt_data[j,1]/expt_data[j,0])**2   )
 
-
     #return factor * inverse_square(error_mat)
     return  (error_mat)
 
 #------------------------------------------------
 
 def inverse_square(array):
-    out=np.zeros(( array.shape[0], array.shape[0]))
-    for i in range(array.shape[0]):
-        for j in range(array.shape[1]):
-            out[i,j]=1/(array[i,j]**2)
-    return out
+    """return the inverse square of array, for all elements"""
+    return 1/(array**2)
 
 #------------------------------------------------
 
 def gen_s_linear(computed_data, param ):
+    """Generate the sensitivity matrix assuming the wavelength
+    dependent sensitivity as a line. Elements are the ratio of
+    sensitivity at two wavenumber/wavelength points"""
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
-    #print(mat.shape)
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
@@ -150,8 +147,11 @@ def gen_s_linear(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quadratic(computed_data, param ):
+    """Generate the sensitivity matrix assuming the wavelength
+    dependent sensitivity as a quadratic polynomial. Elements are
+    the ratio of sensitivity at two wavenumber/wavelength points"""
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
-    #print(mat.shape)
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
@@ -170,8 +170,11 @@ def gen_s_quadratic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_cubic(computed_data, param ):
+    """Generate the sensitivity matrix assuming the wavelength
+    dependent sensitivity as a cubic polynomial. Elements are
+    the ratio of sensitivity at two wavenumber/wavelength points"""
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
-    #print(mat.shape)
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
@@ -193,8 +196,11 @@ def gen_s_cubic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quartic(computed_data, param, scale1):
+    """Generate the sensitivity matrix assuming the wavelength
+    dependent sensitivity as quartic polynomial. Elements are
+    the ratio of sensitivity at two wavenumber/wavelength points"""
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
-    #print(mat.shape)
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
@@ -217,6 +223,361 @@ def gen_s_quartic(computed_data, param, scale1):
 
 #------------------------------------------------
 #------------------------------------------------
+#*******************************************************************
+# Define the residual function
+#*******************************************************************
+
+def residual_linear(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt to theoretical intensity ratio to the sensitivity  profile
+    modelled as  a line, ( 1+ c1*x )
+
+    param : T, c1
+
+    '''
+    #TK = param[0]
+    TK = param[0]
+    #c1 = param[1]
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+
+
+    # ------ D2 ------
+    trueR_D2=gen_intensity_mat (computed_D2, 2)
+    expt_D2=gen_intensity_mat (dataD2, 0)
+    I_D2=np.divide(expt_D2,trueR_D2 )
+    I_D2=clean_mat(I_D2)
+    # ----------------
+
+    # ------ HD ------
+    trueR_HD=gen_intensity_mat (computed_HD, 2)
+    expt_HD=gen_intensity_mat (dataHD, 0)
+    I_HD=np.divide(expt_HD,trueR_HD )
+    I_HD=clean_mat(I_HD)
+    # ----------------
+
+    # ------ H2 ------
+    trueR_H2=gen_intensity_mat (computed_H2, 2)
+    expt_H2=gen_intensity_mat (dataH2, 0)
+    I_H2=np.divide(expt_H2,trueR_H2 )
+    I_H2=clean_mat(I_H2)
+    # ----------------
+
+    # generate the RHS : sensitivity factor
+    sD2=gen_s_linear(computed_D2, param)
+    sHD=gen_s_linear(computed_HD, param)
+    sH2=gen_s_linear(computed_H2, param)
+
+    # residual matrix
+    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
+    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
+    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+
+    eD2=clean_mat(eD2)
+    eHD=clean_mat(eHD)
+    eH2=clean_mat(eH2)
+
+
+    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
+
+    return(E)
+
+#*******************************************************************
+#*******************************************************************
+
+def residual_quadratic(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt to theoretical intensity ratio to the sensitivity  profile
+    modelled as  a line, ( 1+ c1*x + c2*x**2 )
+
+    param : T, c1, c2
+
+    '''
+    TK = param[0]
+    #c1 = param[1]
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+
+
+    # ------ D2 ------
+    trueR_D2=gen_intensity_mat (computed_D2, 2)
+    expt_D2=gen_intensity_mat (dataD2, 0)
+    I_D2=np.divide(expt_D2,trueR_D2 )
+    I_D2=clean_mat(I_D2)
+    # ----------------
+
+    # ------ HD ------
+    trueR_HD=gen_intensity_mat (computed_HD, 2)
+    expt_HD=gen_intensity_mat (dataHD, 0)
+    I_HD=np.divide(expt_HD,trueR_HD )
+    I_HD=clean_mat(I_HD)
+    # ----------------
+
+    # ------ H2 ------
+    trueR_H2=gen_intensity_mat (computed_H2, 2)
+    expt_H2=gen_intensity_mat (dataH2, 0)
+    I_H2=np.divide(expt_H2,trueR_H2 )
+    I_H2=clean_mat(I_H2)
+    # ----------------
+
+    # generate the RHS : sensitivity factor
+    sD2=gen_s_quadratic(computed_D2, param)
+    sHD=gen_s_quadratic(computed_HD, param)
+    sH2=gen_s_quadratic(computed_H2, param)
+
+    # residual matrix
+    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
+    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
+    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+
+    eD2=clean_mat(eD2)
+    eHD=clean_mat(eHD)
+    eH2=clean_mat(eH2)
+
+
+    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
+
+    return(E)
+
+#*******************************************************************
+#*******************************************************************
+
+def residual_cubic(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt to theoretical intensity ratio to the sensitivity  profile
+    modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 )
+
+    param : T, c1, c2, c3
+
+    '''
+    TK = param[0]
+    #c1 = param[1]
+    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
+    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
+    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+
+
+    # ------ D2 ------
+    trueR_D2=gen_intensity_mat (computed_D2, 2)
+    expt_D2=gen_intensity_mat (dataD2, 0)
+    I_D2=np.divide(expt_D2,trueR_D2 )
+    I_D2=clean_mat(I_D2)
+    # ----------------
+
+    # ------ HD ------
+    trueR_HD=gen_intensity_mat (computed_HD, 2)
+    expt_HD=gen_intensity_mat (dataHD, 0)
+    I_HD=np.divide(expt_HD,trueR_HD )
+    I_HD=clean_mat(I_HD)
+    # ----------------
+
+    # ------ H2 ------
+    trueR_H2=gen_intensity_mat (computed_H2, 2)
+    expt_H2=gen_intensity_mat (dataH2, 0)
+    I_H2=np.divide(expt_H2,trueR_H2 )
+    I_H2=clean_mat(I_H2)
+    # ----------------
+
+    # generate the RHS : sensitivity factor
+    sD2=gen_s_cubic(computed_D2, param)
+    sHD=gen_s_cubic(computed_HD, param)
+    sH2=gen_s_cubic(computed_H2, param)
+
+    # residual matrix
+    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
+    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
+    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+
+    eD2=clean_mat(eD2)
+    eHD=clean_mat(eHD)
+    eH2=clean_mat(eH2)
+
+
+    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
+
+
+    return(E)
+
+#***************************************************************
+#***************************************************************
+# Fit functions
+#***************************************************************
+#***************************************************************
+
+def run_fit_linear ( init_T, init_k1 ):
+    '''Function performing the actual fit using the residual_linear function
+    defined earlier '''
+
+    # init_k1 : Intial guess
+
+    param_init = np.array([ init_T, init_k1  ])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0}, k1={1} output = {2}".format(init_T, init_k1, \
+          (residual_linear(param_init))))
+
+
+    print("\nOptimization run: Linear     \n")
+    res = opt.minimize(residual_linear, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9})
+
+    print(res)
+    optT = res.x[0]
+    optk1 = res.x[1]
+    print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,\
+      round(optk1, 6) ))
+
+    correction_curve_line= 1+(optk1/scale1)*xaxis     # generate the correction curve
+
+    np.savetxt("correction_linearv2.txt", correction_curve_line, fmt='%2.8f',\
+               header='corrn_curve_linear', comments='')
+
+    print("**********************************************************")
+
+    # save log -----------
+    log.info('\n *******  Optimization run : Linear  *******')
+    log.info('\n\t Initial : T = %4.8f, c1 = %4.8f\n', init_T, init_k1 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : T = %4.8f, c1 = %4.8f\n', optT, optk1 )
+    log.info(' *******************************************')
+    # --------------------
+
+#***************************************************************
+#***************************************************************
+#***************************************************************
+
+def run_fit_quadratic ( init_T, init_k1, init_k2 ):
+    '''Function performing the actual fit using the residual_linear function
+    defined earlier '''
+
+    # init_k1 : Intial guess
+
+    param_init = np.array([ init_T, init_k1 , init_k2  ])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0}, k1={1}, k2={2} output = {3}".format(init_T, init_k1, \
+         init_k2, (residual_quadratic(param_init))))
+
+
+    print("\nOptimization run: Quadratic     \n")
+    res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9})
+
+    print(res)
+    optT = res.x[0]
+    optk1 = res.x[1]
+    optk2 = res.x[2]
+    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6)\
+     ,  round(optk1, 6), round(optk2, 6) ))
+
+    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
+
+    np.savetxt("correction_quadraticv2.txt", correction_curve_line, fmt='%2.8f',\
+               header='corrn_curve_quadratic', comments='')
+
+    print("**********************************************************")
+
+    # save log -----------
+    log.info('\n *******  Optimization run : Quadratic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f\n', init_k1, init_k2 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f\n', optk1, optk2 )
+    log.info(' *******************************************')
+    # --------------------
+
+#***************************************************************
+
+def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
+    '''Function performing the actual fit using the residual_linear function
+    defined earlier '''
+
+    # init_k1 : Intial guess
+
+    param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".format(init_T, init_k1, init_k2, init_k3, (residual_cubic(param_init))))
+
+
+    print("\nOptimization run : Cubic     \n")
+    res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9})
+
+    print(res)
+    optT = res.x[0]
+    optk1 = res.x[1]
+    optk2 = res.x[2]
+    optk3 = res.x[3]
+    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".\
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
+
+    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
+        +(optk3/scale3)*xaxis**3 # generate the correction curve
+
+    np.savetxt("correction_cubic.txt", correction_curve_line, fmt='%2.8f',\
+               header='corrn_curve_cubic', comments='')
+
+    print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Cubic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1, init_k2, init_k3 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optk1, optk2, optk3 )
+    log.info(' *******************************************')
+    # --------------------
+
+#***************************************************************
+#***************************************************************
+
+def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
+    '''Function performing the actual fit using the residual_linear function
+    defined earlier '''
+
+    # init_k1 : Intial guess
+
+    param_init = np.array([ init_T, init_k1 , init_k2 , init_k3, init_k4  ])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".format(init_T, init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
+
+
+    print("\nOptimization run : Quartic     \n")
+    res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9})
+
+    print(res)
+    optT = res.x[0]
+    optk1 = res.x[1]
+    optk2 = res.x[2]
+    optk3 = res.x[3]
+    optk4 = res.x[4]
+    print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3}, k4={4} \n".\
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
+
+    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
+        +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 # generate the correction curve
+
+    np.savetxt("correction_quartic.txt", correction_curve_line, fmt='%2.8f',\
+               header='corrn_curve_quartic', comments='')
+
+    print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Quartic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1, init_k2, init_k3, init_k4 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optk1, optk2, optk3, opttk4 )
+    log.info(' *******************************************')
+    # --------------------
+
+#***************************************************************
+
+#******************** SET UP CALCULATION ***********************
+#***************************************************************
 
 # GENERATE  INIT COEFS
 
@@ -312,300 +673,7 @@ wMat_D2 = 1
 
 #*******************************************************************
 #exit(0)
-#*******************************************************************
-# Define the residual function
-#*******************************************************************
 
-def residual_linear(param):
-    '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt to theoretical intensity ratio to the sensitivity  profile
-    modelled as  a line, ( 1+ c1*x )
-
-    param : T, c1
-
-    '''
-    #TK = param[0]
-    TK = param[0]
-    #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
-
-
-    # ------ D2 ------
-    trueR_D2=gen_intensity_mat (computed_D2, 2)
-    expt_D2=gen_intensity_mat (dataD2, 0)
-    I_D2=np.divide(expt_D2,trueR_D2 )
-    I_D2=clean_mat(I_D2)
-    # ----------------
-
-    # ------ HD ------
-    trueR_HD=gen_intensity_mat (computed_HD, 2)
-    expt_HD=gen_intensity_mat (dataHD, 0)
-    I_HD=np.divide(expt_HD,trueR_HD )
-    I_HD=clean_mat(I_HD)
-    # ----------------
-
-    # ------ H2 ------
-    trueR_H2=gen_intensity_mat (computed_H2, 2)
-    expt_H2=gen_intensity_mat (dataH2, 0)
-    I_H2=np.divide(expt_H2,trueR_H2 )
-    I_H2=clean_mat(I_H2)
-    # ----------------
-
-    # generate the RHS : sensitivity factor
-    sD2=gen_s_linear(computed_D2, param)
-    sHD=gen_s_linear(computed_HD, param)
-    sH2=gen_s_linear(computed_H2, param)
-
-    # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
-
-    eD2=clean_mat(eD2)
-    eHD=clean_mat(eHD)
-    eH2=clean_mat(eH2)
-
-
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))  
-
-    return(E)
-
-#*******************************************************************
-#*******************************************************************
-
-def residual_quadratic(param):
-    '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt to theoretical intensity ratio to the sensitivity  profile
-    modelled as  a line, ( 1+ c1*x + c2*x**2 )
-
-    param : T, c1, c2
-
-    '''
-    TK = param[0]
-    #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
-
-
-    # ------ D2 ------
-    trueR_D2=gen_intensity_mat (computed_D2, 2)
-    expt_D2=gen_intensity_mat (dataD2, 0)
-    I_D2=np.divide(expt_D2,trueR_D2 )
-    I_D2=clean_mat(I_D2)
-    # ----------------
-
-    # ------ HD ------
-    trueR_HD=gen_intensity_mat (computed_HD, 2)
-    expt_HD=gen_intensity_mat (dataHD, 0)
-    I_HD=np.divide(expt_HD,trueR_HD )
-    I_HD=clean_mat(I_HD)
-    # ----------------
-
-    # ------ H2 ------
-    trueR_H2=gen_intensity_mat (computed_H2, 2)
-    expt_H2=gen_intensity_mat (dataH2, 0)
-    I_H2=np.divide(expt_H2,trueR_H2 )
-    I_H2=clean_mat(I_H2)
-    # ----------------
-
-    # generate the RHS : sensitivity factor
-    sD2=gen_s_quadratic(computed_D2, param)
-    sHD=gen_s_quadratic(computed_HD, param)
-    sH2=gen_s_quadratic(computed_H2, param)
-
-    # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
-
-    eD2=clean_mat(eD2)
-    eHD=clean_mat(eHD)
-    eH2=clean_mat(eH2)
-
-
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) 
-
-    return(E)
-
-#*******************************************************************
-#*******************************************************************
-
-def residual_cubic(param):
-    '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt to theoretical intensity ratio to the sensitivity  profile
-    modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 )
-
-    param : T, c1, c2, c3
-
-    '''
-    TK = param[0]
-    #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
-
-
-    # ------ D2 ------
-    trueR_D2=gen_intensity_mat (computed_D2, 2)
-    expt_D2=gen_intensity_mat (dataD2, 0)
-    I_D2=np.divide(expt_D2,trueR_D2 )
-    I_D2=clean_mat(I_D2)
-    # ----------------
-
-    # ------ HD ------
-    trueR_HD=gen_intensity_mat (computed_HD, 2)
-    expt_HD=gen_intensity_mat (dataHD, 0)
-    I_HD=np.divide(expt_HD,trueR_HD )
-    I_HD=clean_mat(I_HD)
-    # ----------------
-
-    # ------ H2 ------
-    trueR_H2=gen_intensity_mat (computed_H2, 2)
-    expt_H2=gen_intensity_mat (dataH2, 0)
-    I_H2=np.divide(expt_H2,trueR_H2 )
-    I_H2=clean_mat(I_H2)
-    # ----------------
-
-    # generate the RHS : sensitivity factor
-    sD2=gen_s_cubic(computed_D2, param)
-    sHD=gen_s_cubic(computed_HD, param)
-    sH2=gen_s_cubic(computed_H2, param)
-
-    # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
-
-    eD2=clean_mat(eD2)
-    eHD=clean_mat(eHD)
-    eH2=clean_mat(eH2)
-
-
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))  
-
-
-    return(E)
-
-#***************************************************************
-#***************************************************************
-# Fit functions
-#***************************************************************
-#***************************************************************
-
-def run_fit_linear ( init_T, init_k1 ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
-
-    # init_k1 : Intial guess
-
-    param_init = np.array([ init_T, init_k1  ])
-    print("**********************************************************")
-    #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1} output = {2}".format(init_T, init_k1, \
-          (residual_linear(param_init))))
-
-
-    print("\nOptimization run: Linear     \n")
-    res = opt.minimize(residual_linear, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
-
-    print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,  round(optk1, 6) ))
-
-    correction_curve_line= 1+(optk1/scale1)*xaxis     # generate the correction curve
-
-    np.savetxt("correction_linearv2.txt", correction_curve_line, fmt='%2.8f',\
-               header='corrn_curve_linear', comments='')
-
-    print("**********************************************************")
-
-    # save log -----------
-    log.info('\n *******  Optimization run : Linear  *******')
-    log.info('\n\t Initial : T = %4.8f, c1 = %4.8f\n', init_T, init_k1 )
-    log.info('\n\t %s\n', res )
-    log.info('\n Optimized result : T = %4.8f, c1 = %4.8f\n', optT, optk1 )
-    log.info(' *******************************************')
-    # --------------------
-
-#***************************************************************
-#***************************************************************
-#***************************************************************
-
-def run_fit_quadratic ( init_T, init_k1, init_k2 ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
-
-    # init_k1 : Intial guess
-
-    param_init = np.array([ init_T, init_k1 , init_k2  ])
-    print("**********************************************************")
-    #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2} output = {3}".format(init_T, init_k1, \
-         init_k2, (residual_quadratic(param_init))))
-
-
-    print("\nOptimization run: Quadratic     \n")
-    res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
-
-    print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    optk2 = res.x[2]
-    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
-
-    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
-
-    np.savetxt("correction_quadraticv2.txt", correction_curve_line, fmt='%2.8f',\
-               header='corrn_curve_quadratic', comments='')
-
-    print("**********************************************************")
-
-#***************************************************************
-
-
-def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
-
-    # init_k1 : Intial guess
-
-    param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
-    print("**********************************************************")
-    #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".format(init_T, init_k1, \
-         init_k2, init_k3, (residual_cubic(param_init))))
-
-
-    print("\nOptimization run : Cubic     \n")
-    res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
-
-    print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    optk2 = res.x[2]
-    optk3 = res.x[3]
-    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".\
-          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6) ))
-
-    correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
-        +(optk3/scale3)*xaxis**3 # generate the correction curve
-
-    np.savetxt("correction_cubic.txt", correction_curve_line, fmt='%2.8f',\
-               header='corrn_curve_cubic', comments='')
-
-    print("**********************************************************")
-
-#***************************************************************
 
 run_fit_linear(299, 1.04586 )
 
@@ -615,6 +683,8 @@ run_fit_quadratic(299, -2.103, 0.000242 )
 run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
 
 run_fit_cubic(299, -1.096, -0.2192, 0.0025 )
+
+run_fit_quartic(299, -1.096, -0.2192, 0.0025, -0.0003 )
 
 #run_fit_linear_T_fixed (1.045)
 
