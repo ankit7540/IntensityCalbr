@@ -3,11 +3,13 @@ __pycache__/
 *.py[cod]
 *$py.class
 
-# C extensions
-*.so
-
 # vscode
 launch.json
 settings.json
 
 test.py
+
+**/notes
+
+run_parallel/
+run_perperpendicular/

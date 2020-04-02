@@ -10,13 +10,13 @@ import math
 import scipy.optimize as opt
 import logging
 from datetime import datetime
+import matplotlib.pyplot as plt
 
 from common import compute_series
 # ----------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./run1/logfile.txt', 'w+')
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
+fileh = logging.FileHandler('./logfile.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -35,17 +35,36 @@ log.warning('\n',)
 log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
 
-
 # LOAD EXPERIMENTAL BAND AREA DATA
+
+#  | band area | error |
+# without header in the following files
+
 # Change following paths
 
-dataH2 = np.loadtxt("./run1/BA_H2_1.txt")
-dataHD = np.loadtxt("./run1/BA_HD_1.txt")
-dataD2 = np.loadtxt("./run1/BA_D2_1.txt")
-xaxis  = np.loadtxt("./run1/Ramanshift_axis_para.txt")
+dataH2 = np.loadtxt("./run_perpendicular/BA_H2_1.txt")
+dataHD = np.loadtxt("./run_perpendicular/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run_perpendicular/BA_D2_1.txt")
+xaxis  = np.loadtxt("./run_perpendicular/Ramanshift_axis_perp.txt")
 # ------------------------------------------------------
-#dataO2 = np.loadtxt("./DataO2_o1s1.txt")
-#dataO2_p = np.loadtxt("./DataO2_pR.txt")
+
+# set indices for OJ,QJ and SJ for H2, HD and D2
+# these are required for computing spectra for given T
+
+# PERPENDICULAR POLARIZATION
+
+OJ_H2 = 3
+QJ_H2 = 3
+
+OJ_HD = 3
+QJ_HD = 4
+SJ_HD = 2
+
+OJ_D2 = 4
+QJ_D2 = 6
+SJ_D2 = 3
+
+# ------------------------------------------------------
 
 print(dataH2.shape)
 print(dataHD.shape)
@@ -237,9 +256,9 @@ def residual_linear(param):
     #TK = param[0]
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+    computed_D2=compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD=compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2=compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
 
     # ------ D2 ------
@@ -296,9 +315,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+    computed_D2=compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD=compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2=compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
 
     # ------ D2 ------
@@ -355,9 +374,9 @@ def residual_cubic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+    computed_D2=compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD=compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2=compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
 
     # ------ D2 ------
@@ -415,9 +434,9 @@ def residual_quartic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_series.spectra_D2( TK, 4,6,3)
-    computed_HD=compute_series.spectra_HD( TK, 3,3,2)
-    computed_H2=compute_series.spectra_H2_c( TK, 3,4)
+    computed_D2=compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD=compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2=compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
 
     # ------ D2 ------
@@ -493,7 +512,7 @@ def run_fit_linear ( init_T, init_k1 ):
 
     correction_curve= 1+(optk1/scale1)*xaxis     # generate the correction curve
 
-    np.savetxt("correction_linearv2.txt", correction_curve, fmt='%2.8f',\
+    np.savetxt("correction_linear.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_linear', comments='')
 
     print("**********************************************************")
@@ -525,7 +544,7 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
 
     print("\nOptimization run: Quadratic     \n")
     res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
     optT = res.x[0]
@@ -537,7 +556,7 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
      # generate the correction curve
     correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2   
 
-    np.savetxt("correction_quadraticv2.txt", correction_curve, fmt='%2.8f',\
+    np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
 
     print("**********************************************************")
@@ -678,9 +697,9 @@ param_quartic[4]= -0.000001
 #------------------------------------------------
 #------------------------------------------------
 
-computed_D2=compute_series.spectra_D2( 298, 4,6,3)
-computed_HD=compute_series.spectra_HD( 298, 3,3,2)
-computed_H2=compute_series.spectra_H2_c( 298, 3,4)
+computed_D2=compute_series.spectra_D2( 299, OJ_D2, QJ_D2, SJ_D2)
+computed_HD=compute_series.spectra_HD( 299, OJ_HD, QJ_HD, SJ_HD)
+computed_H2=compute_series.spectra_H2_c( 299, OJ_H2, QJ_H2)
 
 
 trueR_D2=gen_intensity_mat (computed_D2, 2)
@@ -749,10 +768,58 @@ wMat_D2 = 1
 
 run_fit_linear(299, 1.04586 )
 
-run_fit_quadratic(299, -0.991, -0.202 )
+run_fit_quadratic(299, -0.8391, -0.202 )
 
 run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
 
 run_fit_quartic(299, -0.85, -0.315, 0.0007, -1e-5 )
 
 #*******************************************************************
+
+
+# Load the saved correction curves for  plotting
+# outputs from last run will be loaded
+correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
+correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
+correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
+correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+
+#********************************************************************
+
+# Plotting the data
+
+txt = ("*Generated from 'wavelength_sensitivity.py' on the\
+      \nGitHub Repository: RamanSpecCalibration ")
+
+# FIGURE 0 INITIALIZED
+
+plt.figure(0)
+ax0 = plt.axes()
+plt.title('Fitting result', fontsize=22)
+
+plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
+plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
+plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
+plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+
+plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
+plt.ylabel('Relative sensitivity', fontsize=20)
+plt.grid(True)
+
+# change following as needed
+ax0.tick_params(axis='both', labelsize =20)
+#plt.xlim((1755, -1120)) #  change this if the xlimit is not correct
+#ax0.set_ylim([0, 1.30]) # change this if the ylimit is not enough
+
+ax0.minorticks_on()
+ax0.tick_params(which='minor', right='on')
+ax0.tick_params(axis='y', labelleft='on', labelright='on')
+plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",\
+         transform=plt.gcf().transFigure)
+plt.legend(loc='lower left', fontsize=16)
+
+
+#  For saving the plot
+#plt.savefig('fit_output.png', dpi=120)
+#********************************************************************
+
