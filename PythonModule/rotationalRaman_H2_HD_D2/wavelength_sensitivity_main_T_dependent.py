@@ -56,7 +56,7 @@ print(dataD2.shape)
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
-scale4 = 1e12
+scale4 = 1e10
 # ----------------------------------------
 
 # these are used for scaling the weights for O2
@@ -534,7 +534,8 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
     print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6)\
      ,  round(optk1, 6), round(optk2, 6) ))
 
-    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
+     # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2   
 
     np.savetxt("correction_quadraticv2.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
@@ -560,7 +561,8 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".format(init_T, init_k1, init_k2, init_k3, (residual_cubic(param_init))))
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".\
+          format(init_T, init_k1, init_k2, init_k3, (residual_cubic(param_init))))
 
 
     print("\nOptimization run : Cubic     \n")
@@ -623,8 +625,9 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
           format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
                  round(optk3, 6), round(optk4, 6)))
 
+    # generate the correction curve
     correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
-        +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 # generate the correction curve
+        +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 
 
     np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quartic', comments='')
@@ -632,7 +635,7 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     print("**********************************************************")
     # save log -----------
     log.info('\n *******  Optimization run : Quartic  *******')
-    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1,\
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f\n', init_k1,\
              init_k2, init_k3, init_k4 )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f\n',\
@@ -713,6 +716,9 @@ sD2=gen_s_linear(computed_D2, param_linear)
 sHD=gen_s_linear(computed_HD, param_linear)
 sH2=gen_s_linear(computed_H2, param_linear)
 
+
+sD2_q=gen_s_quartic(computed_D2, param_quartic)
+
 eD2 = ( np.multiply(errD2_output, I_D2 ) - sD2 )
 eHD = ( np.multiply(errHD_output, I_HD ) - sHD )
 eH2 = ( np.multiply(errH2_output, I_H2 ) - sH2 )
@@ -723,7 +729,7 @@ eH2=clean_mat(eH2)
 
 #E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) + np.sum(np.square(eH2))
 E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) + np.sum(np.abs(eH2))
-print(E )
+#print(E )
 
 
 #*******************************************************************
@@ -745,8 +751,8 @@ wMat_D2 = 1
 
 #run_fit_quadratic(299, -0.991, -0.202 )
 
-run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
+#run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
 
-#run_fit_quartic(299, -1.07, -0.275, 0.0025, 0.0014 )
+run_fit_quartic(299, -1.07, -0.275, 0.0025, 0.0014 )
 
 #*******************************************************************
