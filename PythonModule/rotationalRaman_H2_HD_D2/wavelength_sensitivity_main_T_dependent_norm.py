@@ -87,7 +87,7 @@ print(dataD2.shape)
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
-scale4 = 1e11
+scale4 = 1e10
 # ----------------------------------------
 
 # these are used for scaling the weights for O2
@@ -164,8 +164,8 @@ def gen_s_linear(computed_data, param ):
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1=computed_data[i,1]
-            v2=computed_data[j,1]
+            v1=computed_data[i,1]-scenter
+            v2=computed_data[j,1]-scenter
 
             # param[0] = temperature
             # param[1] = c1
@@ -185,8 +185,8 @@ def gen_s_quadratic(computed_data, param ):
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1=computed_data[i,1]
-            v2=computed_data[j,1]
+            v1=computed_data[i,1]-scenter
+            v2=computed_data[j,1]-scenter
 
             # param[0] = temperature
             # param[1] = c1
@@ -208,14 +208,13 @@ def gen_s_cubic(computed_data, param ):
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1=computed_data[i,1]
-            v2=computed_data[j,1]
+            v1=computed_data[i,1]-scenter
+            v2=computed_data[j,1]-scenter
 
             # param[0] = temperature
             # param[1] = c1
             # param[2] = c2
             # param[3] = c3
-
 
             mat [i,j]=(1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
                        (param[3]/scale3)*v1**3 )/ \
@@ -234,8 +233,8 @@ def gen_s_quartic(computed_data, param):
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1=computed_data[i,1]
-            v2=computed_data[j,1]
+            v1=computed_data[i,1]-scenter
+            v2=computed_data[j,1]-scenter
 
             # param[0] = temperature
             # param[1] = c1
@@ -522,7 +521,7 @@ def run_fit_linear ( init_T, init_k1 ):
     print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,\
       round(optk1, 6) ))
 
-    correction_curve= 1+(optk1/scale1)*xaxis     # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)     # generate the correction curve
 
     np.savetxt("correction_linear.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_linear', comments='')
@@ -566,7 +565,7 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
      ,  round(optk1, 6), round(optk2, 6) ))
 
      # generate the correction curve
-    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2   
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)*(xaxis-scenter)**2   
 
     np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
@@ -609,8 +608,8 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
           format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
                  round(optk3, 6)))
 
-    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
-        +(optk3/scale3)*xaxis**3 # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)*(xaxis-scenter)**2  +\
+        +(optk3/scale3)*(xaxis-scenter)**3 # generate the correction curve
 
     np.savetxt("correction_cubic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_cubic', comments='')
@@ -657,8 +656,8 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
                  round(optk3, 6), round(optk4, 6)))
 
     # generate the correction curve
-    correction_curve= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2  +\
-        +(optk3/scale3)*xaxis**3 +(optk4/scale4)*xaxis**4 
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)*(xaxis-scenter)**2  +\
+        +(optk3/scale3)*(xaxis-scenter)**3 +(optk4/scale4)*(xaxis-scenter)**4 
 
     np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quartic', comments='')
@@ -778,13 +777,13 @@ wMat_D2 = 1
 #exit(0)
 
 
-run_fit_linear(299, 1.04586 )
+run_fit_linear(299, -5.0 )
 
-run_fit_quadratic(299, -0.8391, -0.202 )
+run_fit_quadratic(299, -6.91, -0.202 )
 
-run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
+run_fit_cubic(299, -6.036, -0.5592, 0.0025 )
 
-run_fit_quartic(299, -0.85, -0.315, 0.0007, -1e-5 )
+run_fit_quartic(299, -6.85, -0.515, 0.05, -0.02 )
 
 #*******************************************************************
 
