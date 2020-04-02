@@ -15,7 +15,7 @@ from common import compute_series
 # ----------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('logfile.txt', 'w+')
+fileh = logging.FileHandler('./run1/logfile.txt', 'w+')
 #formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
@@ -56,7 +56,7 @@ print(dataD2.shape)
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
-scale4 = 1e10
+scale4 = 1e11
 # ----------------------------------------
 
 # these are used for scaling the weights for O2
@@ -613,7 +613,7 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
 
     print("\nOptimization run : Quartic     \n")
     res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1200})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
     optT = res.x[0]
@@ -747,12 +747,12 @@ wMat_D2 = 1
 #exit(0)
 
 
-#run_fit_linear(299, 1.04586 )
+run_fit_linear(299, 1.04586 )
 
-#run_fit_quadratic(299, -0.991, -0.202 )
+run_fit_quadratic(299, -0.991, -0.202 )
 
-#run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
+run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
 
-run_fit_quartic(299, -1.07, -0.275, 0.0025, 0.0014 )
+run_fit_quartic(299, -0.85, -0.315, 0.0007, -1e-5 )
 
 #*******************************************************************
