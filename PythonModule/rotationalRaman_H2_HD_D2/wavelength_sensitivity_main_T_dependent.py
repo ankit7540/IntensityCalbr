@@ -84,10 +84,10 @@ print(dataD2.shape)
 
 # Constants ------------------------------
 # these are used for scaling the coefs
-scale1 = 1e4
-scale2 = 1e7
+scale1 = 1e3
+scale2 = 1e6
 scale3 = 1e9
-scale4 = 1e11
+scale4 = 1e12
 # ----------------------------------------
 
 # these are used for scaling the weights for O2
@@ -205,11 +205,13 @@ def gen_s_cubic(computed_data, param ):
     the ratio of sensitivity at two wavenumber/wavelength points"""
 
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
-
+    #print('cubic, without norm')
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
             v1=computed_data[i,1]
             v2=computed_data[j,1]
+
+            #print(i,j,v1,v2)
 
             # param[0] = temperature
             # param[1] = c1
@@ -644,7 +646,7 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
 
     print("\nOptimization run : Quartic     \n")
     res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2500})
 
     print(res)
     optT = res.x[0]
@@ -775,63 +777,80 @@ wMat_HD = 1
 wMat_D2 = 1
 
 #*******************************************************************
-#exit(0)
+
+print('\n - D2')
+sD2=gen_s_cubic(computed_D2, param_cubic)
+print('\n - HD')
+sHD=gen_s_cubic(computed_HD, param_cubic)
+print('\n - H2')
+sH2=gen_s_cubic(computed_H2, param_cubic)
 
 
 run_fit_linear(299, 1.04586 )
+run_fit_linear(299, -0.04586 )
 
-run_fit_quadratic(299, -0.8391, -0.202 )
+run_fit_quadratic(296, -0.21391, -0.102 )
+run_fit_quadratic(296, +0.21391, -0.102 )
 
-run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
+run_fit_cubic(296, -0.1096, -0.02192, 0.0025 )
 
-run_fit_quartic(299, -0.85, -0.315, 0.0007, -1e-5 )
+#run_fit_quartic(2.95754543e+02,  3.44626388e-01, -1.68421181e-01,  1.03963986e-02, +1e-4 )
+run_fit_quartic(296, -0.1096, -0.0215, 0.0117, -1e-2 )
+run_fit_quartic(296, -0.1096, -0.0215, 0.0117, +1e-2 )
+
 
 #*******************************************************************
-
-
-# Load the saved correction curves for  plotting
-# outputs from last run will be loaded
-correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
-correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
-correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
-correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
-
 #********************************************************************
 
 # Plotting the data
+boolean=1
 
-txt = ("*Generated from 'wavelength_sensitivity.py' on the\
-      \nGitHub Repository: RamanSpecCalibration ")
+def plot_curves(boolean):
+    if boolean == 1:
+        # Load the saved correction curves for  plotting
+        # outputs from last run will be loaded
+        correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
+        correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
+        correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
+        correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+        
+        #********************************************************************
+        
+        # Plotting the data
+        
+        txt = ("*Generated from 'wavelength_sensitivity.py' on the\
+              \nGitHub Repository: RamanSpecCalibration ")
+        
+        # FIGURE 0 INITIALIZED
+        
+        plt.figure(0)
+        ax0 = plt.axes()
+        plt.title('Fitting result', fontsize=22)
+        
+        plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
+        plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
+        plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
+        plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+        
+        plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
+        plt.ylabel('Relative sensitivity', fontsize=20)
+        plt.grid(True)
+        
+        # change following as needed
+        ax0.tick_params(axis='both', labelsize =20)
+        #plt.xlim((1755, -1120)) #  change this if the xlimit is not correct
+        #ax0.set_ylim([0, 1.30]) # change this if the ylimit is not enough
+        
+        ax0.minorticks_on()
+        ax0.tick_params(which='minor', right='on')
+        ax0.tick_params(axis='y', labelleft='on', labelright='on')
+        plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",\
+                 transform=plt.gcf().transFigure)
+        plt.legend(loc='lower left', fontsize=16)
+        
+        
+        #  For saving the plot
+        #plt.savefig('fit_output.png', dpi=120)
+        #********************************************************************
 
-# FIGURE 0 INITIALIZED
-
-plt.figure(0)
-ax0 = plt.axes()
-plt.title('Fitting result', fontsize=22)
-
-plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
-plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
-plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
-plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
-
-plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
-plt.ylabel('Relative sensitivity', fontsize=20)
-plt.grid(True)
-
-# change following as needed
-ax0.tick_params(axis='both', labelsize =20)
-#plt.xlim((1755, -1120)) #  change this if the xlimit is not correct
-#ax0.set_ylim([0, 1.30]) # change this if the ylimit is not enough
-
-ax0.minorticks_on()
-ax0.tick_params(which='minor', right='on')
-ax0.tick_params(axis='y', labelleft='on', labelright='on')
-plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",\
-         transform=plt.gcf().transFigure)
-plt.legend(loc='lower left', fontsize=16)
-
-
-#  For saving the plot
-#plt.savefig('fit_output.png', dpi=120)
-#********************************************************************
-
+plot_curves(boolean)
