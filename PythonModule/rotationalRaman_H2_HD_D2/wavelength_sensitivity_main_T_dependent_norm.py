@@ -774,6 +774,13 @@ wMat_HD = 1
 wMat_D2 = 1
 
 #*******************************************************************
+
+# Analyse the T-independen terms in the calc ratio matrix, 
+# give those elements extra weight 
+
+
+
+#*******************************************************************
 #exit(0)
 
 
