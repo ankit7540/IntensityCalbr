@@ -9,7 +9,7 @@ settings.json
 
 test.py
 
-**/notes
+#**/notes
 
-run_parallel/
-run_perperpendicular/
+#run_parallel/
+#run_perperpendicular/

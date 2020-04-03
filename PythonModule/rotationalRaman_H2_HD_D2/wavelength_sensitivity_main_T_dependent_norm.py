@@ -87,7 +87,7 @@ print(dataD2.shape)
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
-scale4 = 1e10
+scale4 = 1e11
 # ----------------------------------------
 
 # these are used for scaling the weights for O2
