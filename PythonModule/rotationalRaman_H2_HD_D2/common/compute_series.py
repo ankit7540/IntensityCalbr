@@ -221,8 +221,8 @@ def HD_S1(T, JMax, sos):
         gamma = ME_gamma_HD_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         specHD[i][0] = i
         specHD[i][1] = position
@@ -249,8 +249,8 @@ def HD_O1(T, JMax, sos):
         position = (eJHDv1[i-2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         #print(JMax-i)
 
@@ -280,8 +280,8 @@ def HD_Q1(T, JMax, sos):
         gamma = ME_gamma_HD_532_Q1[i][4]
         #print(i, E, popn, position, alpha, gamma)
 
-        factor = (popn/sos)*omega_sc*((omega_sc-position/1e4)**3)*\
-                (bj*(4/45)*(gamma**2) + alpha**2)
+        factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
+                (bj*(gamma**2)+ alpha**2)
 
         specHD[JMax-i][0] = i
         specHD[JMax-i][1] = position
@@ -330,8 +330,8 @@ def D2_S1(T, JMax, sos):
         gamma = ME_gamma_D2_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         specD2[i][0] = i
         specD2[i][1] = position
@@ -357,8 +357,8 @@ def D2_O1(T, JMax, sos):
         position = (eJD2v1[i-2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -383,9 +383,9 @@ def D2_Q1(T, JMax, sos):
         position = (eJD2v1[i]-eJD2v0[i])
         alpha = ME_alpha_D2_532_Q1[i][4]
         gamma = ME_gamma_D2_532_Q1[i][4]
-        #print(gamma, alpha)
-        factor = (popn/sos)*omega_sc*((omega_sc-position/1e4)**3)*\
-                (bj*(4/45)*(gamma**2) + alpha**2)
+
+        factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
+                (bj*(gamma**2)+ alpha**2)
 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -437,8 +437,8 @@ def H2_S1(T, JMax, sos):
         gamma = ME_gamma_H2_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         specH2[i][0] = i
         specH2[i][1] = position
@@ -464,8 +464,8 @@ def H2_O1(T, JMax, sos):
         position = (eJH2v1[i-2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*((omega_sc-position/1e4)**3)\
-            *((2/15)*(gamma**2))/sos
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(gamma**2)/sos
 
         #print(JMax-i)
 
@@ -493,8 +493,8 @@ def H2_Q1(T, JMax, sos):
         alpha = ME_alpha_H2_532_Q1[i][4]
         gamma = ME_gamma_H2_532_Q1[i][4]
 
-        factor = (popn/sos)*omega_sc*((omega_sc-position/1e4)**3)*\
-                (bj*(4/45)*(gamma**2) + alpha**2)
+        factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
+                (bj*(gamma**2)+ alpha**2)
 
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
