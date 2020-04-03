@@ -1,0 +1,23 @@
+
+
+computed_D2=compute_series.spectra_D2( 298, OJ_D2, QJ_D2, SJ_D2)
+computed_HD=compute_series.spectra_HD( 298, OJ_HD, QJ_HD, SJ_HD)
+computed_H2=compute_series.spectra_H2_c( 298, OJ_H2, QJ_H2)
+calc_298_D2=gen_intensity_mat (computed_D2, 2)
+calc_298_HD=gen_intensity_mat (computed_HD, 2)
+calc_298_H2=gen_intensity_mat (computed_H2, 2)
+
+
+computed_D2=compute_series.spectra_D2( 600, OJ_D2, QJ_D2, SJ_D2)
+computed_HD=compute_series.spectra_HD( 600, OJ_HD, QJ_HD, SJ_HD)
+computed_H2=compute_series.spectra_H2_c( 600, OJ_H2, QJ_H2)
+calc_600_D2=gen_intensity_mat (computed_D2, 2)
+calc_600_HD=gen_intensity_mat (computed_HD, 2)
+calc_600_H2=gen_intensity_mat (computed_H2, 2)
+
+diff_D2=calc_298_D2 - calc_600_D2
+diff_H2=calc_298_H2 - calc_600_H2
+diff_HD = calc_298_HD - calc_600_HD
+cr_D2 = calc_298_D2 / calc_600_D2
+cr_H2 = calc_298_H2 / calc_600_H2
+cr_HD = calc_298_HD / calc_600_HD
