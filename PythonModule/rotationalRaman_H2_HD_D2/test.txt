@@ -21,3 +21,18 @@ diff_HD = calc_298_HD - calc_600_HD
 cr_D2 = calc_298_D2 / calc_600_D2
 cr_H2 = calc_298_H2 / calc_600_H2
 cr_HD = calc_298_HD / calc_600_HD
+
+
+
+cr_D2 = clean_mat(cr_D2)
+cr_HD = clean_mat(cr_HD)
+cr_H2 = clean_mat(cr_H2)
+
+index_H2 = np.nonzero(cr_H2 == round(1, 8)) 
+index_HD = np.nonzero(cr_HD == round(1, 8)) 
+index_D2 = np.nonzero(cr_D2 == round(1, 8)) 
+
+
+cr_H2[index] = cr_H2[index]*5
+cr_HD[index] = cr_HD[index]*5
+cr_D2[index] = cr_D2[index]*5

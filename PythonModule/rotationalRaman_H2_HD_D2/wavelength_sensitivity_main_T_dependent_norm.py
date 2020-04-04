@@ -1,15 +1,19 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
+# pylint: disable=wildcard-import, method-hidden,C0103,E265,E303,R0914,W0621
 
 """Module describing the weighted non-linear optimization scheme used to
 determine the wavelength sensitivity of the spectrometer using a  polynomial
 as a model function"""
 
-import numpy as np
 import math
-import scipy.optimize as opt
 import logging
 from datetime import datetime
+import numpy as np
+
+import scipy.optimize as opt
+
+
 import matplotlib.pyplot as plt
 
 from common import compute_series
@@ -47,12 +51,10 @@ dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
 dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
 xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
 
-
-
-#dataH2 = np.loadtxt("./run_perpendicular/BA_H2_1.txt")
-#dataHD = np.loadtxt("./run_perpendicular/BA_HD_1.txt")
-#dataD2 = np.loadtxt("./run_perpendicular/BA_D2_1.txt")
-#xaxis  = np.loadtxt("./run_perpendicular/Ramanshift_axis_perp.txt")
+# dataH2 = np.loadtxt("./run_perpendicular/BA_H2_1.txt")
+# dataHD = np.loadtxt("./run_perpendicular/BA_HD_1.txt")
+# dataD2 = np.loadtxt("./run_perpendicular/BA_D2_1.txt")
+# xaxis  = np.loadtxt("./run_perpendicular/Ramanshift_axis_perp.txt")
 # ------------------------------------------------------
 
 # set indices for OJ,QJ and SJ for H2, HD and D2
@@ -74,8 +76,6 @@ SJ_D2 = 3
 
 # PERPENDICULAR POLARIZATION ------
 
-
-
 # ------------------------------------------------------
 
 print(dataH2.shape)
@@ -91,17 +91,22 @@ scale4 = 1e12
 # ----------------------------------------
 # ----------------------------------------
 
-scenter = 3316.3 # center of the spectra
+scenter = 3316.3  # center of the spectra
+
+
 # (v1-scenter)
 # (v2-scenter)
-#------------------------------------------------
+# ------------------------------------------------
 #                COMMON FUNCTIONS
-#------------------------------------------------
+# ------------------------------------------------
+
+
 def gen_intensity_mat(arr, index):
     """To obtain the intensity matrix for the numerator or denominator\
         in the Intensity ratio matrix
 
-        array  =  2D array of data where index column contains the intensity data
+        array  =  2D array of data where index column contains the intensity
+                  data
         index  =  corresponding to the column which has intensity data
 
         returns => square matrix of intensity ratio : { I(v1)/I(v2) } """
@@ -110,101 +115,125 @@ def gen_intensity_mat(arr, index):
     spec_mat = np.zeros((spec1D.shape[0], spec1D.shape[0]))
 
     for i in range(spec1D.shape[0]):
-        spec_mat[:, i] = spec1D/spec1D[i]
+        spec_mat[:, i] = spec1D / spec1D[i]
 
     return spec_mat
 
-#------------------------------------------------
+# ------------------------------------------------
+
 
 def clean_mat(square_array):
     """Set the upper triangular portion of square matrix to zero
         input = any square array     """
     np.fill_diagonal(square_array, 0)
-    return (np.tril(square_array, k=0))
+    return np.tril(square_array, k=0)
 
-#------------------------------------------------
+# ------------------------------------------------
+
 
 def gen_weight(expt_data):
     """To generate the weight matrix from the experimental data 2D array
         expt_data  =  2D array of expt data where
-                      0th column is the band area
+                      0 index column is the band area
                       and
-                      1st column is the error
+                      1 index column is the error
     """
     error_mat = np.zeros((expt_data.shape[0], expt_data.shape[0]))
 
     for i in range(expt_data.shape[0]):
         for j in range(expt_data.shape[0]):
-            error_mat[i, j] = (expt_data[i, 0]/expt_data[j, 0])*\
-                math.sqrt( (expt_data[i, 1]/expt_data[i, 0])**2 + \
-                     (expt_data[j, 1]/expt_data[j, 0])**2   )
+            error_mat[i, j] = (expt_data[i, 0] / expt_data[j, 0]) \
+                * math.sqrt((expt_data[i, 1] / expt_data[i, 0])**2 \
+                            + (expt_data[j, 1] / expt_data[j, 0])**2)
+    # return factor * inverse_square(error_mat)
+    return  error_mat
 
-    #return factor * inverse_square(error_mat)
-    return  (error_mat)
+# ------------------------------------------------
 
-#------------------------------------------------
 
 def inverse_square(array):
     """return the inverse square of array, for all elements"""
     return 1/(array**2)
 
-#------------------------------------------------
+# ------------------------------------------------
 
-def gen_s_linear(computed_data, param ):
+
+def scale_elements(array, index_array, factor):
+    """scale the elements of array using the index_array and factor"""
+
+    array[index_array] = array[index_array] * factor
+    return array
+
+# ------------------------------------------------
+
+
+def clean_and_scale_elements(array, index_array, factor):
+    """scale the elements of array using the index_array and factor"""
+
+    np.fill_diagonal(array, 0)
+    array = np.tril(array, k=0)
+
+    array[index_array] = array[index_array] * factor
+    return array
+
+# ------------------------------------------------
+    
+
+def gen_s_linear(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as a line. Elements are the ratio of
     sensitivity at two wavenumber/wavelength points"""
 
-    mat = np.zeros((computed_data.shape[0],computed_data.shape[0]))
+    mat = np.zeros((computed_data.shape[0], computed_data.shape[0]))
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1 = computed_data[i, 1]-scenter
-            v2 = computed_data[j, 1]-scenter
+            v1 = computed_data[i, 1] - scenter
+            v2 = computed_data[j, 1] - scenter
 
             # param[0] = temperature
             # param[1] = c1
 
-            mat [i, j] = (1+ (param[1]/scale1)*v1 )/ \
-                (1+ (param[1]/scale1)*v2)
+            mat[i, j] = (1+(param[1]/scale1)*v1)/ \
+                (1+(param[1]/scale1)*v2)
 
     return mat
 
-#------------------------------------------------
-def gen_s_quadratic(computed_data, param ):
+# ------------------------------------------------
+def gen_s_quadratic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as a quadratic polynomial. Elements are
     the ratio of sensitivity at two wavenumber/wavelength points"""
 
-    mat = np.zeros((computed_data.shape[0],computed_data.shape[0]))
+    mat = np.zeros((computed_data.shape[0], computed_data.shape[0]))
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1 = computed_data[i,1]-scenter
-            v2 = computed_data[j,1]-scenter
+            v1 = computed_data[i, 1] - scenter
+            v2 = computed_data[j, 1] - scenter
 
             # param[0] = temperature
             # param[1] = c1
             # param[2] = c2
 
 
-            mat [i,j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 )/ \
-                (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 )
+            mat[i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2)/ \
+                (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2)
 
     return mat
 
-#------------------------------------------------
-def gen_s_cubic(computed_data, param ):
+# ------------------------------------------------
+def gen_s_cubic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as a cubic polynomial. Elements are
     the ratio of sensitivity at two wavenumber/wavelength points"""
 
-    mat = np.zeros((computed_data.shape[0],computed_data.shape[0]))
+    mat = np.zeros((computed_data.shape[0], computed_data.shape[0]))
     #print('norm')
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1 = computed_data[i,1]-scenter
-            v2 = computed_data[j,1]-scenter
+            v1 = computed_data[i, 1] - scenter
+            v2 = computed_data[j, 1] - scenter
 
             #print(i,j,v1,v2)
 
@@ -213,25 +242,25 @@ def gen_s_cubic(computed_data, param ):
             # param[2] = c2
             # param[3] = c3
 
-            mat [i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
-                       (param[3]/scale3)*v1**3 )/ \
-                (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
-                 + (param[3]/scale3)*v2**3 )
+            mat[i, j] = (1 + (param[1] / scale1) * v1 + (param[2] / scale2)
+                          * v1**2 + (param[3] / scale3) * v1**3) / \
+                (1 + (param[1] / scale1) * v2 + (param[2] / scale2) * v2**2 \
+                 + (param[3] / scale3) * v2**3)
 
     return mat
 
-#------------------------------------------------
+# ------------------------------------------------
 def gen_s_quartic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as quartic polynomial. Elements are
     the ratio of sensitivity at two wavenumber/wavelength points"""
 
-    mat = np.zeros((computed_data.shape[0],computed_data.shape[0]))
+    mat = np.zeros((computed_data.shape[0], computed_data.shape[0]))
 
     for i in range(computed_data.shape[0]):
         for j in range(computed_data.shape[0]):
-            v1 = computed_data[i,1]-scenter
-            v2 = computed_data[j,1]-scenter
+            v1 = computed_data[i, 1] - scenter
+            v2 = computed_data[j, 1] - scenter
 
             # param[0] = temperature
             # param[1] = c1
@@ -243,15 +272,16 @@ def gen_s_quartic(computed_data, param):
             mat [i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
                        (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4  )/ \
                 (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
-                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4 )
+                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4)
 
     return mat
 
-#------------------------------------------------
-#------------------------------------------------
-#*******************************************************************
+# ------------------------------------------------
+# ------------------------------------------------
+# *******************************************************************
 # Define the residual function
-#*******************************************************************
+# *******************************************************************
+
 
 def residual_linear(param):
     '''Function which computes the residual (as sum of squares) comparing the
@@ -264,31 +294,34 @@ def residual_linear(param):
     #TK = param[0]
     TK = param[0]
     #c1 = param[1]
-    computed_D2 = compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
-
+    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
-    trueR_D2 = gen_intensity_mat (computed_D2, 2)
-    expt_D2 = gen_intensity_mat (dataD2, 0)
-    I_D2 = np.divide(expt_D2,trueR_D2 )
-    I_D2 = clean_mat(I_D2)
+    trueR_D2 = gen_intensity_mat(computed_D2, 2)
+    expt_D2 = gen_intensity_mat(dataD2, 0)
+    I_D2 = np.divide(expt_D2, trueR_D2)
+    #I_D2 = clean_mat(I_D2)
     # ----------------
 
     # ------ HD ------
-    trueR_HD = gen_intensity_mat (computed_HD, 2)
-    expt_HD = gen_intensity_mat (dataHD, 0)
-    I_HD = np.divide(expt_HD,trueR_HD )
-    I_HD = clean_mat(I_HD)
+    trueR_HD = gen_intensity_mat(computed_HD, 2)
+    expt_HD = gen_intensity_mat(dataHD, 0)
+    I_HD = np.divide(expt_HD, trueR_HD)
+    #I_HD = clean_mat(I_HD)
     # ----------------
 
     # ------ H2 ------
-    trueR_H2 = gen_intensity_mat (computed_H2, 2)
-    expt_H2 = gen_intensity_mat (dataH2, 0)
-    I_H2 = np.divide(expt_H2,trueR_H2 )
-    I_H2 = clean_mat(I_H2)
+    trueR_H2 = gen_intensity_mat(computed_H2, 2)
+    expt_H2 = gen_intensity_mat(dataH2, 0)
+    I_H2 = np.divide(expt_H2, trueR_H2)
+    #I_H2 = clean_mat(I_H2)
     # ----------------
+    
+    I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
+    I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
+    I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)    
 
     # generate the RHS : sensitivity factor
     sD2 = gen_s_linear(computed_D2, param)
@@ -296,22 +329,22 @@ def residual_linear(param):
     sH2 = gen_s_linear(computed_H2, param)
 
     # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
+    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
     return(E)
 
-#*******************************************************************
-#*******************************************************************
+# *******************************************************************
+# *******************************************************************
+
 
 def residual_quadratic(param):
     '''Function which computes the residual (as sum of squares) comparing the
@@ -322,32 +355,35 @@ def residual_quadratic(param):
 
     '''
     TK = param[0]
-    #c1 = param[1]
-    computed_D2 = compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
+    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
-    trueR_D2 = gen_intensity_mat (computed_D2, 2)
-    expt_D2 = gen_intensity_mat (dataD2, 0)
-    I_D2 = np.divide(expt_D2,trueR_D2 )
-    I_D2 = clean_mat(I_D2)
+    trueR_D2 = gen_intensity_mat(computed_D2, 2)
+    expt_D2 = gen_intensity_mat(dataD2, 0)
+    I_D2 = np.divide(expt_D2, trueR_D2)
+    #I_D2 = clean_mat(I_D2)
     # ----------------
 
     # ------ HD ------
-    trueR_HD = gen_intensity_mat (computed_HD, 2)
-    expt_HD = gen_intensity_mat (dataHD, 0)
-    I_HD = np.divide(expt_HD,trueR_HD )
-    I_HD = clean_mat(I_HD)
+    trueR_HD = gen_intensity_mat(computed_HD, 2)
+    expt_HD = gen_intensity_mat(dataHD, 0)
+    I_HD = np.divide(expt_HD, trueR_HD)
+    #I_HD = clean_mat(I_HD)
     # ----------------
 
     # ------ H2 ------
-    trueR_H2 = gen_intensity_mat (computed_H2, 2)
-    expt_H2 = gen_intensity_mat (dataH2, 0)
-    I_H2 = np.divide(expt_H2,trueR_H2 )
-    I_H2 = clean_mat(I_H2)
+    trueR_H2 = gen_intensity_mat(computed_H2, 2)
+    expt_H2 = gen_intensity_mat(dataH2, 0)
+    I_H2 = np.divide(expt_H2, trueR_H2)
+    #I_H2 = clean_mat(I_H2)
     # ----------------
+
+    I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
+    I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
+    I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)    
 
     # generate the RHS : sensitivity factor
     sD2 = gen_s_quadratic(computed_D2, param)
@@ -355,22 +391,22 @@ def residual_quadratic(param):
     sH2 = gen_s_quadratic(computed_H2, param)
 
     # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
+    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
     return(E)
 
-#*******************************************************************
-#*******************************************************************
+# *******************************************************************
+# *******************************************************************
+
 
 def residual_cubic(param):
     '''Function which computes the residual (as sum of squares) comparing the
@@ -381,32 +417,35 @@ def residual_cubic(param):
 
     '''
     TK = param[0]
-    #c1 = param[1]
-    computed_D2 = compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
+    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
-    trueR_D2 = gen_intensity_mat (computed_D2, 2)
-    expt_D2 = gen_intensity_mat (dataD2, 0)
-    I_D2 = np.divide(expt_D2,trueR_D2 )
-    I_D2 = clean_mat(I_D2)
+    trueR_D2 = gen_intensity_mat(computed_D2, 2)
+    expt_D2 = gen_intensity_mat(dataD2, 0)
+    I_D2 = np.divide(expt_D2, trueR_D2)
+    #I_D2 = clean_mat(I_D2)
     # ----------------
 
     # ------ HD ------
-    trueR_HD = gen_intensity_mat (computed_HD, 2)
-    expt_HD = gen_intensity_mat (dataHD, 0)
-    I_HD = np.divide(expt_HD,trueR_HD )
-    I_HD = clean_mat(I_HD)
+    trueR_HD = gen_intensity_mat(computed_HD, 2)
+    expt_HD = gen_intensity_mat(dataHD, 0)
+    I_HD = np.divide(expt_HD, trueR_HD)
+    #I_HD = clean_mat(I_HD)
     # ----------------
 
     # ------ H2 ------
-    trueR_H2 = gen_intensity_mat (computed_H2, 2)
-    expt_H2 = gen_intensity_mat (dataH2, 0)
-    I_H2 = np.divide(expt_H2,trueR_H2 )
-    I_H2 = clean_mat(I_H2)
+    trueR_H2 = gen_intensity_mat(computed_H2, 2)
+    expt_H2 = gen_intensity_mat(dataH2, 0)
+    I_H2 = np.divide(expt_H2, trueR_H2)
+    #I_H2 = clean_mat(I_H2)
     # ----------------
+    
+    I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
+    I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
+    I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)    
 
     # generate the RHS : sensitivity factor
     sD2 = gen_s_cubic(computed_D2, param)
@@ -414,23 +453,22 @@ def residual_cubic(param):
     sH2 = gen_s_cubic(computed_H2, param)
 
     # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
+    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
-
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
     return(E)
 
-#***************************************************************
-#*******************************************************************
+# *******************************************************************
+# *******************************************************************
+
 
 def residual_quartic(param):
     '''Function which computes the residual (as sum of squares) comparing the
@@ -441,32 +479,35 @@ def residual_quartic(param):
 
     '''
     TK = param[0]
-    #c1 = param[1]
-    computed_D2 = compute_series.spectra_D2( TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD( TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c( TK, OJ_H2, QJ_H2)
 
+    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
-    trueR_D2 = gen_intensity_mat (computed_D2, 2)
-    expt_D2 = gen_intensity_mat (dataD2, 0)
-    I_D2 = np.divide(expt_D2,trueR_D2 )
-    I_D2 = clean_mat(I_D2)
+    trueR_D2 = gen_intensity_mat(computed_D2, 2)
+    expt_D2 = gen_intensity_mat(dataD2, 0)
+    I_D2 = np.divide(expt_D2, trueR_D2)
+    #I_D2 = clean_mat(I_D2)
     # ----------------
 
     # ------ HD ------
-    trueR_HD = gen_intensity_mat (computed_HD, 2)
-    expt_HD = gen_intensity_mat (dataHD, 0)
-    I_HD = np.divide(expt_HD,trueR_HD )
-    I_HD = clean_mat(I_HD)
+    trueR_HD = gen_intensity_mat(computed_HD, 2)
+    expt_HD = gen_intensity_mat(dataHD, 0)
+    I_HD = np.divide(expt_HD, trueR_HD)
+    #I_HD = clean_mat(I_HD)
     # ----------------
 
     # ------ H2 ------
-    trueR_H2 = gen_intensity_mat (computed_H2, 2)
-    expt_H2 = gen_intensity_mat (dataH2, 0)
-    I_H2 = np.divide(expt_H2,trueR_H2 )
-    I_H2 = clean_mat(I_H2)
+    trueR_H2 = gen_intensity_mat(computed_H2, 2)
+    expt_H2 = gen_intensity_mat(dataH2, 0)
+    I_H2 = np.divide(expt_H2, trueR_H2)
+    #I_H2 = clean_mat(I_H2)
     # ----------------
+
+    I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
+    I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
+    I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)
 
     # generate the RHS : sensitivity factor
     sD2 = gen_s_quartic(computed_D2, param)
@@ -474,28 +515,27 @@ def residual_quartic(param):
     sH2 = gen_s_quartic(computed_H2, param)
 
     # residual matrix
-    eD2 = ( np.multiply( wMat_D2, I_D2 )) - sD2
-    eHD = ( np.multiply( wMat_HD, I_HD )) - sHD
-    eH2 = ( np.multiply( wMat_H2, I_H2 )) - sH2
+    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
+    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
-
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
     return(E)
 
-#***************************************************************
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 # Fit functions
-#***************************************************************
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 
-def run_fit_linear ( init_T, init_k1 ):
+
+def run_fit_linear(init_T, init_k1):
     '''Function performing the actual fit using the residual_linear function
     defined earlier '''
 
@@ -515,8 +555,8 @@ def run_fit_linear ( init_T, init_k1 ):
     print(res)
     optT = res.x[0]
     optk1 = res.x[1]
-    print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,\
-      round(optk1, 6) ))
+    print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,
+                                                         round(optk1, 6) ))
 
     correction_curve= 1+(optk1/scale1)*(xaxis-scenter)     # generate the correction curve
 
@@ -533,9 +573,8 @@ def run_fit_linear ( init_T, init_k1 ):
     log.info(' *******************************************')
     # --------------------
 
-#***************************************************************
-#***************************************************************
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 
 def run_fit_quadratic ( init_T, init_k1, init_k2 ):
     '''Function performing the actual fit using the residual_linear function
@@ -577,7 +616,8 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
     log.info(' *******************************************')
     # --------------------
 
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 
 def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     '''Function performing the actual fit using the residual_linear function
@@ -622,8 +662,8 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     log.info(' *******************************************')
     # --------------------
 
-#***************************************************************
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 
 def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     '''Function performing the actual fit using the residual_linear function
@@ -670,15 +710,18 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     log.info(' *******************************************')
     # --------------------
 
-#***************************************************************
+# *******************************************************************
+# *******************************************************************
 
-#******************** SET UP CALCULATION ***********************
-#***************************************************************
+# ******************** SET UP CALCULATION ***********************
+# ***************************************************************
 
+# DEVELOPMENT CODE 
+    
+    
 # GENERATE  INIT COEFS
 
-
-param_linear =np.zeros((2))
+param_linear = np.zeros((2))
 param_linear[0] = 298
 param_linear[1] = -1.045
 
@@ -689,21 +732,21 @@ param_quadratic[1] = -0.931
 param_quadratic[2] = -0.242
 
 #----------------------------
-param_cubic=np.zeros((4))
+param_cubic = np.zeros((4))
 param_cubic[0] = 298
 param_cubic[1] = -0.9340
 param_cubic[2] = -0.2140
 param_cubic[3] = -0.00100
 
-param_quartic=np.zeros((5))
+param_quartic = np.zeros((5))
 param_quartic[0] = 298
 param_quartic[1] = -0.9340
 param_quartic[2] = -0.2140
 param_quartic[3] = -0.00100
 param_quartic[4] = -0.000001
 
-#------------------------------------------------
-#------------------------------------------------
+# ------------------------------------------------
+# ------------------------------------------------
 
 computed_D2 = compute_series.spectra_D2( 299, OJ_D2, QJ_D2, SJ_D2)
 computed_HD = compute_series.spectra_HD( 299, OJ_HD, QJ_HD, SJ_HD)
@@ -761,18 +804,49 @@ E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) + np.sum(np.abs(eH2))
 #print(E )
 
 
-#*******************************************************************
+# ######################### 298 K ##############################
+computed_D2=compute_series.spectra_D2( 298, OJ_D2, QJ_D2, SJ_D2)
+computed_HD=compute_series.spectra_HD( 298, OJ_HD, QJ_HD, SJ_HD)
+computed_H2=compute_series.spectra_H2_c( 298, OJ_H2, QJ_H2)
+
+calc_298_D2=gen_intensity_mat (computed_D2, 2)
+calc_298_HD=gen_intensity_mat (computed_HD, 2)
+calc_298_H2=gen_intensity_mat (computed_H2, 2)
+
+# ######################### 600 K ##############################
+computed_D2 = compute_series.spectra_D2( 600, OJ_D2, QJ_D2, SJ_D2)
+computed_HD = compute_series.spectra_HD( 600, OJ_HD, QJ_HD, SJ_HD)
+computed_H2 = compute_series.spectra_H2_c( 600, OJ_H2, QJ_H2)
+
+calc_600_D2=gen_intensity_mat (computed_D2, 2)
+calc_600_HD=gen_intensity_mat (computed_HD, 2)
+calc_600_H2=gen_intensity_mat (computed_H2, 2)
+
+# ########### RATIO ##############
+cr_D2 = calc_298_D2 - calc_600_D2
+cr_H2 = calc_298_H2 - calc_600_H2
+cr_HD = calc_298_HD - calc_600_HD
+
+#cr_D2 = clean_mat(cr_D2)
+#cr_HD = clean_mat(cr_HD)
+#cr_H2 = clean_mat(cr_H2)
+
+index_H2 = np.nonzero(cr_H2 < 1e-8) 
+index_HD = np.nonzero(cr_HD < 1e-8) 
+index_D2 = np.nonzero(cr_D2 < 1e-8) 
+
+# *******************************************************************
 #  GENERATE WEIGHT MATRICES
 
 wMat_H2 = gen_weight(dataH2)
 wMat_HD = gen_weight(dataHD)
 wMat_D2 = gen_weight(dataD2)
 
-wMat_H2 = 1
-wMat_HD = 1
-wMat_D2 = 1
+wMat_H2 = clean_and_scale_elements(wMat_H2, index_H2, 2)
+wMat_HD = clean_and_scale_elements(wMat_HD, index_HD, 2)
+wMat_D2 = clean_and_scale_elements(wMat_D2, index_D2, 2)
 
-#*******************************************************************
+# *******************************************************************
 
 print('\n - D2')
 sD2 = gen_s_cubic(computed_D2, param_cubic)
@@ -781,78 +855,81 @@ sHD = gen_s_cubic(computed_HD, param_cubic)
 print('\n - H2')
 sH2 = gen_s_cubic(computed_H2, param_cubic)
 
-
-
 # Analyse the T-independen terms in the calc ratio matrix, 
 # give those elements extra weight 
 
+# *******************************************************************
+
+run=1
+plot_option=1
+
+if (run == 1):
+    run_fit_linear(299, 1.04586 )
+    run_fit_linear(299, -1.04586 )
+    
+    run_fit_quadratic(299, -0.8391, -0.202 )
+    run_fit_quadratic(299, +0.8391, -0.202 )
+    
+    run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
+    run_fit_cubic(299, -0.90, 0.055, +0.0015 )
+    
+    run_fit_quartic(299, -0.925, -0.1215, 0.05, +0.02 )
+    run_fit_quartic(299, +0.995, -0.0715, 0.185, +0.08 )
+
+# *******************************************************************
 
 
-#*******************************************************************
-#exit(0)
+def plot_curves(option):
+    '''
+    option = 1 : plot
+           = 0 : do not plot
 
-
-run_fit_linear(299, 1.04586 )
-
-run_fit_quadratic(299, -0.8391, -0.202 )
-
-run_fit_quadratic(299, +0.8391, -0.202 )
-
-run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
-run_fit_cubic(299, -0.90, 0.055, +0.0015 )
-
-run_fit_quartic(299, -0.925, -0.1215, 0.05, +0.02 )
-run_fit_quartic(299, -0.995, -0.0715, 0.185, +0.08 )
-
-#*******************************************************************
-boolean=1
-
-def plot_curves(boolean):
-    if boolean == 1:
+    '''
+    if option == 1:
         # Load the saved correction curves for  plotting
         # outputs from last run will be loaded
         correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
         correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
         correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
         correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
-        
+
         #********************************************************************
-        
+
         # Plotting the data
-        
+
         txt = ("*Generated from 'wavelength_sensitivity.py' on the\
               \nGitHub Repository: RamanSpecCalibration ")
-        
+
         # FIGURE 0 INITIALIZED
-        
+
         plt.figure(0)
         ax0 = plt.axes()
         plt.title('Fitting result', fontsize=22)
-        
+
         plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
         plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
         plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
         plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
-        
+
         plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
         plt.ylabel('Relative sensitivity', fontsize=20)
         plt.grid(True)
-        
+
         # change following as needed
         ax0.tick_params(axis='both', labelsize =20)
         #plt.xlim((1755, -1120)) #  change this if the xlimit is not correct
         #ax0.set_ylim([0, 1.30]) # change this if the ylimit is not enough
-        
+
         ax0.minorticks_on()
         ax0.tick_params(which='minor', right='on')
         ax0.tick_params(axis='y', labelleft='on', labelright='on')
-        plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",\
+        plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
                  transform=plt.gcf().transFigure)
         plt.legend(loc='lower left', fontsize=16)
-        
-        
+
+
         #  For saving the plot
         #plt.savefig('fit_output.png', dpi=120)
-        #********************************************************************
+#********************************************************************
 
-plot_curves(boolean)
+plot_curves(plot_option)
