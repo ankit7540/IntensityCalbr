@@ -14,7 +14,7 @@ import numpy as np
 
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
-from common import compute_series
+from common import compute_series_perp
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
@@ -69,7 +69,6 @@ SJ_D2 = 3
 print(dataH2.shape)
 print(dataHD.shape)
 print(dataD2.shape)
-
 
 # ------------------------------------------------
 #                COMMON SETTINGS
@@ -282,9 +281,9 @@ def residual_linear(param):
 
     TK = param[0]
 
-    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -347,9 +346,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -412,9 +411,9 @@ def residual_cubic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -477,9 +476,9 @@ def residual_quartic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -758,9 +757,9 @@ wMat_D2 = 1
 wMat_HD = 1
 wMat_H2 = 1
 
-computed_D2 = compute_series.spectra_D2( 299, OJ_D2, QJ_D2, SJ_D2)
-computed_HD = compute_series.spectra_HD( 299, OJ_HD, QJ_HD, SJ_HD)
-computed_H2 = compute_series.spectra_H2_c( 299, OJ_H2, QJ_H2)
+computed_D2 = compute_series_perp.spectra_D2( 299, OJ_D2, QJ_D2, SJ_D2)
+computed_HD = compute_series_perp.spectra_HD( 299, OJ_HD, QJ_HD, SJ_HD)
+computed_H2 = compute_series_perp.spectra_H2_c( 299, OJ_H2, QJ_H2)
 
 
 trueR_D2 = gen_intensity_mat (computed_D2, 2)
