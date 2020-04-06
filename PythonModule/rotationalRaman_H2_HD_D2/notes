@@ -17,6 +17,13 @@ OJ_D2 = 4
 QJ_D2 = 6
 SJ_D2 = 3
 
+
+dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt")
+dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
+xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
+
+
 #-------------------------------------------------------
 
 # PERPENDICULAR POLARIZATION
@@ -32,6 +39,11 @@ SJ_HD = 2
 OJ_D2 = 4
 QJ_D2 = 6
 SJ_D2 = 3
+
+dataH2 = np.loadtxt("./run_perpendicular/BA_H2_1.txt")
+dataHD = np.loadtxt("./run_perpendicular/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run_perpendicular/BA_D2_1.txt")
+xaxis = np.loadtxt("./run_perpendicular/Ramanshift_axis_perp.txt")
 
 #-------------------------------------------------------
 
