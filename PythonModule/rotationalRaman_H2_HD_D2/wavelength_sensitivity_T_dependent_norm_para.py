@@ -7,6 +7,7 @@ determine the wavelength sensitivity of the spectrometer using a  polynomial
 as a model function"""
 
 import os
+import sys
 import math
 import logging
 from datetime import datetime
@@ -18,7 +19,7 @@ from common import compute_series_para
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./logfile.txt', 'w+')
+fileh = logging.FileHandler('./run_parallel/logfile.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -64,15 +65,88 @@ OJ_D2 = 4
 QJ_D2 = 6
 SJ_D2 = 3
 # ------------------------------------------------------
+print('Dimension of input data')
+print('\t', dataH2.shape)
+print('\t', dataHD.shape)
+print('\t', dataD2.shape)
+# ------------------------------------------------------
+# SET  INIT COEFS
 
-print(dataH2.shape)
-print(dataHD.shape)
-print(dataD2.shape)
+param_linear = np.zeros((2))
+param_linear[0] = 298
+param_linear[1] = -1.045
 
+# ----------------------------
+param_quadratic = np.zeros((3))
+param_quadratic[0] = 298
+param_quadratic[1] = -0.931
+param_quadratic[2] = -0.242
 
+# ----------------------------
+param_cubic = np.zeros((4))
+param_cubic[0] = 298
+param_cubic[1] = -0.9340
+param_cubic[2] = -0.2140
+param_cubic[3] = -0.00100
+
+param_quartic = np.zeros((5))
+param_quartic[0] = 298
+param_quartic[1] = -0.9340
+param_quartic[2] = -0.2140
+param_quartic[3] = -0.00100
+param_quartic[4] = -0.000001
+
+# initial run will be with above parameters
 # ------------------------------------------------
+
+# ------------------------------------------------------
+#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
+#                   FINAL OPTIMIZATION
+# ------------------------------------------------------
+
+# AVAILABLE FUNCTIONS TO USER :
+
+# run_all_fit()
+#    Runs the fitting up to quartic polynomial
+#    Returns : np array of residuals, with 4 elements
+
+
+# plot_curves(residual_array="None")
+#   Plotting the curves (from fit)
+#   and plot the residuals over the number of unknown variables
+#   np array of residuals to be passed for plot of residuals
+
+# ------------------------------------------------------
+def run_all_fit():
+    '''
+    Runs the fitting up to quartic polynomial
+    Returns : np array of residuals, with 4 elements
+    '''
+    resd_1 = 0
+    resd_2 = 0
+    resd_3 = 0
+    resd_4 = 0
+
+    run_fit_linear(299, 1.04586)
+    resd_1 = run_fit_linear(299, -1.04586)
+
+    resd_2 = run_fit_quadratic(299, -0.285, 0.052)
+    resd_2 = run_fit_quadratic(299, 0.835, -0.052)
+
+    run_fit_cubic(299, -1.036, -0.2192, 0.0025)
+    resd_3 = run_fit_cubic(299, -0.90, 0.055, +0.00215)
+
+    resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
+
+    out = np.array([resd_1, resd_2, resd_3, resd_4])
+    return out
+
+# *******************************************************************
+
+# ------------------------------------------------------
+# ------------------------------------------------------
 #                COMMON SETTINGS
-# ------------------------------------------------
+# ------------------------------------------------------
 
 # Constants ------------------------------
 # these are used for scaling the coefs
@@ -230,9 +304,9 @@ def gen_s_cubic(computed_data, param):
             # param[3] = c3
 
             mat[i, j] = (1 + (param[1] / scale1) * v1 + (param[2] / scale2)
-                          * v1**2 + (param[3] / scale3) * v1**3) / \
-                (1 + (param[1] / scale1) * v2 + (param[2] / scale2) * v2**2 \
-                 + (param[3] / scale3) * v2**3)
+                          * v1**2 + (param[3] / scale3) * v1**3) \
+                / (1 + (param[1] / scale1) * v2 + (param[2] / scale2) * v2**2
+                   + (param[3] / scale3) * v2**3)
 
     return mat
 
@@ -673,7 +747,7 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
 
     # init_k1 : Intial guess
 
-    param_init = np.array([ init_T, init_k1 , init_k2 , init_k3, init_k4  ])
+    param_init = np.array([init_T, init_k1 , init_k2 , init_k3, init_k4])
     print("**********************************************************")
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".\
@@ -717,50 +791,117 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
 # *******************************************************************
 # *******************************************************************
 
-# ******************** SET UP CALCULATION ***********************
+# ******************** CHECKS FOR INPUTS ************************
 # ***************************************************************
 
-# DEVELOPMENT CODE
 
-
-# GENERATE  INIT COEFS
-
-param_linear = np.zeros((2))
-param_linear[0] = 298
-param_linear[1] = -1.045
-
-#----------------------------
-param_quadratic = np.zeros((3))
-param_quadratic[0] = 298
-param_quadratic[1] = -0.931
-param_quadratic[2] = -0.242
-
-#----------------------------
-param_cubic = np.zeros((4))
-param_cubic[0] = 298
-param_cubic[1] = -0.9340
-param_cubic[2] = -0.2140
-param_cubic[3] = -0.00100
-
-param_quartic = np.zeros((5))
-param_quartic[0] = 298
-param_quartic[1] = -0.9340
-param_quartic[2] = -0.2140
-param_quartic[3] = -0.00100
-param_quartic[4] = -0.000001
-
-# ------------------------------------------------
 # ------------------------------------------------
 
 wMat_D2 = 1
 wMat_HD = 1
 wMat_H2 = 1
 
-computed_D2 = compute_series_para.spectra_D2( 299, OJ_D2, QJ_D2, SJ_D2)
-computed_HD = compute_series_para.spectra_HD( 299, OJ_HD, QJ_HD, SJ_HD)
-computed_H2 = compute_series_para.spectra_H2_c( 299, OJ_H2, QJ_H2)
+# checks for input done here
 
+# generate calculated data for the entered J values
 
+computed_D2 = compute_series_para.spectra_D2(299, OJ_D2, QJ_D2, SJ_D2)
+computed_HD = compute_series_para.spectra_HD(299, OJ_HD, QJ_HD, SJ_HD)
+computed_H2 = compute_series_para.spectra_H2_c(299, OJ_H2, QJ_H2)
+
+# checks for dimension match done here
+if (computed_D2.shape[0] != dataD2.shape[0]):
+    print('D2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+if (computed_HD.shape[0] != dataHD.shape[0]):
+    print('H2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+if (computed_H2.shape[0] != dataH2.shape[0]):
+    print('H2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+# ------------------------------------------------
+# *******************************************************************
+
+def plot_curves(residual_array="None"):
+    '''
+    option = 1 : plot
+           = 0 : do not plot
+
+    '''
+    # Load the saved correction curves for  plotting
+    # outputs from last run will be loaded
+    correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
+    correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
+    correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
+    correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+
+    # ---------------------------------------------------------------------
+
+    # Plotting the data
+
+    txt = ("*Generated from 'wavelength_sensitivity.py' on the\
+          \nGitHub Repository: IntensityCalbr ")
+
+    # FIGURE 0 INITIALIZED
+    
+    plt.figure(0)
+    ax0 = plt.axes()
+    plt.title('Fitting result', fontsize=22)
+
+    plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
+    plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
+    plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
+    plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+
+    plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
+    plt.ylabel('Relative sensitivity', fontsize=20)
+    plt.grid(True , which='both')  # ax.grid(True, which='both')
+
+    # change following as needed
+    ax0.tick_params(axis='both', labelsize =20)
+    
+    xmin = np.amin(xaxis-10)
+    xmax = np.amax(xaxis+10)
+
+    plt.xlim((xmax, xmin)) #  change this if the xlimit is not correct
+    ax0.set_ylim([0, 2.1]) # change this if the ylimit is not enough
+
+    ax0.minorticks_on()
+    ax0.tick_params(which='minor', right='on')
+    ax0.tick_params(axis='y', labelleft='on', labelright='on')
+    plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey", 
+             transform=plt.gcf().transFigure)
+    plt.legend(loc='upper left', fontsize=16)
+
+    if type(residual_array) != str:
+        if isinstance(residual_array, (list,np.ndarray)):
+        # ---------------------------------------------------------------------
+            # FIGURE 1 INITIALIZED
+
+            xv = np.arange(1, 5, 1)
+            plt.figure(1)
+            ax1 = plt.axes()
+            plt.title('Residuals', fontsize=21)
+            plt.plot(xv, residual_array, 'ro--')
+            plt.xlabel('degree of polynomial', fontsize=20)
+            plt.ylabel('Residual', fontsize=20)
+            plt.grid(True)  # ax.grid(True, which='both')
+            ax1.tick_params(axis='both', labelsize=20)
+        else:
+            print('\tWrong type of parameter : residual_array. Quitting plotting.')
+    else:
+        print('\tResidual array not provided. plot of residuals not made!')
+
+#********************************************************************
+        
+# TESTS        
+        
 trueR_D2 = gen_intensity_mat (computed_D2, 2)
 expt_D2 = gen_intensity_mat (dataD2, 0)
 
@@ -773,33 +914,27 @@ trueR_H2 = gen_intensity_mat (computed_H2, 2)
 expt_H2 = gen_intensity_mat (dataH2, 0)
 
 
-I_D2 = np.divide(expt_D2,trueR_D2 )
-I_HD = np.divide(expt_HD,trueR_HD )
-I_H2 = np.divide(expt_H2,trueR_H2 )
+I_D2 = np.divide(expt_D2, trueR_D2)
+I_HD = np.divide(expt_HD, trueR_HD)
+I_H2 = np.divide(expt_H2, trueR_H2)
 
 I_D2 = clean_mat(I_D2)
 I_HD = clean_mat(I_HD)
 I_H2 = clean_mat(I_H2)
 
-#print(I_H2)
-
+# print(I_H2)
 
 errH2_output = gen_weight(dataH2)
 errHD_output = gen_weight(dataHD)
 errD2_output = gen_weight(dataD2)
 
-
-
 sD2 = gen_s_linear(computed_D2, param_linear)
 sHD = gen_s_linear(computed_HD, param_linear)
 sH2 = gen_s_linear(computed_H2, param_linear)
 
-
-sD2_q=gen_s_quartic(computed_D2, param_quartic)
-
-eD2 = ( np.multiply(errD2_output, I_D2 ) - sD2 )
-eHD = ( np.multiply(errHD_output, I_HD ) - sHD )
-eH2 = ( np.multiply(errH2_output, I_H2 ) - sH2 )
+eD2 = (np.multiply(errD2_output, I_D2) - sD2)
+eHD = (np.multiply(errHD_output, I_HD) - sHD)
+eH2 = (np.multiply(errH2_output, I_H2) - sH2)
 
 eD2 = clean_mat(eD2)
 
@@ -807,114 +942,15 @@ eHD = clean_mat(eHD)
 
 eH2 = clean_mat(eH2)
 
-print(residual_linear(param_linear))
-print(residual_quadratic(param_quadratic))
-print(residual_cubic(param_cubic))
-print(residual_quartic(param_quartic))
+resd_lin = residual_linear(param_linear)
+resd_quad = residual_quadratic(param_quadratic)
+resd_cubic = residual_cubic(param_cubic)
+resd_quar = residual_quartic(param_quartic)
 
-
-
-
-# *******************************************************************
-
-run=1
-plot_option=1
-
-if (run == 1):
-    resd_1 = 0
-    resd_2 = 0
-    resd_3 = 0
-    resd_4 = 0
-
-    run_fit_linear(299, 1.04586 )
-    resd_1=run_fit_linear(299, -1.04586 )
-
-    resd_2=run_fit_quadratic(299, -0.285, 0.052 )
-    resd_2=run_fit_quadratic(299, 0.835, -0.052 )
-    #run_fit_quadratic(299, +0.8391, -0.202 )
-
-    run_fit_cubic(299, -1.036, -0.2192, 0.0025 )
-    resd_3=run_fit_cubic(299, -0.90, 0.055, +0.00215 )
-
-    resd_4=run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02 )
-    #run_fit_quartic(299, +0.995, -0.0715, 0.185, +0.08 )
-
-# *******************************************************************
-
-
-def plot_curves(option):
-    '''
-    option = 1 : plot
-           = 0 : do not plot
-
-    '''
-    if option == 1:
-        # Load the saved correction curves for  plotting
-        # outputs from last run will be loaded
-        correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
-        correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
-        correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
-        correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
-
-        #********************************************************************
-
-        # Plotting the data
-
-        txt = ("*Generated from 'wavelength_sensitivity.py' on the\
-              \nGitHub Repository: IntensityCalbr ")
-
-        # FIGURE 0 INITIALIZED
-
-        plt.figure(0)
-        ax0 = plt.axes()
-        plt.title('Fitting result', fontsize=22)
-
-        plt.plot(xaxis,  correction_line, 'r', linewidth=3, label='line_fit')
-        plt.plot(xaxis,  correction_quad, 'g', linewidth=4.2, label='quad_fit')
-        plt.plot(xaxis,  correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
-        plt.plot(xaxis,  correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
-
-        plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
-        plt.ylabel('Relative sensitivity', fontsize=20)
-        plt.grid(True , which='both')  # ax.grid(True, which='both')
-
-        # change following as needed
-        ax0.tick_params(axis='both', labelsize =20)
-
-        xmin=np.amin(xaxis-10)
-        xmax=np.amax(xaxis+10)
-
-
-        plt.xlim((xmax, xmin)) #  change this if the xlimit is not correct
-        ax0.set_ylim([0, 2.1]) # change this if the ylimit is not enough
-
-        ax0.minorticks_on()
-        ax0.tick_params(which='minor', right='on')
-        ax0.tick_params(axis='y', labelleft='on', labelright='on')
-        plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
-                 transform=plt.gcf().transFigure)
-        plt.legend(loc='upper left', fontsize=16)
-
-        # *********************
-        marker_style = dict(linestyle=':', color='0.8', markersize=10,
-                    mfc="C0", mec="C0")
-        xv=np.arange(1,5,1)
-        plt.figure(1)
-        ax1 = plt.axes()
-        plt.title('Residuals', fontsize=21)
-        plt.plot(xv, [resd_1,resd_2,resd_3,resd_4],  'ro--' )
-        plt.xlabel('degree of polynomial', fontsize=20)
-        plt.ylabel('Residual', fontsize=20)
-        plt.grid(True )  # ax.grid(True, which='both')
-        ax1.tick_params(axis='both', labelsize =20)
-
-
-
-
-
-
-        #  For saving the plot
-        #plt.savefig('fit_output.png', dpi=120)
-#********************************************************************
-
-plot_curves(plot_option)
+print('Value of residuals with default coefs are')
+print('\t linear \t:', resd_lin)
+print('\t quadratic \t:', resd_quad)
+print('\t cubic \t:', resd_cubic)
+print('\t quartic \t:', resd_quar)
+        
+        
