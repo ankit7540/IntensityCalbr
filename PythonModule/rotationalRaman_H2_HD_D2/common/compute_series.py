@@ -512,7 +512,7 @@ def spectra_H2(T, OJ, QJ, SJ, reverse=0):
               QJ = max J state for Q(v=1) bands
               SJ = max J state for S(v=1) bands
 
-              reverse=0 or 1, will reverse the output
+              reverse = 0 or 1, will reverse the output
 
      """
 
@@ -520,9 +520,9 @@ def spectra_H2(T, OJ, QJ, SJ, reverse=0):
 
     # call individual functions ------------------------
 
-    O1=H2_O1(T, OJ, sos)
-    Q1=H2_Q1(T, QJ, sos)
-    S1=H2_S1(T, SJ, sos)
+    O1 = H2_O1(T, OJ, sos)
+    Q1 = H2_Q1(T, QJ, sos)
+    S1 = H2_S1(T, SJ, sos)
     # --------------------------------------------------
     out=np.concatenate((O1, Q1, S1 ))
     return out
