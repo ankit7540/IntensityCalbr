@@ -80,7 +80,7 @@ print('\t', dataD2_q1.shape)
 
 param_linear = np.zeros((2))
 param_linear[0] = 298
-param_linear[1] = -1.045
+param_linear[1] = +.045
 
 # ----------------------------
 param_quadratic = np.zeros((3))
@@ -91,7 +91,7 @@ param_quadratic[2] = -0.242
 # ----------------------------
 param_cubic = np.zeros((4))
 param_cubic[0] = 298
-param_cubic[1] = -0.9340
+param_cubic[1] = +0.9340
 param_cubic[2] = -0.2140
 param_cubic[3] = -0.00100
 
@@ -99,8 +99,8 @@ param_quartic = np.zeros((5))
 param_quartic[0] = 298
 param_quartic[1] = -0.9340
 param_quartic[2] = -0.2140
-param_quartic[3] = -0.00100
-param_quartic[4] = -0.000001
+param_quartic[3] = -0.004
+param_quartic[4] = -0.005
 
 # initial run will be with above parameters
 # ------------------------------------------------
@@ -133,9 +133,9 @@ def run_all_fit():
     resd_3 = 0
     resd_4 = 0
 
-    resd_1 = run_fit_linear(299, -1.04586)
-    resd_2 = run_fit_quadratic(299, 0.835, -0.052)
-    resd_3 = run_fit_cubic(299, -0.90, 0.055, +0.00215)
+    resd_1 = run_fit_linear(299, -0.9586)
+    resd_2 = run_fit_quadratic(299, -0.835, -0.052)
+    resd_3 = run_fit_cubic(299, -0.90, -0.075, +0.00215)
     resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4])
@@ -154,11 +154,14 @@ def run_all_fit():
 
 scale1 = 1e3
 scale2 = 1e6
-scale3 = 1e9
+scale3 = 1e8
 scale4 = 1e12
 # ----------------------------------------
 scenter = 3316.3  # center of the spectra
 # used to scale the xaxis
+
+# ----------------------------------------
+weight = 30  #  scaling factor for o1s1
 
 # ------------------------------------------------
 #                COMMON FUNCTIONS
@@ -283,7 +286,8 @@ def gen_s_quadratic(computed_data, param):
 
             mat[i, j] = (1 + (param[1] / scale1) * v1 + (param[2]
                                                          / scale2) * v1**2)\
-                / (1 + (param[1] / scale1) * v2 + (param[2] / scale2) * v2**2)
+                / (1 + (param[1] / scale1) * v2 + (param[2] / scale2) 
+                   * (v2**2))
 
     return mat
 
@@ -355,7 +359,12 @@ def residual_linear(param):
     '''
 
     TK = param[0]
+    
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)
 
+    # computing spectra for given temperature
     computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
                                                            SJ_D2, sosD2)
     computed_D2_q1 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
@@ -375,11 +384,13 @@ def residual_linear(param):
     trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
     expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
     # --------------------------------------------------
+    
     trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
     expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
     trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
     expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
     # --------------------------------------------------
+    
     trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
     expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
     trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
@@ -397,7 +408,7 @@ def residual_linear(param):
     I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
     I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
-    #   remove redundant elements
+    #   remove redundant elements ----------------------
     I_D2_q1 = clean_mat(I_D2_q1)
     I_HD_q1 = clean_mat(I_HD_q1)
     I_H2_q1 = clean_mat(I_H2_q1)
@@ -416,13 +427,15 @@ def residual_linear(param):
     sHD_o1s1 = gen_s_linear(computed_HD_o1s1, param)
     sH2_o1 = gen_s_linear(computed_H2_o1, param)
     # --------------------------------------------------
-    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
-    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
-    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+    
 
-    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
-    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
-    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    eD2_q1 = (np.multiply(0, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(0, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(0, I_H2_q1) - sH2_q1)
+
+    eD2_o1s1 = (np.multiply(weight, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(weight, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(weight, I_H2_o1) - sH2_o1)
     # --------------------------------------------------
 
     eD2_o1s1 = clean_mat(eD2_o1s1)
@@ -455,6 +468,10 @@ def residual_quadratic(param):
 
     '''
     TK = param[0]
+   
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)    
 
     computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
                                                            SJ_D2, sosD2)
@@ -515,13 +532,13 @@ def residual_quadratic(param):
     sHD_o1s1 = gen_s_quadratic(computed_HD_o1s1, param)
     sH2_o1 = gen_s_quadratic(computed_H2_o1, param)
     # --------------------------------------------------
-    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
-    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
-    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+    eD2_q1 = (np.multiply(0, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(0, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(0, I_H2_q1) - sH2_q1)
 
-    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
-    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
-    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    eD2_o1s1 = (np.multiply(weight, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(weight, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(weight, I_H2_o1) - sH2_o1)
 
     # --------------------------------------------------
 
@@ -552,6 +569,10 @@ def residual_cubic(param):
 
     '''
     TK = param[0]
+    
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)    
 
     computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
                                                            SJ_D2, sosD2)
@@ -613,13 +634,13 @@ def residual_cubic(param):
     sHD_o1s1 = gen_s_cubic(computed_HD_o1s1, param)
     sH2_o1 = gen_s_cubic(computed_H2_o1, param)
     # --------------------------------------------------
-    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
-    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
-    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+    eD2_q1 = (np.multiply(1, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(1, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(1, I_H2_q1) - sH2_q1)
 
-    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
-    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
-    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    eD2_o1s1 = (np.multiply(weight, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(weight, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(1, I_H2_o1) - sH2_o1)
     # --------------------------------------------------
 
     eD2_o1s1 = clean_mat(eD2_o1s1)
@@ -652,6 +673,10 @@ def residual_quartic(param):
 
     '''
     TK = param[0]
+    
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)    
 
     computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
                                                            SJ_D2, sosD2)
@@ -713,13 +738,13 @@ def residual_quartic(param):
     sHD_o1s1 = gen_s_quartic(computed_HD_o1s1, param)
     sH2_o1 = gen_s_quartic(computed_H2_o1, param)
     # --------------------------------------------------
-    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
-    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
-    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+    eD2_q1 = (np.multiply(1, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(1, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(1, I_H2_q1) - sH2_q1)
 
-    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
-    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
-    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    eD2_o1s1 = (np.multiply(weight, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(weight, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(1, I_H2_o1) - sH2_o1)
     # --------------------------------------------------
 
     eD2_o1s1 = clean_mat(eD2_o1s1)
@@ -1039,11 +1064,11 @@ def plot_curves(residual_array="None"):
     # change following as needed
     ax0.tick_params(axis='both', labelsize =20)
 
-    xmin = np.amin(xaxis-10)
-    xmax = np.amax(xaxis+10)
+    xmin = np.amin(xaxis-15)
+    xmax = np.amax(xaxis+15)
 
     plt.xlim((xmax, xmin)) #  change this if the xlimit is not correct
-    ax0.set_ylim([0, 2.1]) # change this if the ylimit is not enough
+    ax0.set_ylim([0, 2.85]) # change this if the ylimit is not enough
 
     ax0.minorticks_on()
     ax0.tick_params(which='minor', right='on')
@@ -1151,13 +1176,13 @@ sH2_o1 = gen_s_linear(computed_H2_o1, param_linear)
 
 # --------------------------------------------------
 
-eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
-eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
-eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+eD2_q1 = (np.multiply(0, I_D2_q1) - sD2_q1)
+eHD_q1 = (np.multiply(0, I_HD_q1) - sHD_q1)
+eH2_q1 = (np.multiply(0, I_H2_q1) - sH2_q1)
 
-eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
-eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
-eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+eD2_o1s1 = (np.multiply(50, I_D2_o1s1) - sD2_o1s1)
+eHD_o1s1 = (np.multiply(50, I_HD_o1s1) - sHD_o1s1)
+eH2_o1 = (np.multiply(50, I_H2_o1) - sH2_o1)
 
 eD2_o1s1 = clean_mat(eD2_o1s1)
 eD2_q1 = clean_mat(eD2_q1)
