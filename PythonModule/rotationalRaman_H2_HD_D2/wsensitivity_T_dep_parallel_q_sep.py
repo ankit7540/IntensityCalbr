@@ -44,12 +44,12 @@ log.error("------------ Run log ------------\n")
 # without header in the following files
 
 # Change following paths
-dataH2 = np.loadtxt("./run_parallel/BA_H2_o1.txt")
-dataH2 = np.loadtxt("./run_parallel/BA_H2_q1.txt")
-dataHD = np.loadtxt("./run_parallel/BA_HD_o1s1.txt")
-dataHD = np.loadtxt("./run_parallel/BA_HD_q1.txt")
-dataD2 = np.loadtxt("./run_parallel/BA_D2_o1s1.txt")
-dataD2 = np.loadtxt("./run_parallel/BA_D2_q1.txt")
+dataH2_o1 = np.loadtxt("./run_parallel/BA_H2_o1.txt")
+dataH2_q1 = np.loadtxt("./run_parallel/BA_H2_q1.txt")
+dataHD_o1s1 = np.loadtxt("./run_parallel/BA_HD_o1s1.txt")
+dataHD_q1 = np.loadtxt("./run_parallel/BA_HD_q1.txt")
+dataD2_o1s1 = np.loadtxt("./run_parallel/BA_D2_o1s1.txt")
+dataD2_q1 = np.loadtxt("./run_parallel/BA_D2_q1.txt")
 xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
 # ------------------------------------------------------
 # PARALLEL POLARIZATION
@@ -69,9 +69,12 @@ QJ_D2 = 6
 SJ_D2 = 3
 # ------------------------------------------------------
 print('Dimension of input data')
-print('\t', dataH2.shape)
-print('\t', dataHD.shape)
-print('\t', dataD2.shape)
+print('\t', dataH2_o1.shape)
+print('\t', dataH2_q1.shape)
+print('\t', dataHD_o1s1.shape)
+print('\t', dataHD_q1.shape)
+print('\t', dataD2_o1s1.shape)
+print('\t', dataD2_q1.shape)
 # ------------------------------------------------------
 # SET  INIT COEFS
 
@@ -130,15 +133,9 @@ def run_all_fit():
     resd_3 = 0
     resd_4 = 0
 
-    run_fit_linear(299, 1.04586)
     resd_1 = run_fit_linear(299, -1.04586)
-
-    resd_2 = run_fit_quadratic(299, -0.285, 0.052)
     resd_2 = run_fit_quadratic(299, 0.835, -0.052)
-
-    run_fit_cubic(299, -1.036, -0.2192, 0.0025)
     resd_3 = run_fit_cubic(299, -0.90, 0.055, +0.00215)
-
     resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4])
@@ -153,6 +150,8 @@ def run_all_fit():
 
 # Constants ------------------------------
 # these are used for scaling the coefs
+
+
 scale1 = 1e3
 scale2 = 1e6
 scale3 = 1e9
@@ -357,54 +356,89 @@ def residual_linear(param):
 
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
+                                                           SJ_D2, sosD2)
+    computed_D2_q1 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
-    # ------ D2 ------
-    trueR_D2 = gen_intensity_mat(computed_D2, 2)
-    expt_D2 = gen_intensity_mat(dataD2, 0)
-    I_D2 = np.divide(expt_D2, trueR_D2)
-    I_D2 = clean_mat(I_D2)
-    # ----------------
+    computed_HD_o1s1 = compute_series_para.spectra_HD_o1s1(TK, OJ_HD,
+                                                           SJ_HD, sosHD)
+    computed_HD_q1 = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
 
-    # ------ HD ------
-    trueR_HD = gen_intensity_mat(computed_HD, 2)
-    expt_HD = gen_intensity_mat(dataHD, 0)
-    I_HD = np.divide(expt_HD, trueR_HD)
-    I_HD = clean_mat(I_HD)
-    # ----------------
+    computed_H2_o1 = compute_series_para.H2_O1(TK, OJ_H2, sosH2)
+    computed_H2_q1 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
 
-    # ------ H2 ------
-    trueR_H2 = gen_intensity_mat(computed_H2, 2)
-    expt_H2 = gen_intensity_mat(dataH2, 0)
-    I_H2 = np.divide(expt_H2, trueR_H2)
-    I_H2 = clean_mat(I_H2)
-    # ----------------
+    # --------------------------------------------------
+    #   generate the matrix of ratios
 
-    #I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
-    #I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
-    #I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)
+    trueR_D2_o1s1 = gen_intensity_mat(computed_D2_o1s1, 2)
+    expt_D2_o1s1 = gen_intensity_mat(dataD2_o1s1, 0)
+    trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
+    expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
+    # --------------------------------------------------
+    trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
+    expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
+    trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
+    expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
+    # --------------------------------------------------
+    trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
+    expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
+    trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
+    expt_H2_q1 = gen_intensity_mat(dataH2_q1, 0)
+    # --------------------------------------------------
 
-    # generate the RHS : sensitivity factor
-    sD2 = gen_s_linear(computed_D2, param)
-    sHD = gen_s_linear(computed_HD, param)
-    sH2 = gen_s_linear(computed_H2, param)
+    #   take ratio of expt to calculated
 
-    # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
-    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
+    I_D2_q1 = np.divide(expt_D2_q1, trueR_D2_q1)
+    I_D2_o1s1 = np.divide(expt_D2_o1s1, trueR_D2_o1s1)
 
-    eD2 = clean_mat(eD2)
-    eHD = clean_mat(eHD)
-    eH2 = clean_mat(eH2)
+    I_HD_q1 = np.divide(expt_HD_q1, trueR_HD_q1)
+    I_HD_o1s1 = np.divide(expt_HD_o1s1, trueR_HD_o1s1)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
+    I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #   remove redundant elements
+    I_D2_q1 = clean_mat(I_D2_q1)
+    I_HD_q1 = clean_mat(I_HD_q1)
+    I_H2_q1 = clean_mat(I_H2_q1)
+
+    I_D2_o1s1 = clean_mat(I_D2_o1s1)
+    I_HD_o1s1 = clean_mat(I_HD_o1s1)
+    I_H2_o1 = clean_mat(I_H2_o1)
+    # --------------------------------------------------
+
+    # generate sensitivity matrix using true data
+    sD2_q1 = gen_s_linear(computed_D2_q1, param)
+    sHD_q1 = gen_s_linear(computed_HD_q1, param)
+    sH2_q1 = gen_s_linear(computed_H2_q1, param)
+
+    sD2_o1s1 = gen_s_linear(computed_D2_o1s1, param)
+    sHD_o1s1 = gen_s_linear(computed_HD_o1s1, param)
+    sH2_o1 = gen_s_linear(computed_H2_o1, param)
+    # --------------------------------------------------
+    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+
+    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    # --------------------------------------------------
+
+    eD2_o1s1 = clean_mat(eD2_o1s1)
+    eD2_q1 = clean_mat(eD2_q1)
+
+    eHD_o1s1 = clean_mat(eHD_o1s1)
+    eHD_q1 = clean_mat(eHD_q1)
+
+    eH2_q1 = clean_mat(eH2_q1)
+    eH2_o1 = clean_mat(eH2_o1)
+
+    # --------------------------------------------------
+
+    E = np.sum(np.abs(eD2_q1)) + np.sum(np.abs(eHD_q1)) \
+        + np.sum(np.abs(eH2_q1)) + np.sum(np.abs(eD2_o1s1)) \
+        + np.sum(np.abs(eHD_o1s1)) + + np.sum(np.abs(eH2_o1))
 
     return(E)
 
@@ -422,58 +456,90 @@ def residual_quadratic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
+                                                           SJ_D2, sosD2)
+    computed_D2_q1 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
-    # ------ D2 ------
-    trueR_D2 = gen_intensity_mat(computed_D2, 2)
-    expt_D2 = gen_intensity_mat(dataD2, 0)
-    I_D2 = np.divide(expt_D2, trueR_D2)
-    I_D2 = clean_mat(I_D2)
-    # ----------------
+    computed_HD_o1s1 = compute_series_para.spectra_HD_o1s1(TK, OJ_HD,
+                                                           SJ_HD, sosHD)
+    computed_HD_q1 = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
 
-    # ------ HD ------
-    trueR_HD = gen_intensity_mat(computed_HD, 2)
-    expt_HD = gen_intensity_mat(dataHD, 0)
-    I_HD = np.divide(expt_HD, trueR_HD)
-    I_HD = clean_mat(I_HD)
-    # ----------------
+    computed_H2_o1 = compute_series_para.H2_O1(TK, OJ_H2, sosH2)
+    computed_H2_q1 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
 
-    # ------ H2 ------
-    trueR_H2 = gen_intensity_mat(computed_H2, 2)
-    expt_H2 = gen_intensity_mat(dataH2, 0)
-    I_H2 = np.divide(expt_H2, trueR_H2)
-    I_H2 = clean_mat(I_H2)
-    # ----------------
+    # --------------------------------------------------
+    #   generate the matrix of ratios
 
-    #I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
-    #I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
-    #I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)
+    trueR_D2_o1s1 = gen_intensity_mat(computed_D2_o1s1, 2)
+    expt_D2_o1s1 = gen_intensity_mat(dataD2_o1s1, 0)
+    trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
+    expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
+    # --------------------------------------------------
+    trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
+    expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
+    trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
+    expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
+    # --------------------------------------------------
+    trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
+    expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
+    trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
+    expt_H2_q1 = gen_intensity_mat(dataH2_q1, 0)
+    # --------------------------------------------------
+    #   take ratio of expt to calculated
 
-    # generate the RHS : sensitivity factor
-    sD2 = gen_s_quadratic(computed_D2, param)
-    sHD = gen_s_quadratic(computed_HD, param)
-    sH2 = gen_s_quadratic(computed_H2, param)
+    I_D2_q1 = np.divide(expt_D2_q1, trueR_D2_q1)
+    I_D2_o1s1 = np.divide(expt_D2_o1s1, trueR_D2_o1s1)
 
-    # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
-    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
+    I_HD_q1 = np.divide(expt_HD_q1, trueR_HD_q1)
+    I_HD_o1s1 = np.divide(expt_HD_o1s1, trueR_HD_o1s1)
 
-    eD2 = clean_mat(eD2)
-    eHD = clean_mat(eHD)
-    eH2 = clean_mat(eH2)
+    I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
+    I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    #   remove redundant elements
+    I_D2_q1 = clean_mat(I_D2_q1)
+    I_HD_q1 = clean_mat(I_HD_q1)
+    I_H2_q1 = clean_mat(I_H2_q1)
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) \
-    + np.sum(np.abs(eH2))
+    I_D2_o1s1 = clean_mat(I_D2_o1s1)
+    I_HD_o1s1 = clean_mat(I_HD_o1s1)
+    I_H2_o1 = clean_mat(I_H2_o1)
+    # --------------------------------------------------
+
+    # generate sensitivity matrix using true data
+    sD2_q1 = gen_s_quadratic(computed_D2_q1, param)
+    sHD_q1 = gen_s_quadratic(computed_HD_q1, param)
+    sH2_q1 = gen_s_quadratic(computed_H2_q1, param)
+
+    sD2_o1s1 = gen_s_quadratic(computed_D2_o1s1, param)
+    sHD_o1s1 = gen_s_quadratic(computed_HD_o1s1, param)
+    sH2_o1 = gen_s_quadratic(computed_H2_o1, param)
+    # --------------------------------------------------
+    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+
+    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+
+    # --------------------------------------------------
+
+    eD2_o1s1 = clean_mat(eD2_o1s1)
+    eD2_q1 = clean_mat(eD2_q1)
+
+    eHD_o1s1 = clean_mat(eHD_o1s1)
+    eHD_q1 = clean_mat(eHD_q1)
+
+    eH2_q1 = clean_mat(eH2_q1)
+    eH2_o1 = clean_mat(eH2_o1)
+
+    E = np.sum(np.abs(eD2_q1)) + np.sum(np.abs(eHD_q1)) \
+        + np.sum(np.abs(eH2_q1)) + np.sum(np.abs(eD2_o1s1)) \
+        + np.sum(np.abs(eHD_o1s1)) + + np.sum(np.abs(eH2_o1))
 
     return(E)
 
-# *******************************************************************
 # *******************************************************************
 
 
@@ -487,54 +553,89 @@ def residual_cubic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
+                                                           SJ_D2, sosD2)
+    computed_D2_q1 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
-    # ------ D2 ------
-    trueR_D2 = gen_intensity_mat(computed_D2, 2)
-    expt_D2 = gen_intensity_mat(dataD2, 0)
-    I_D2 = np.divide(expt_D2, trueR_D2)
-    I_D2 = clean_mat(I_D2)
-    # ----------------
+    computed_HD_o1s1 = compute_series_para.spectra_HD_o1s1(TK, OJ_HD,
+                                                           SJ_HD, sosHD)
+    computed_HD_q1 = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
 
-    # ------ HD ------
-    trueR_HD = gen_intensity_mat(computed_HD, 2)
-    expt_HD = gen_intensity_mat(dataHD, 0)
-    I_HD = np.divide(expt_HD, trueR_HD)
-    I_HD = clean_mat(I_HD)
-    # ----------------
+    computed_H2_o1 = compute_series_para.H2_O1(TK, OJ_H2, sosH2)
+    computed_H2_q1 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
 
-    # ------ H2 ------
-    trueR_H2 = gen_intensity_mat(computed_H2, 2)
-    expt_H2 = gen_intensity_mat(dataH2, 0)
-    I_H2 = np.divide(expt_H2, trueR_H2)
-    I_H2 = clean_mat(I_H2)
-    # ----------------
+    # --------------------------------------------------
+    #   generate the matrix of ratios
 
-    #I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
-    #I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
-    #I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)
+    trueR_D2_o1s1 = gen_intensity_mat(computed_D2_o1s1, 2)
+    expt_D2_o1s1 = gen_intensity_mat(dataD2_o1s1, 0)
+    trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
+    expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
+    # --------------------------------------------------
+    trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
+    expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
+    trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
+    expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
+    # --------------------------------------------------
+    trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
+    expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
+    trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
+    expt_H2_q1 = gen_intensity_mat(dataH2_q1, 0)
+    # --------------------------------------------------
 
-    # generate the RHS : sensitivity factor
-    sD2 = gen_s_cubic(computed_D2, param)
-    sHD = gen_s_cubic(computed_HD, param)
-    sH2 = gen_s_cubic(computed_H2, param)
+    #   take ratio of expt to calculated
 
-    # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
-    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
+    I_D2_q1 = np.divide(expt_D2_q1, trueR_D2_q1)
+    I_D2_o1s1 = np.divide(expt_D2_o1s1, trueR_D2_o1s1)
 
-    eD2 = clean_mat(eD2)
-    eHD = clean_mat(eHD)
-    eH2 = clean_mat(eH2)
+    I_HD_q1 = np.divide(expt_HD_q1, trueR_HD_q1)
+    I_HD_o1s1 = np.divide(expt_HD_o1s1, trueR_HD_o1s1)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
+    I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #   remove redundant elements
+    I_D2_q1 = clean_mat(I_D2_q1)
+    I_HD_q1 = clean_mat(I_HD_q1)
+    I_H2_q1 = clean_mat(I_H2_q1)
+
+    I_D2_o1s1 = clean_mat(I_D2_o1s1)
+    I_HD_o1s1 = clean_mat(I_HD_o1s1)
+    I_H2_o1 = clean_mat(I_H2_o1)
+    # --------------------------------------------------
+
+    # generate sensitivity matrix using true data
+    sD2_q1 = gen_s_cubic(computed_D2_q1, param)
+    sHD_q1 = gen_s_cubic(computed_HD_q1, param)
+    sH2_q1 = gen_s_cubic(computed_H2_q1, param)
+
+    sD2_o1s1 = gen_s_cubic(computed_D2_o1s1, param)
+    sHD_o1s1 = gen_s_cubic(computed_HD_o1s1, param)
+    sH2_o1 = gen_s_cubic(computed_H2_o1, param)
+    # --------------------------------------------------
+    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+
+    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    # --------------------------------------------------
+
+    eD2_o1s1 = clean_mat(eD2_o1s1)
+    eD2_q1 = clean_mat(eD2_q1)
+
+    eHD_o1s1 = clean_mat(eHD_o1s1)
+    eHD_q1 = clean_mat(eHD_q1)
+
+    eH2_q1 = clean_mat(eH2_q1)
+    eH2_o1 = clean_mat(eH2_o1)
+
+    # --------------------------------------------------
+
+    E = np.sum(np.abs(eD2_q1)) + np.sum(np.abs(eHD_q1)) \
+        + np.sum(np.abs(eH2_q1)) + np.sum(np.abs(eD2_o1s1)) \
+        + np.sum(np.abs(eHD_o1s1)) + + np.sum(np.abs(eH2_o1))
 
     return(E)
 
@@ -552,59 +653,96 @@ def residual_quartic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(TK, OJ_D2,
+                                                           SJ_D2, sosD2)
+    computed_D2_q1 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
-    # ------ D2 ------
-    trueR_D2 = gen_intensity_mat(computed_D2, 2)
-    expt_D2 = gen_intensity_mat(dataD2, 0)
-    I_D2 = np.divide(expt_D2, trueR_D2)
-    I_D2 = clean_mat(I_D2)
-    # ----------------
+    computed_HD_o1s1 = compute_series_para.spectra_HD_o1s1(TK, OJ_HD,
+                                                           SJ_HD, sosHD)
+    computed_HD_q1 = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
 
-    # ------ HD ------
-    trueR_HD = gen_intensity_mat(computed_HD, 2)
-    expt_HD = gen_intensity_mat(dataHD, 0)
-    I_HD = np.divide(expt_HD, trueR_HD)
-    I_HD = clean_mat(I_HD)
-    # ----------------
+    computed_H2_o1 = compute_series_para.H2_O1(TK, OJ_H2, sosH2)
+    computed_H2_q1 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
 
-    # ------ H2 ------
-    trueR_H2 = gen_intensity_mat(computed_H2, 2)
-    expt_H2 = gen_intensity_mat(dataH2, 0)
-    I_H2 = np.divide(expt_H2, trueR_H2)
-    I_H2 = clean_mat(I_H2)
-    # ----------------
+    # --------------------------------------------------
+    #   generate the matrix of ratios
 
-    #I_H2 = clean_and_scale_elements(I_H2, index_H2, 2)
-    #I_HD = clean_and_scale_elements(I_HD, index_HD, 2)
-    #I_D2 = clean_and_scale_elements(I_D2, index_D2, 2)
+    trueR_D2_o1s1 = gen_intensity_mat(computed_D2_o1s1, 2)
+    expt_D2_o1s1 = gen_intensity_mat(dataD2_o1s1, 0)
+    trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
+    expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
+    # --------------------------------------------------
+    trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
+    expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
+    trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
+    expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
+    # --------------------------------------------------
+    trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
+    expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
+    trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
+    expt_H2_q1 = gen_intensity_mat(dataH2_q1, 0)
+    # --------------------------------------------------
 
-    # generate the RHS : sensitivity factor
-    sD2 = gen_s_quartic(computed_D2, param)
-    sHD = gen_s_quartic(computed_HD, param)
-    sH2 = gen_s_quartic(computed_H2, param)
+    #   take ratio of expt to calculated
 
-    # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
-    eH2 = (np.multiply(wMat_H2, I_H2)) - sH2
+    I_D2_q1 = np.divide(expt_D2_q1, trueR_D2_q1)
+    I_D2_o1s1 = np.divide(expt_D2_o1s1, trueR_D2_o1s1)
 
-    eD2 = clean_mat(eD2)
-    eHD = clean_mat(eHD)
-    eH2 = clean_mat(eH2)
+    I_HD_q1 = np.divide(expt_HD_q1, trueR_HD_q1)
+    I_HD_o1s1 = np.divide(expt_HD_o1s1, trueR_HD_o1s1)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
+    I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #   remove redundant elements
+    I_D2_q1 = clean_mat(I_D2_q1)
+    I_HD_q1 = clean_mat(I_HD_q1)
+    I_H2_q1 = clean_mat(I_H2_q1)
+
+    I_D2_o1s1 = clean_mat(I_D2_o1s1)
+    I_HD_o1s1 = clean_mat(I_HD_o1s1)
+    I_H2_o1 = clean_mat(I_H2_o1)
+    # --------------------------------------------------
+
+    # generate sensitivity matrix using true data
+    sD2_q1 = gen_s_quartic(computed_D2_q1, param)
+    sHD_q1 = gen_s_quartic(computed_HD_q1, param)
+    sH2_q1 = gen_s_quartic(computed_H2_q1, param)
+
+    sD2_o1s1 = gen_s_quartic(computed_D2_o1s1, param)
+    sHD_o1s1 = gen_s_quartic(computed_HD_o1s1, param)
+    sH2_o1 = gen_s_quartic(computed_H2_o1, param)
+    # --------------------------------------------------
+    eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
+    eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
+    eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
+
+    eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
+    eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
+    eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
+    # --------------------------------------------------
+
+    eD2_o1s1 = clean_mat(eD2_o1s1)
+    eD2_q1 = clean_mat(eD2_q1)
+
+    eHD_o1s1 = clean_mat(eHD_o1s1)
+    eHD_q1 = clean_mat(eHD_q1)
+
+    eH2_q1 = clean_mat(eH2_q1)
+    eH2_o1 = clean_mat(eH2_o1)
+
+    # --------------------------------------------------
+
+    E = np.sum(np.abs(eD2_q1)) + np.sum(np.abs(eHD_q1)) \
+        + np.sum(np.abs(eH2_q1)) + np.sum(np.abs(eD2_o1s1)) \
+        + np.sum(np.abs(eHD_o1s1)) + + np.sum(np.abs(eH2_o1))
 
     return(E)
 
 # *******************************************************************
 # *******************************************************************
+
+
 # Fit functions
 # *******************************************************************
 # *******************************************************************
@@ -790,10 +928,6 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
     return res.fun
     # --------------------
 
-
-# *******************************************************************
-# *******************************************************************
-
 # ******************** CHECKS FOR INPUTS ************************
 # ***************************************************************
 
@@ -808,28 +942,63 @@ wMat_H2 = 1
 
 # generate calculated data for the entered J values
 
-computed_D2 = compute_series_para.spectra_D2(299, OJ_D2, QJ_D2, SJ_D2)
-computed_HD = compute_series_para.spectra_HD(299, OJ_HD, QJ_HD, SJ_HD)
-computed_H2 = compute_series_para.spectra_H2_c(299, OJ_H2, QJ_H2)
+sosD2 = compute_series_para.sumofstate_D2(299)
+sosHD = compute_series_para.sumofstate_HD(299)
+sosH2 = compute_series_para.sumofstate_H2(299)
+
+print(sosD2, sosHD, sosH2)
+
+# ----------------------------------------
+computed_D2_o1s1 = compute_series_para.spectra_D2_o1s1(299, OJ_D2,
+                                                       SJ_D2, sosD2)
+computed_D2_q1 = compute_series_para.D2_Q1(299, QJ_D2, sosD2)
+
+computed_HD_o1s1 = compute_series_para.spectra_HD_o1s1(299, OJ_HD,
+                                                       SJ_HD, sosHD)
+
+computed_HD_q1 = compute_series_para.HD_Q1(299, QJ_HD, sosHD)
+
+computed_H2_o1 = compute_series_para.H2_O1(299, OJ_H2, sosH2)
+computed_H2_q1 = compute_series_para.H2_Q1(299, QJ_H2, sosH2)
+# ----------------------------------------
 
 # checks for dimension match done here
-if (computed_D2.shape[0] != dataD2.shape[0]):
+if (computed_D2_o1s1.shape[0] != dataD2_o1s1.shape[0]):
     print('D2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
 
-if (computed_HD.shape[0] != dataHD.shape[0]):
+if (computed_D2_q1.shape[0] != dataD2_q1.shape[0]):
+    print('D2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+# ----------------------------------------
+
+if (computed_HD_o1s1.shape[0] != dataHD_o1s1.shape[0]):
+    print('HD o1s1 : Dimension of input data does not match with the\
+ calculated spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+if (computed_HD_q1.shape[0] != dataHD_q1.shape[0]):
+    print('HD q1 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+# ----------------------------------------
+
+
+if (computed_H2_o1.shape[0] != dataH2_o1.shape[0]):
     print('H2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
 
-if (computed_H2.shape[0] != dataH2.shape[0]):
+if (computed_H2_q1.shape[0] != dataH2_q1.shape[0]):
     print('H2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
 
 # ------------------------------------------------
 # *******************************************************************
+
 
 def plot_curves(residual_array="None"):
     '''
@@ -906,45 +1075,113 @@ def plot_curves(residual_array="None"):
 
 # TESTS
 
-trueR_D2 = gen_intensity_mat (computed_D2, 2)
-expt_D2 = gen_intensity_mat (dataD2, 0)
+
+print(dataD2_o1s1)
+
+#   generate the matrix of ratios
+
+trueR_D2_o1s1 = gen_intensity_mat(computed_D2_o1s1, 2)
+expt_D2_o1s1 = gen_intensity_mat(dataD2_o1s1, 0)
+
+trueR_D2_q1 = gen_intensity_mat(computed_D2_q1, 2)
+expt_D2_q1 = gen_intensity_mat(dataD2_q1, 0)
+
+# --------------------------------------------------
+trueR_HD_o1s1 = gen_intensity_mat(computed_HD_o1s1, 2)
+expt_HD_o1s1 = gen_intensity_mat(dataHD_o1s1, 0)
+
+trueR_HD_q1 = gen_intensity_mat(computed_HD_q1, 2)
+expt_HD_q1 = gen_intensity_mat(dataHD_q1, 0)
+
+# --------------------------------------------------
+trueR_H2_o1 = gen_intensity_mat(computed_H2_o1, 2)
+expt_H2_o1 = gen_intensity_mat(dataH2_o1, 0)
+
+trueR_H2_q1 = gen_intensity_mat(computed_H2_q1, 2)
+expt_H2_q1 = gen_intensity_mat(dataH2_q1, 0)
+
+# --------------------------------------------------
+
+#   take ratio of expt to calculated
+
+I_D2_q1 = np.divide(expt_D2_q1, trueR_D2_q1)
+I_D2_o1s1 = np.divide(expt_D2_o1s1, trueR_D2_o1s1)
+
+I_HD_q1 = np.divide(expt_HD_q1, trueR_HD_q1)
+I_HD_o1s1 = np.divide(expt_HD_o1s1, trueR_HD_o1s1)
+
+I_H2_q1 = np.divide(expt_H2_q1, trueR_H2_q1)
+I_H2_o1 = np.divide(expt_H2_o1, trueR_H2_o1)
 
 
-trueR_HD = gen_intensity_mat (computed_HD, 2)
-expt_HD = gen_intensity_mat (dataHD, 0)
+#   remove redundant elements
+
+I_D2_q1 = clean_mat(I_D2_q1)
+I_HD_q1 = clean_mat(I_HD_q1)
+I_H2_q1 = clean_mat(I_H2_q1)
+
+I_D2_o1s1 = clean_mat(I_D2_o1s1)
+I_HD_o1s1 = clean_mat(I_HD_o1s1)
+I_H2_o1 = clean_mat(I_H2_o1)
+
+# --------------------------------------------------
+# generate error matrix using expt data
+
+errD2_q1_output = gen_weight(dataD2_q1)
+errHD_q1_output = gen_weight(dataHD_q1)
+errH2_q1_output = gen_weight(dataH2_q1)
 
 
-trueR_H2 = gen_intensity_mat (computed_H2, 2)
-expt_H2 = gen_intensity_mat (dataH2, 0)
+errD2_o1s1_output = gen_weight(dataD2_o1s1)
+errHD_o1s1_output = gen_weight(dataHD_o1s1)
+errH2_o1_output = gen_weight(dataH2_o1)
+
+# --------------------------------------------------
+
+# generate sensitivity matrix using true data
+
+sD2_q1 = gen_s_linear(computed_D2_q1, param_linear)
+sHD_q1 = gen_s_linear(computed_HD_q1, param_linear)
+sH2_q1 = gen_s_linear(computed_H2_q1, param_linear)
 
 
-I_D2 = np.divide(expt_D2, trueR_D2)
-I_HD = np.divide(expt_HD, trueR_HD)
-I_H2 = np.divide(expt_H2, trueR_H2)
+sD2_o1s1 = gen_s_linear(computed_D2_o1s1, param_linear)
+sHD_o1s1 = gen_s_linear(computed_HD_o1s1, param_linear)
+sH2_o1 = gen_s_linear(computed_H2_o1, param_linear)
 
-I_D2 = clean_mat(I_D2)
-I_HD = clean_mat(I_HD)
-I_H2 = clean_mat(I_H2)
+# --------------------------------------------------
 
-# print(I_H2)
+eD2_q1 = (np.multiply(errD2_q1_output, I_D2_q1) - sD2_q1)
+eHD_q1 = (np.multiply(errHD_q1_output, I_HD_q1) - sHD_q1)
+eH2_q1 = (np.multiply(errH2_q1_output, I_H2_q1) - sH2_q1)
 
-errH2_output = gen_weight(dataH2)
-errHD_output = gen_weight(dataHD)
-errD2_output = gen_weight(dataD2)
+eD2_o1s1 = (np.multiply(errD2_o1s1_output, I_D2_o1s1) - sD2_o1s1)
+eHD_o1s1 = (np.multiply(errHD_o1s1_output, I_HD_o1s1) - sHD_o1s1)
+eH2_o1 = (np.multiply(errH2_o1_output, I_H2_o1) - sH2_o1)
 
-sD2 = gen_s_linear(computed_D2, param_linear)
-sHD = gen_s_linear(computed_HD, param_linear)
-sH2 = gen_s_linear(computed_H2, param_linear)
+eD2_o1s1 = clean_mat(eD2_o1s1)
+eD2_q1 = clean_mat(eD2_q1)
+eHD_o1s1 = clean_mat(eHD_o1s1)
+eHD_q1 = clean_mat(eHD_q1)
+eH2_q1 = clean_mat(eH2_q1)
+eH2_o1 = clean_mat(eH2_o1)
 
-eD2 = (np.multiply(errD2_output, I_D2) - sD2)
-eHD = (np.multiply(errHD_output, I_HD) - sHD)
-eH2 = (np.multiply(errH2_output, I_H2) - sH2)
+E = np.sum(np.abs(eD2_q1)) + np.sum(np.abs(eHD_q1)) \
+    + np.sum(np.abs(eH2_q1)) + np.sum(np.abs(eD2_o1s1)) \
+    + np.sum(np.abs(eHD_o1s1)) + + np.sum(np.abs(eH2_o1))
 
-eD2 = clean_mat(eD2)
+print(E)
+print(' Error value :', E)
+# --------------------------------------------------
 
-eHD = clean_mat(eHD)
+eD2_q1 = clean_mat(eD2_q1)
+eHD_q1 = clean_mat(eHD_q1)
+eH2_q1 = clean_mat(eH2_q1)
 
-eH2 = clean_mat(eH2)
+eD2_o1s1 = clean_mat(eD2_o1s1)
+eHD_o1s1 = clean_mat(eHD_o1s1)
+eH2_o1 = clean_mat(eH2_o1)
+
 
 resd_lin = residual_linear(param_linear)
 resd_quad = residual_quadratic(param_quadratic)

@@ -1,5 +1,4 @@
 #!/usr/bin/python
-# pylint: disable=wildcard-import, method-hidden,C0103
 '''Module for computing the pure rotational Raman spectra from H2, HD and D2'''
 
 import math
@@ -15,7 +14,7 @@ C = np.float64(2.99792458e+10)   # cm/s
 
 # Laser properties------------------------
 omega = 18789.9850    #absolute cm-1
-omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
+omega_sc = omega/1e4  # scaled frequency (for better numerical accuracy)
 # ----------------------------------------
 
 # Load data on the energy levels and the polarizability anisotropy
@@ -36,9 +35,9 @@ eJHDv1 = np.loadtxt("./energy_levels_and_ME/HDeV1.txt")
 eJD2v0 = np.loadtxt("./energy_levels_and_ME/D2eV0.txt")
 eJD2v1 = np.loadtxt("./energy_levels_and_ME/D2eV1.txt")
 
-#   Data on the matrix elements of polarizability anisotropy has been taken
-#    from our previous work.
-#   c) A. Raj, H. Hamaguchi, and H. A. Witek, J. Chem. Phys. 148, 104308 (2018)
+#   Data on the matrix elements of polarizability anisotropy has been taken from
+#   our previous work.
+#   c) A. Raj, H. Hamaguchi, and H. A. Witek, J. Chem. Phys. 148, 104308 (2018).
 
 ME_alpha_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_mp_Q1.txt")
 ME_alpha_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_mp_Q1.txt")
@@ -58,28 +57,27 @@ ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.txt")
 ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.txt")
 
 
-# ********************************************************************
-# ********************************************************************
+#********************************************************************
+#********************************************************************
 
 # common objects
 
 # header, incase output is saved as txt and if header is needed in np.savetxt
-header_str = 'J_val\tfreq\tintensity\tabs_wavenum'
+header_str='J_val\tfreq\tintensity\tabs_wavenum'
 
-# ********************************************************************
-# ********************************************************************
+#********************************************************************
+#********************************************************************
 
 # set of functions for computing the Sum of states of molecular hydrogen and
 #   its isotopologues at given temperature.
 # Data on energy levels is needed for the specific molecule
-
 
 def sumofstate_H2(T):
     """calculate the sum of state for H2 molecule at T """
 
     Q = np.float64(0.0)
 
-    # --- nuclear spin statistics ------------
+    #--- nuclear spin statistics ------------
     g_even = 1 	# hydrogen nuclei
     g_odd = 3
     # ---------------------------------------
@@ -119,13 +117,12 @@ def sumofstate_H2(T):
 #  contributions from the ground and first vibrational state of electronic
 #  ground state.
 
-
 def sumofstate_HD(T):
     """calculate the sum of state for HD molecule at T """
 
     Q = np.float64(0.0)
 
-    # --- nuclear spin statistics ------------
+    #--- nuclear spin statistics ------------
     g_even = 1        # hydrogen deuteride
     g_odd = 1
     # ---------------------------------------
@@ -158,23 +155,22 @@ def sumofstate_HD(T):
 #   return the sum of states for HD
     return Q
 
-# *****************************************************************************
-# *****************************************************************************
+#******************************************************************************
+#******************************************************************************
 
 # compute the temperature dependent sum of state for D2 which
 #  includes contributions from the ground and first vibrational state
 #  of electronic ground state.
-
 
 def sumofstate_D2(T):
     """calculate the sum of state for D2 molecule at T """
 
     Q = np.float64(0.0)
 
-    # --- nuclear spin statistics ------------
+    #--- nuclear spin statistics ------------
     g_even = 6        # deuterium nuclei
     g_odd = 3
-    # ----------------------------------------
+    # ---------------------------------------
 
     jmaxv0 = len(eJD2v0)
     jmaxv1 = len(eJD2v1)
@@ -205,23 +201,15 @@ def sumofstate_D2(T):
     return Q
 
 
-# *****************************************************************************
-#                      COMPUTING SPECTRAL INTENSITIES
-# *****************************************************************************
-#  OUTPUT : nx4 array (where n is the number of rows)
-#   For every band 4 parameters are given,
-#       J           = rotational quantum number
-#       freq        = frequency (Ramanshift)
-#       intensity   = intensity, arbitrary units
-#       abs_wavenum = frequency in absolute wavenumbers
-# *****************************************************************************
-
+#******************************************************************************
+# ----------  HD  ----------
+#******************************************************************************
 
 def HD_S1(T, JMax, sos):
     '''compute the intensity for HD, S1 bands upto given JMax for T
     sum of states has to be supplied as argument '''
 
-    specHD = np.zeros(shape=(JMax + 1, 4))
+    specHD = np.zeros(shape=(JMax+1, 4))
 
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
@@ -230,7 +218,7 @@ def HD_S1(T, JMax, sos):
         popn = (2*i+1)*math.exp(energy/(K*T))
         bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
         position = (eJHDv1[i+2]-eJHDv0[i])
-        gamma = ME_gamma_HD_532_S1[i][4]
+        gamma = ME_gamma_HD_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
@@ -243,13 +231,13 @@ def HD_S1(T, JMax, sos):
 
     return specHD
 
-# *****************************************************************************
+#******************************************************************************
 
 def HD_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given JMax and T
     sum of states has to be supplied as argument  '''
 
-    specHD = np.zeros(shape=(JMax - 1, 4))
+    specHD = np.zeros(shape=(JMax-1, 4))
 
     # O1 bands ----------------------------------
 
@@ -272,7 +260,7 @@ def HD_O1(T, JMax, sos):
         specHD[JMax-i][3] = omega-position
 
     return specHD
-# *****************************************************************************
+#******************************************************************************
 
 
 def HD_Q1(T, JMax, sos):
@@ -301,47 +289,31 @@ def HD_Q1(T, JMax, sos):
         specHD[JMax-i][3] = (omega-position)
 
     return specHD
-# *****************************************************************************
+#******************************************************************************
 
-def spectra_HD(T, OJ, QJ, SJ):
+def spectra_HD(T, OJ, QJ, SJ ):
     """Compute in intensities and position for rotational Raman bands of HD
-        where OJ = max J state for O(v = 1) bands
-              QJ = max J state for Q(v = 1) bands
-              SJ = max J state for S(v = 1) bands
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
      """
 
     sos = sumofstate_HD(T)
 
     # call individual functions ------------------------
-    O1 = HD_O1(T, OJ, sos)
-    Q1 = HD_Q1(T, QJ, sos)
-    S1 = HD_S1(T, SJ, sos)
+    O1=HD_O1(T, OJ, sos)
+    Q1=HD_Q1(T, QJ, sos)
+    S1=HD_S1(T, SJ, sos)
     #---------------------------------------------------
-    out = np.concatenate((O1, Q1, S1))
-    return out  # return the output
-    # --------------------------------------------------
-# *****************************************************************************
-
-def spectra_HD_o1s1(T, OJ, SJ):
-    """Compute in intensities and position for rotational Raman bands of HD
-        where OJ = max J state for O(v = 1) bands
-              SJ = max J state for S(v = 1) bands
-     """
-
-    sos = sumofstate_HD(T)
-
-    # call individual functions ------------------------
-    O1 = HD_O1(T, OJ, sos)
-    S1 = HD_S1(T, SJ, sos)
-    # --------------------------------------------------
-    out = np.concatenate((O1, S1))
+    out=np.concatenate((O1, Q1, S1 ))
     return out  # return the output
     # --------------------------------------------------
 
 
-# *****************************************************************************
+
+#******************************************************************************
 # ----------  D2  ----------
-# *****************************************************************************
+#******************************************************************************
 
 def D2_S1(T, JMax, sos):
     '''compute the intensity for D2, S1 bands upto given JMax and T '''
@@ -355,7 +327,7 @@ def D2_S1(T, JMax, sos):
         popn = (2*i+1)*math.exp(energy/(K*T))
         bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
         position = (eJD2v1[i+2]-eJD2v0[i])
-        gamma = ME_gamma_D2_532_S1[i][4]
+        gamma = ME_gamma_D2_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
@@ -368,7 +340,7 @@ def D2_S1(T, JMax, sos):
 
     return specD2
 
-# *****************************************************************************
+#******************************************************************************
 
 def D2_O1(T, JMax, sos):
     '''compute the intensity for D2, O1 bands upto given JMax and sum of state '''
@@ -394,7 +366,7 @@ def D2_O1(T, JMax, sos):
         specD2[JMax-i][3] = omega-position
 
     return specD2
-# *****************************************************************************
+#******************************************************************************
 
 
 def D2_Q1(T, JMax, sos):
@@ -421,16 +393,16 @@ def D2_Q1(T, JMax, sos):
         specD2[JMax-i][3] = (omega-position)
 
     return specD2
-# *****************************************************************************
+#******************************************************************************
 
 
-def spectra_D2(T, OJ, QJ, SJ):
+def spectra_D2(T, OJ, QJ, SJ, reverse=0):
     """Compute in intensities and position for rotational Raman bands of D2
-        where OJ = max J state for O(v = 1) bands
-              QJ = max J state for Q(v = 1) bands
-              SJ = max J state for S(v = 1) bands
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
 
-              reverse = 0 or 1, will reverse the output
+              reverse=0 or 1, will reverse the output
 
      """
 
@@ -438,42 +410,17 @@ def spectra_D2(T, OJ, QJ, SJ):
 
     # call individual functions ------------------------
 
-    O1 = D2_O1(T, OJ, sos)
-    Q1 = D2_Q1(T, QJ, sos)
-    S1 = D2_S1(T, SJ, sos)
+    O1=D2_O1(T, OJ, sos)
+    Q1=D2_Q1(T, QJ, sos)
+    S1=D2_S1(T, SJ, sos)
     # --------------------------------------------------
-    out = np.concatenate((O1, Q1, S1))
+    out=np.concatenate((O1, Q1, S1 ))
     return out
     # --------------------------------------------------
 
-# *****************************************************************************
-
-
-def spectra_D2_o1s1(T, OJ, SJ):
-    """Compute in intensities and position for rotational Raman bands of D2
-        where OJ = max J state for O(v = 1) bands
-              QJ = max J state for Q(v = 1) bands
-              SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
-     """
-
-    sos = sumofstate_D2(T)
-
-    # call individual functions ------------------------
-
-    O1 = D2_O1(T, OJ, sos)
-    S1 = D2_S1(T, SJ, sos)
-    # --------------------------------------------------
-    out = np.concatenate((O1, S1))
-    return out
-    # --------------------------------------------------
-
-# *****************************************************************************
+#******************************************************************************
 # ----------  H2  ----------
-# *****************************************************************************
-
+#******************************************************************************
 
 def H2_S1(T, JMax, sos):
     '''compute the intensity for H2, S1 bands upto given JMax and T '''
@@ -487,7 +434,7 @@ def H2_S1(T, JMax, sos):
         popn = (2*i+1)*math.exp(energy/(K*T))
         bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
         position = (eJH2v1[i+2]-eJH2v0[i])
-        gamma = ME_gamma_H2_532_S1[i][4]
+        gamma = ME_gamma_H2_532_S1 [i][4]
         #print(i, E, popn, position ,gamma)
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
@@ -500,7 +447,7 @@ def H2_S1(T, JMax, sos):
 
     return specH2
 
-# *****************************************************************************
+#******************************************************************************
 
 def H2_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given JMax and sum of state '''
@@ -528,7 +475,7 @@ def H2_O1(T, JMax, sos):
         specH2[JMax-i][3] = omega-position
 
     return specH2
-# *****************************************************************************
+#******************************************************************************
 
 
 def H2_Q1(T, JMax, sos):
@@ -555,18 +502,17 @@ def H2_Q1(T, JMax, sos):
         specH2[JMax-i][3] = (omega-position)
 
     return specH2
-
-# *****************************************************************************
-# *****************************************************************************
+#******************************************************************************
+#******************************************************************************
 
 #@utils.MeasureTime
-def spectra_H2(T, OJ, QJ, SJ):
+def spectra_H2(T, OJ, QJ, SJ, reverse=0):
     """Compute in intensities and position for rotational Raman bands of H2
-        where OJ = max J state for O(v = 1) bands
-              QJ = max J state for Q(v = 1) bands
-              SJ = max J state for S(v = 1) bands
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
 
-              reverse = 0 or 1, will reverse the output
+              reverse=0 or 1, will reverse the output
 
      """
 
@@ -574,25 +520,25 @@ def spectra_H2(T, OJ, QJ, SJ):
 
     # call individual functions ------------------------
 
-    O1 = H2_O1(T, OJ, sos)
-    Q1 = H2_Q1(T, QJ, sos)
-    S1 = H2_S1(T, SJ, sos)
+    O1=H2_O1(T, OJ, sos)
+    Q1=H2_Q1(T, QJ, sos)
+    S1=H2_S1(T, SJ, sos)
     # --------------------------------------------------
-    out = np.concatenate((O1, Q1, S1))
+    out=np.concatenate((O1, Q1, S1 ))
     return out
     # --------------------------------------------------
+#******************************************************************************
 
-# *****************************************************************************
-# *****************************************************************************
+#******************************************************************************
 
 #@utils.MeasureTime
-def spectra_H2_c(T, OJ, QJ):
+def spectra_H2_c(T, OJ, QJ , reverse=0):
     """Compute in intensities and position for rotational Raman bands of H2
-        where OJ = max J state for O(v = 1) bands
-              QJ = max J state for Q(v = 1) bands
-              SJ = max J state for S(v = 1) bands
+        where OJ = max J state for O(v=1) bands
+              QJ = max J state for Q(v=1) bands
+              SJ = max J state for S(v=1) bands
 
-              reverse = 0 or 1, will reverse the output
+              reverse=0 or 1, will reverse the output
 
               This does not include S1 bands, specific for the spectral
               range where no S1 bands observed.
@@ -603,12 +549,11 @@ def spectra_H2_c(T, OJ, QJ):
 
     # call individual functions ------------------------
 
-    O1 = H2_O1(T, OJ, sos)
-    Q1 = H2_Q1(T, QJ, sos)
+    O1=H2_O1(T, OJ, sos)
+    Q1=H2_Q1(T, QJ, sos)
 
     # --------------------------------------------------
-    out = np.concatenate((O1, Q1))
+    out=np.concatenate((O1, Q1 ))
     return out
     # --------------------------------------------------
-# *****************************************************************************
-# *****************************************************************************
+#******************************************************************************
