@@ -19,7 +19,7 @@ from common import compute_series_para
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./run_parallel/logfile.txt', 'w+')
+fileh = logging.FileHandler('./run_parallel/logfile_para.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -354,13 +354,9 @@ def residual_linear(param):
 
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)    
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
-
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -423,15 +419,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
-
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2,
-                                                 sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD,
-                                                 sosHD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -494,13 +484,9 @@ def residual_cubic(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
-
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -563,13 +549,9 @@ def residual_quartic(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
-
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -692,8 +674,8 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
      ,  round(optk1, 6), round(optk2, 6) ))
 
      # generate the correction curve
-    correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)\
-                                                       * (xaxis-scenter)**2
+    correction_curve = 1+(optk1/scale1)*(xaxis-scenter) \
+        +(optk2/scale2) * (xaxis-scenter)**2
 
     np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
@@ -738,8 +720,9 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
           format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
                  round(optk3, 6)))
 
-    correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  + (optk2/scale2)*(xaxis-scenter)**2  +\
-        +(optk3/scale3)*(xaxis-scenter)**3 # generate the correction curve
+    correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  \
+        + (optk2/scale2)*(xaxis-scenter)**2  \
+            +(optk3/scale3)*(xaxis-scenter)**3 # generate the correction curve
 
     np.savetxt("correction_cubic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_cubic', comments='')
@@ -787,8 +770,10 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
                  round(optk3, 6), round(optk4, 6)))
 
     # generate the correction curve
-    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)*(xaxis-scenter)**2  +\
-        +(optk3/scale3)*(xaxis-scenter)**3 +(optk4/scale4)*(xaxis-scenter)**4
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  \
+        + (optk2/scale2)*(xaxis-scenter)**2  \
+            + (optk3/scale3)*(xaxis-scenter)**3 \
+                +(optk4/scale4)*(xaxis-scenter)**4
 
     np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quartic', comments='')
@@ -822,14 +807,10 @@ wMat_H2 = 1
 # checks for input done here
 
 # generate calculated data for the entered J values
-TK=299
-sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)
-sosH2 = compute_series_para.sumofstate_H2(TK)
 
-computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+computed_D2 = compute_series_para.spectra_D2(299, OJ_D2, QJ_D2, SJ_D2)
+computed_HD = compute_series_para.spectra_HD(299, OJ_HD, QJ_HD, SJ_HD)
+computed_H2 = compute_series_para.spectra_H2_c(299, OJ_H2, QJ_H2)
 
 # checks for dimension match done here
 if (computed_D2.shape[0] != dataD2.shape[0]):
@@ -852,8 +833,9 @@ if (computed_H2.shape[0] != dataH2.shape[0]):
 
 def plot_curves(residual_array="None"):
     '''
-    option = 1 : plot
-           = 0 : do not plot
+    If array containing residuals is not provided
+    then the plot of residuals vs number of variables
+    will not be made
 
     '''
     # Load the saved correction curves for  plotting
@@ -871,7 +853,7 @@ def plot_curves(residual_array="None"):
           \nGitHub Repository: IntensityCalbr ")
 
     # FIGURE 0 INITIALIZED
-    
+
     plt.figure(0)
     ax0 = plt.axes()
     plt.title('Fitting result', fontsize=22)
@@ -887,7 +869,7 @@ def plot_curves(residual_array="None"):
 
     # change following as needed
     ax0.tick_params(axis='both', labelsize =20)
-    
+
     xmin = np.amin(xaxis-10)
     xmax = np.amax(xaxis+10)
 
@@ -897,7 +879,7 @@ def plot_curves(residual_array="None"):
     ax0.minorticks_on()
     ax0.tick_params(which='minor', right='on')
     ax0.tick_params(axis='y', labelleft='on', labelright='on')
-    plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey", 
+    plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
 
@@ -921,9 +903,9 @@ def plot_curves(residual_array="None"):
         print('\tResidual array not provided. plot of residuals not made!')
 
 #********************************************************************
-        
-# TESTS        
-        
+
+# TESTS
+
 trueR_D2 = gen_intensity_mat (computed_D2, 2)
 expt_D2 = gen_intensity_mat (dataD2, 0)
 
@@ -974,5 +956,3 @@ print('\t linear \t:', resd_lin)
 print('\t quadratic \t:', resd_quad)
 print('\t cubic \t:', resd_cubic)
 print('\t quartic \t:', resd_quar)
-        
-        
