@@ -128,12 +128,12 @@ def run_all_fit():
     resd_1 = run_fit_linear( -1.04586)
 
     resd_2 = run_fit_quadratic( -0.285, 0.052)
-    resd_2 = run_fit_quadratic( 0.835, -0.052)
+    resd_2 = run_fit_quadratic( -0.5435, -0.352)
 
-    run_fit_cubic( -1.036, -0.2192, 0.0025)
-    resd_3 = run_fit_cubic( -0.90, 0.055, +0.00215)
+    run_fit_cubic( -0.536, -0.3192, 0.015)
+    resd_3 = run_fit_cubic( -0.5440, -0.355, +0.00215)
 
-    resd_4 = run_fit_quartic( -0.925, -0.0715, 0.05, +0.02)
+    resd_4 = run_fit_quartic( -0.5445, -0.315, 0.05, +0.02)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4])
     return out
@@ -460,7 +460,8 @@ def residual_linear(param):
     np.savetxt("errD2_test", eD2, fmt='%3.3f')
     np.savetxt("errHD_test", eHD, fmt='%3.3f')
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return(E)
 
@@ -519,7 +520,8 @@ def residual_quadratic(param):
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return(E)
 
@@ -578,7 +580,8 @@ def residual_cubic(param):
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return(E)
 
@@ -629,12 +632,13 @@ def residual_quartic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+
     
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))    
 
     return(E)
 
@@ -823,47 +827,6 @@ def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
 # *******************************************************************
 # *******************************************************************
 
-# ******************** CHECKS FOR INPUTS ************************
-# ***************************************************************
-
-
-# ------------------------------------------------
-
-wMat_D2 = 1
-wMat_HD = 1
-wMat_H2 = 1
-
-# checks for input done here
-
-# generate calculated data for the entered J values
-TK=299
-sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)
-sosH2 = compute_series_para.sumofstate_H2(TK)
-
-computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
-
-# checks for dimension match done here
-if (computed_D2.shape[0] != dataD2.shape[0]):
-    print('D2 : Dimension of input data does not match with the calculated\
-           spectra. Check input expt data or the J-indices entered.')
-    sys.exit("\tError: Quitting.")
-
-if (computed_HD.shape[0] != dataHD.shape[0]):
-    print('H2 : Dimension of input data does not match with the calculated\
-           spectra. Check input expt data or the J-indices entered.')
-    sys.exit("\tError: Quitting.")
-
-if (computed_H2.shape[0] != dataH2.shape[0]):
-    print('H2 : Dimension of input data does not match with the calculated\
-           spectra. Check input expt data or the J-indices entered.')
-    sys.exit("\tError: Quitting.")
-
-# ------------------------------------------------
-# *******************************************************************
-
 def plot_curves(residual_array="None"):
     '''
     option = 1 : plot
@@ -934,7 +897,47 @@ def plot_curves(residual_array="None"):
     else:
         print('\tResidual array not provided. plot of residuals not made!')
 
-# ********************************************************************
+# ***************************************************************
+
+# ******************** CHECKS FOR INPUTS ************************
+# ***************************************************************
+
+
+# ------------------------------------------------
+
+wMat_D2 = 1
+wMat_HD = 1.2
+wMat_H2 = 1
+
+# checks for input done here
+
+# generate calculated data for the entered J values
+TK=299
+sosD2 = compute_series_para.sumofstate_D2(TK)
+sosHD = compute_series_para.sumofstate_HD(TK)
+sosH2 = compute_series_para.sumofstate_H2(TK)
+
+computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
+computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
+computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
+
+# checks for dimension match done here
+if (computed_D2.shape[0] != dataD2.shape[0]):
+    print('D2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+if (computed_HD.shape[0] != dataHD.shape[0]):
+    print('H2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+if (computed_H2.shape[0] != dataH2.shape[0]):
+    print('H2 : Dimension of input data does not match with the calculated\
+           spectra. Check input expt data or the J-indices entered.')
+    sys.exit("\tError: Quitting.")
+
+# ------------------------------------------------
 
 # TESTS        
 
