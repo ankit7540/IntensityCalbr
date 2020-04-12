@@ -645,41 +645,38 @@ def residual_quartic(param):
 # *******************************************************************
 
 
-def run_fit_linear(init_T, init_k1):
+def run_fit_linear(init_k1):
     '''Function performing the actual fit using the residual_linear function
     defined earlier '''
 
     # init_k1 : Intial guess
 
-    param_init = np.array([ init_T, init_k1  ])
+    param_init = np.array([ init_k1 ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1} output = {2}".format(init_T, init_k1, \
+    print("Initial coef :  k1={0} output = {1}".format( init_k1, \
           (residual_linear(param_init))))
-
 
     print("\nOptimization run: Linear     \n")
     res = opt.minimize(residual_linear, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9})
 
     print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    print("\nOptimized result : T={0}, k1={1} \n".format(round(optT, 6) ,
-                                                         round(optk1, 6) ))
+    optk1 = res.x[0]
+    print("\nOptimized result : k1={0} \n".format(round(optk1, 6)))
 
     correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  # generate the correction curve
 
-    np.savetxt("correction_linear.txt", correction_curve, fmt='%2.8f',\
-               header='corrn_curve_linear', comments='')
+    np.savetxt("correction_linear.txt", correction_curve, fmt='%2.9f',\
+               header='corrn_curve_linear')
 
     print("**********************************************************")
 
     # save log -----------
     log.info('\n *******  Optimization run : Linear  *******')
-    log.info('\n\t Initial : T = %4.8f, c1 = %4.8f\n', init_T, init_k1 )
+    log.info('\n\t Initial : c1 = %4.8f\n', init_k1 )
     log.info('\n\t %s\n', res )
-    log.info('\n Optimized result : T = %4.8f, c1 = %4.8f\n', optT, optk1 )
+    log.info('\n Optimized result : c1 = %4.8f\n', optk1 )
     log.info(' *******************************************')
     return res.fun
     # --------------------
@@ -687,16 +684,16 @@ def run_fit_linear(init_T, init_k1):
 # *******************************************************************
 # *******************************************************************
 
-def run_fit_quadratic ( init_T, init_k1, init_k2 ):
+def run_fit_quadratic ( init_k1, init_k2 ):
     '''Function performing the actual fit using the residual_linear function
     defined earlier '''
 
     # init_k1 : Intial guess
 
-    param_init = np.array([ init_T, init_k1 , init_k2  ])
+    param_init = np.array([  init_k1 , init_k2  ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2} output = {3}".format(init_T, init_k1, \
+    print("Initial coef :  k1={0}, k2={1} output = {2}".format( init_k1, \
          init_k2, (residual_quadratic(param_init))))
 
 
@@ -705,18 +702,17 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    optk2 = res.x[2]
-    print("\nOptimized result : T={0}, k1={1}, k2={2} \n".format(round(optT, 6)\
-     ,  round(optk1, 6), round(optk2, 6) ))
+    optk1 = res.x[0]
+    optk2 = res.x[1]
+    print("\nOptimized result : k1={0}, k2={1} \n".format(round(optk1, 6), \
+                                                          round(optk2, 6)))
 
      # generate the correction curve
     correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)\
                                                        * (xaxis-scenter)**2
 
-    np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.8f',\
-               header='corrn_curve_quadratic', comments='')
+    np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.9f',\
+               header='corrn_curve_quadratic' )
 
     print("**********************************************************")
 
@@ -732,17 +728,17 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
 # *******************************************************************
 # *******************************************************************
 
-def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
+def run_fit_cubic ( init_k1, init_k2, init_k3 ):
     '''Function performing the actual fit using the residual_linear function
     defined earlier '''
 
     # init_k1 : Intial guess
 
-    param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
+    param_init = np.array([ init_k1 , init_k2 , init_k3  ])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".\
-          format(init_T, init_k1, init_k2, init_k3, (residual_cubic(param_init))))
+    print("Initial coef : k1={0}, k2={1}, k3={2}, output = {3}".\
+          format( init_k1, init_k2, init_k3, (residual_cubic(param_init))))
 
 
     print("\nOptimization run : Cubic     \n")
@@ -750,19 +746,18 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2500})
 
     print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    optk2 = res.x[2]
-    optk3 = res.x[3]
-    print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3} \n".\
-          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
+    optk1 = res.x[0]
+    optk2 = res.x[1]
+    optk3 = res.x[2]
+    print("\nOptimized result : k1={0}, k2={1}, k3={2} \n".\
+          format(  round(optk1, 6), round(optk2, 6),\
                  round(optk3, 6)))
 
     correction_curve = 1+(optk1/scale1)*(xaxis-scenter)  + (optk2/scale2)*(xaxis-scenter)**2  +\
         +(optk3/scale3)*(xaxis-scenter)**3 # generate the correction curve
 
-    np.savetxt("correction_cubic.txt", correction_curve, fmt='%2.8f',\
-               header='corrn_curve_cubic', comments='')
+    np.savetxt("correction_cubic.txt", correction_curve, fmt='%2.9f',\
+               header='corrn_curve_cubic')
 
     print("**********************************************************")
     # save log -----------
@@ -779,39 +774,38 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
 # *******************************************************************
 # *******************************************************************
 
-def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
+def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
     '''Function performing the actual fit using the residual_linear function
     defined earlier '''
 
     # init_k1 : Intial guess
 
-    param_init = np.array([init_T, init_k1 , init_k2 , init_k3, init_k4])
+    param_init = np.array([ init_k1 , init_k2 , init_k3, init_k4])
     print("**********************************************************")
     #print("Testing the residual function with data")
-    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".\
-          format(init_T, init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
+    print("Initial coef : k1={0}, k2={1}, k3={2}, k4={3} output = {4}".\
+          format(init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
 
 
     print("\nOptimization run : Quartic     \n")
     res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
-                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2000})
 
     print(res)
-    optT = res.x[0]
-    optk1 = res.x[1]
-    optk2 = res.x[2]
-    optk3 = res.x[3]
-    optk4 = res.x[4]
-    print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3}, k4={4} \n".\
-          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
+    optk1 = res.x[0]
+    optk2 = res.x[1]
+    optk3 = res.x[2]
+    optk4 = res.x[3]
+    print("\nOptimized result : k1={0}, k2={1}, k3={2}, k4={3} \n".\
+          format( round(optk1, 6), round(optk2, 6),\
                  round(optk3, 6), round(optk4, 6)))
 
     # generate the correction curve
     correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  +(optk2/scale2)*(xaxis-scenter)**2  +\
         +(optk3/scale3)*(xaxis-scenter)**3 +(optk4/scale4)*(xaxis-scenter)**4
 
-    np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.8f',\
-               header='corrn_curve_quartic', comments='')
+    np.savetxt("correction_quartic.txt", correction_curve, fmt='%2.9f',\
+               header='corrn_curve_quartic')
 
     print("**********************************************************")
     # save log -----------
