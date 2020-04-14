@@ -228,7 +228,7 @@ def residual_Q_D2(param):
 
     TK = param 
     sosD2 = compute_series_para.sumofstate_D2(TK)
-    QJ_D2=6
+    QJ_D2=4  # max J value of analyzed Q-bands
     computed_D2 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
     # ------ D2 ------
@@ -238,8 +238,8 @@ def residual_Q_D2(param):
     errD2_output = gen_weight(dataD2Q)
     errorP = errD2_output  
     
-    np.savetxt("exptD2",clean_mat(expt_D2),fmt='%2.4f')
-    np.savetxt("errD2",clean_mat(errorP),fmt='%2.4f')
+    #np.savetxt("exptD2",clean_mat(expt_D2),fmt='%2.4f')
+    #np.savetxt("errD2",clean_mat(errorP),fmt='%2.4f')
     
     calc_D2 = clean_mat(trueR_D2)
     expt_D2 = clean_mat(expt_D2)
@@ -249,15 +249,16 @@ def residual_Q_D2(param):
     diffD2 = expt_D2 - calc_D2
     
     # scale by weights
-    diffD2 = (np.multiply(errorP , diffD2))
+    #diffD2 = (np.multiply(errorP , diffD2))
     
     # remove redundant terms
     diffD2 = clean_mat(diffD2)
+    np.savetxt("diff_D2", diffD2,fmt='%2.4f')
 
     # return the residual
-    E=np.sum(np.square(diffD2))/1e3
+    E=np.sum(np.square(diffD2))
 
-    return(E)
+    return E/1e2
 
 # *******************************************************************
 
@@ -280,7 +281,8 @@ def residual_Q_HD(param):
     expt_HD = gen_intensity_mat(dataHDQ, 0)
     
     errHD_output = gen_weight(dataHDQ)
-    errorP = 1/(np.divide( errHD_output, expt_HD))
+    errorP = errHD_output
+    #errorP = 1/(np.divide( errHD_output, expt_HD))
     
     
     calc_HD = clean_mat(trueR_HD)
@@ -291,14 +293,14 @@ def residual_Q_HD(param):
     diffHD = expt_HD - calc_HD
     
     # scale by weights
-    diffHD = (np.multiply(errorP , diffHD))
+    #diffHD = (np.multiply(errorP , diffHD))
     
     # remove redundant terms
     diffHD = clean_mat(diffHD)
 
     # return the residual
-    E=np.sum(np.square(diffHD))/1e2
-    return(E)
+    E=np.sum(np.square(diffHD))
+    return E/1e2
 
 # *******************************************************************   
 
@@ -321,7 +323,8 @@ def residual_Q_H2(param):
     expt_H2 = gen_intensity_mat(dataH2Q, 0)
     
     errH2_output = gen_weight(dataH2Q)
-    errorP = 1/(np.divide( errH2_output, expt_H2))
+    errorP = errH2_output
+    #errorP = 1/(np.divide( errH2_output, expt_H2))
     
     
     calc_H2 = clean_mat(trueR_H2)
@@ -332,14 +335,14 @@ def residual_Q_H2(param):
     diffH2 = expt_H2 - calc_H2
     
     # scale by weights
-    diffH2 = (np.multiply(errorP , diffH2))
+    #diffH2 = (np.multiply(errorP , diffH2))
     
     # remove redundant terms
     diffH2 = clean_mat(diffH2)
 
     # return the residual
-    E=np.sum(np.square(diffH2))/1e3
-    return(E)
+    E=np.sum(np.square(diffH2))
+    return E/1e2
 
 # *******************************************************************    
 # *******************************************************************
