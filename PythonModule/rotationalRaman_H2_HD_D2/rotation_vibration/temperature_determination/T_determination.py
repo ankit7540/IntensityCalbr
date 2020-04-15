@@ -120,22 +120,6 @@ def run_all_fit():
     run_fit_HD(inputT)
     run_fit_H2(inputT)
 # *******************************************************************
-
-# ------------------------------------------------------
-# ------------------------------------------------------
-#                COMMON SETTINGS
-# ------------------------------------------------------
-
-# Constants ------------------------------
-# these are used for scaling the coefs
-scale1 = 1e3
-scale2 = 1e6
-scale3 = 1e9
-scale4 = 1e12
-# ----------------------------------------
-scenter = 3316.3  # center of the spectra
-# used to scale the xaxis
-
 # ------------------------------------------------
 #                COMMON FUNCTIONS
 # ------------------------------------------------
@@ -202,16 +186,6 @@ def inverse (array):
     return 1 / (array)
 
 # ------------------------------------------------
-
-
-def scale_elements(array, index_array, factor):
-    """scale the elements of array using the index_array and factor"""
-
-    array[index_array] = array[index_array] * factor
-    return array
-
-# ------------------------------------------------
-
 # *******************************************************************
 #     RESIDUAL FUNCTIONS DEFINED BELOW
 # *******************************************************************
@@ -219,14 +193,14 @@ def scale_elements(array, index_array, factor):
 
 def residual_Q_D2(param):
     '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt with the corresponding calculated ratios. The calculated 
+    ratio of expt with the corresponding calculated ratios. The calculated
     ratios are computed for given T.
 
     Param : T
 
     '''
 
-    TK = param 
+    TK = param
     sosD2 = compute_series_para.sumofstate_D2(TK)
     QJ_D2=4  # max J value of analyzed Q-bands
     computed_D2 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
@@ -234,23 +208,23 @@ def residual_Q_D2(param):
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2Q, 0)
-    
+
     errD2_output = gen_weight(dataD2Q)
-    errorP = errD2_output  
-    
+    errorP = errD2_output
+
     #np.savetxt("exptD2",clean_mat(expt_D2),fmt='%2.4f')
     #np.savetxt("errD2",clean_mat(errorP),fmt='%2.4f')
-    
+
     calc_D2 = clean_mat(trueR_D2)
     expt_D2 = clean_mat(expt_D2)
     errorP = clean_mat(errorP)
     # ----------------
-    
+
     diffD2 = expt_D2 - calc_D2
-    
+
     # scale by weights
     #diffD2 = (np.multiply(errorP , diffD2))
-    
+
     # remove redundant terms
     diffD2 = clean_mat(diffD2)
     np.savetxt("diff_D2", diffD2,fmt='%2.4f')
@@ -265,13 +239,13 @@ def residual_Q_D2(param):
 
 def residual_Q_HD(param):
     '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt with the corresponding calculated ratios. The calculated 
+    ratio of expt with the corresponding calculated ratios. The calculated
     ratios are computed for given T.
 
     Param : T
 
     '''
-    TK = param 
+    TK = param
     sosHD = compute_series_para.sumofstate_HD(TK)
     QJ_HD=3
     computed_HD = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
@@ -279,22 +253,22 @@ def residual_Q_HD(param):
     # ------ HD ------
     trueR_HD = gen_intensity_mat(computed_HD, 2)
     expt_HD = gen_intensity_mat(dataHDQ, 0)
-    
+
     errHD_output = gen_weight(dataHDQ)
     errorP = errHD_output
     #errorP = 1/(np.divide( errHD_output, expt_HD))
-    
-    
+
+
     calc_HD = clean_mat(trueR_HD)
     expt_HD = clean_mat(expt_HD)
     errorP = clean_mat(errorP)
     # ----------------
-    
+
     diffHD = expt_HD - calc_HD
-    
+
     # scale by weights
     #diffHD = (np.multiply(errorP , diffHD))
-    
+
     # remove redundant terms
     diffHD = clean_mat(diffHD)
 
@@ -302,18 +276,18 @@ def residual_Q_HD(param):
     E=np.sum(np.square(diffHD))
     return E
 
-# *******************************************************************   
+# *******************************************************************
 
 def residual_Q_H2(param):
     '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt with the corresponding calculated ratios. The calculated 
+    ratio of expt with the corresponding calculated ratios. The calculated
     ratios are computed for given T.
 
     Param : T
 
     '''
 
-    TK = param 
+    TK = param
     sosH2 = compute_series_para.sumofstate_H2(TK)
     QJ_H2=3
     computed_H2 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
@@ -321,21 +295,21 @@ def residual_Q_H2(param):
     # ------ H2 ------
     trueR_H2 = gen_intensity_mat(computed_H2, 2)
     expt_H2 = gen_intensity_mat(dataH2Q, 0)
-    
+
     errH2_output = gen_weight(dataH2Q)
     errorP = errH2_output
     #errorP = 1/(np.divide( errH2_output, expt_H2))
-    
+
     calc_H2 = clean_mat(trueR_H2)
     expt_H2 = clean_mat(expt_H2)
     errorP = clean_mat(errorP)
     # ----------------
-    
+
     diffH2 = expt_H2 - calc_H2
-    
+
     # scale by weights
     #diffH2 = (np.multiply(errorP , diffH2))
-    
+
     # remove redundant terms
     diffH2 = clean_mat(diffH2)
 
@@ -343,7 +317,7 @@ def residual_Q_H2(param):
     E=np.sum(np.square(diffH2))
     return E
 
-# *******************************************************************    
+# *******************************************************************
 # *******************************************************************
 # Fit functions
 # *******************************************************************
@@ -383,7 +357,7 @@ def run_fit_D2(init_T ):
     # --------------------
 
 # *******************************************************************
-    
+
 
 def run_fit_HD(init_T ):
     '''Function performing the actual fit using the residual_linear function
@@ -473,7 +447,7 @@ computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
 computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
 
 # ------------------------------------------
-# ratio 
+# ratio
 trueR_D2 = gen_intensity_mat (computed_D2, 2)
 expt_D2 = gen_intensity_mat (dataD2, 0)
 
@@ -492,8 +466,8 @@ errHD_output = gen_weight(dataHD)
 errD2_output = gen_weight(dataD2)
 
 diffD2 = trueR_D2 - expt_D2
-diffHD = trueR_HD - expt_HD 
-diffH2 = trueR_H2 - expt_H2 
+diffHD = trueR_HD - expt_HD
+diffH2 = trueR_H2 - expt_H2
 
 eD2 = (np.multiply(errD2_output, diffD2))
 eHD = (np.multiply(errHD_output, diffHD))
@@ -504,20 +478,20 @@ eHD = clean_mat(eHD)
 eH2 = clean_mat(eH2)
 
 print(np.sum(np.square(eD2)))
-print(np.sum(np.square(eHD))) 
+print(np.sum(np.square(eHD)))
 print(np.sum(np.square(eH2)))
 # ------------------------------------------
 test = np.loadtxt("./run_parallel/test_data.txt")
 
 def residual_Q_test(param):
     '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt with the corresponding calculated ratios. The calculated 
+    ratio of expt with the corresponding calculated ratios. The calculated
     ratios are computed for given T.
 
     Param : T
 
     '''
-    TK = param 
+    TK = param
     sosHD = compute_series_para.sumofstate_HD(TK)
     QJ_HD=3
     computed_HD = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
@@ -525,21 +499,21 @@ def residual_Q_test(param):
     # ------ HD ------
     trueR_HD = gen_intensity_mat(computed_HD, 2)
     expt_HD = gen_intensity_mat(test, 0)
-    
+
     errHD_output = gen_weight(dataHDQ)
     errorP = errHD_output
-    
-    
+
+
     calc_HD = clean_mat(trueR_HD)
     expt_HD = clean_mat(expt_HD)
     errorP = clean_mat(errorP)
     # ----------------
-    
+
     diffHD = expt_HD - calc_HD
-    
+
     # scale by weights
     diffHD = (np.multiply(errorP , diffHD))
-    
+
     # remove redundant terms
     diffHD = clean_mat(diffHD)
 
@@ -547,5 +521,4 @@ def residual_Q_test(param):
     #E=np.sum(np.square(diffHD))/1e2
     return(errorP)
 
-# *******************************************************************   
-
+# *******************************************************************
