@@ -22,7 +22,7 @@ omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
 
 # Data on the rovibrational energy levels has been extracted from
 #   the calculated dissociation
-# energy data published in the following works :
+# Energy data published in the following works :
 #   a)  J. Komasa, K. Piszczatowski, G.  Lach, M. Przybytek, B. Jeziorski,
 #        and K. Pachucki, J. Chem. Theory and Comput. 7, 3105 (2011).
 #

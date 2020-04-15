@@ -1,5 +1,5 @@
 <Logger T_determination.py (INFO)>
-2020-04-15 17:29:12
+2020-04-15 21:04:12
 
 
 ------------ Run log ------------
@@ -10,18 +10,18 @@
 	 Initial : T = 300.00000000 
 
 
-	  final_simplex: (array([[293.03737342],
-       [293.03737342]]), array([0.16707062, 0.16707062]))
-           fun: 0.16707062350399768
+	  final_simplex: (array([[292.75385936],
+       [292.75385935]]), array([0.16299443, 0.16299443]))
+           fun: 0.1629944264541413
        message: 'Optimization terminated successfully.'
-          nfev: 77
-           nit: 35
+          nfev: 80
+           nit: 37
         status: 0
        success: True
-             x: array([293.03737342])
+             x: array([292.75385936])
 
 
- Optimized result : T = 293.03737342 
+ Optimized result : T = 292.75385936 
 
  *******************************************
 
@@ -30,18 +30,18 @@
 	 Initial : T = 300.00000000 
 
 
-	  final_simplex: (array([[294.59326694],
-       [294.59326694]]), array([0.03943995, 0.03943995]))
-           fun: 0.03943994596138832
+	  final_simplex: (array([[294.66114063],
+       [294.66114063]]), array([0.04001833, 0.04001833]))
+           fun: 0.04001832582120773
        message: 'Optimization terminated successfully.'
-          nfev: 73
-           nit: 35
+          nfev: 79
+           nit: 36
         status: 0
        success: True
-             x: array([294.59326694])
+             x: array([294.66114063])
 
 
- Optimized result : T = 294.59326694 
+ Optimized result : T = 294.66114063 
 
  *******************************************
 
@@ -50,17 +50,17 @@
 	 Initial : T = 300.00000000 
 
 
-	  final_simplex: (array([[317.50447953],
-       [317.50447953]]), array([0.02694923, 0.02694923]))
-           fun: 0.026949233222111645
+	  final_simplex: (array([[318.28827119],
+       [318.28827119]]), array([0.02545749, 0.02545749]))
+           fun: 0.02545748839673147
        message: 'Optimization terminated successfully.'
-          nfev: 72
+          nfev: 74
            nit: 35
         status: 0
        success: True
-             x: array([317.50447953])
+             x: array([318.28827119])
 
 
- Optimized result : T = 317.50447953 
+ Optimized result : T = 318.28827119 
 
  *******************************************
