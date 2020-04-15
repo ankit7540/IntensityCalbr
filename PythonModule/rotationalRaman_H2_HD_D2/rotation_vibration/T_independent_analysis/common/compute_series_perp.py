@@ -5,7 +5,7 @@
 import math
 import numpy as np
 
-#import utils
+# FOR PERPENDICULAR POLARIZATION 
 
 # Constants ------------------------------
 K = np.float64(1.38064852e-23) # J/K
@@ -80,7 +80,7 @@ def sumofstate_H2(T):
     Q = np.float64(0.0)
 
     # --- nuclear spin statistics ------------
-    g_even = 1 	# hydrogen nuclei
+    g_even = 1 	# hydrogen molecule
     g_odd = 3
     # ---------------------------------------
 
@@ -172,7 +172,7 @@ def sumofstate_D2(T):
     Q = np.float64(0.0)
 
     # --- nuclear spin statistics ------------
-    g_even = 6        # deuterium nuclei
+    g_even = 6        # deuterium molecule
     g_odd = 3
     # ----------------------------------------
 
@@ -303,14 +303,12 @@ def HD_Q1(T, JMax, sos):
     return specHD
 # *****************************************************************************
 
-def spectra_HD(T, OJ, QJ, SJ):
+def spectra_HD(T, OJ, QJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of HD
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
      """
-
-    sos = sumofstate_HD(T)
 
     # call individual functions ------------------------
     O1 = HD_O1(T, OJ, sos)
@@ -322,13 +320,11 @@ def spectra_HD(T, OJ, QJ, SJ):
     # --------------------------------------------------
 # *****************************************************************************
 
-def spectra_HD_o1s1(T, OJ, SJ):
+def spectra_HD_o1s1(T, OJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of HD
         where OJ = max J state for O(v = 1) bands
               SJ = max J state for S(v = 1) bands
      """
-
-    sos = sumofstate_HD(T)
 
     # call individual functions ------------------------
     O1 = HD_O1(T, OJ, sos)
@@ -347,7 +343,10 @@ def D2_S1(T, JMax, sos):
     '''compute the intensity for D2, S1 bands upto given JMax and T '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------    
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
@@ -360,7 +359,10 @@ def D2_S1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(1/10)*(gamma**2)/sos
-
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd       
         specD2[i][0] = i
         specD2[i][1] = position
         specD2[i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -371,10 +373,14 @@ def D2_S1(T, JMax, sos):
 # *****************************************************************************
 
 def D2_O1(T, JMax, sos):
-    '''compute the intensity for D2, O1 bands upto given JMax and sum of state '''
+    '''compute the intensity for D2, O1 bands upto 
+    given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------     
     # O1 bands ----------------------------------
 
     for i in range(JMax, 1, -1):
@@ -387,7 +393,10 @@ def D2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(1/10)*(gamma**2)/sos
-
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -401,7 +410,10 @@ def D2_Q1(T, JMax, sos):
     '''compute the intensity for D2, Q1 bands upto given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
@@ -414,7 +426,10 @@ def D2_Q1(T, JMax, sos):
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(1/15)*(gamma**2)+ alpha**2)
-
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -424,18 +439,12 @@ def D2_Q1(T, JMax, sos):
 # *****************************************************************************
 
 
-def spectra_D2(T, OJ, QJ, SJ):
+def spectra_D2(T, OJ, QJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of D2
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
-
-    sos = sumofstate_D2(T)
-
     # call individual functions ------------------------
 
     O1 = D2_O1(T, OJ, sos)
@@ -449,17 +458,12 @@ def spectra_D2(T, OJ, QJ, SJ):
 # *****************************************************************************
 
 
-def spectra_D2_o1s1(T, OJ, SJ):
+def spectra_D2_o1s1(T, OJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of D2
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
-
-    sos = sumofstate_D2(T)
 
     # call individual functions ------------------------
 
@@ -479,7 +483,10 @@ def H2_S1(T, JMax, sos):
     '''compute the intensity for H2, S1 bands upto given JMax and T '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJH2v0[i]
@@ -492,7 +499,10 @@ def H2_S1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(1/10)*(gamma**2)/sos
-
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd
         specH2[i][0] = i
         specH2[i][1] = position
         specH2[i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -503,10 +513,14 @@ def H2_S1(T, JMax, sos):
 # *****************************************************************************
 
 def H2_O1(T, JMax, sos):
-    '''compute the intensity for HD O1 bands upto given JMax and sum of state '''
+    '''compute the intensity for HD O1 bands upto given
+     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax-1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------
     # O1 bands ----------------------------------
 
     for i in range(JMax, 1, -1):
@@ -519,6 +533,10 @@ def H2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(1/10)*(gamma**2)/sos
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd            
 
         #print(JMax-i)
 
@@ -532,10 +550,14 @@ def H2_O1(T, JMax, sos):
 
 
 def H2_Q1(T, JMax, sos):
-    '''compute the intensity for H2 Q-branch upto given JMax and sum of state '''
+    '''compute the intensity for H2 Q-branch upto given
+     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
-
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
         E = eJH2v0[i]
@@ -548,6 +570,10 @@ def H2_Q1(T, JMax, sos):
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(1/15)*(gamma**2)+ alpha**2)
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd                
 
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
@@ -559,19 +585,13 @@ def H2_Q1(T, JMax, sos):
 # *****************************************************************************
 # *****************************************************************************
 
-#@utils.MeasureTime
-def spectra_H2(T, OJ, QJ, SJ):
+
+def spectra_H2(T, OJ, QJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of H2
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
-
-    sos = sumofstate_D2(T)
-
     # call individual functions ------------------------
 
     O1 = H2_O1(T, OJ, sos)
@@ -585,22 +605,15 @@ def spectra_H2(T, OJ, QJ, SJ):
 # *****************************************************************************
 # *****************************************************************************
 
-#@utils.MeasureTime
-def spectra_H2_c(T, OJ, QJ):
+
+def spectra_H2_c(T, OJ, QJ, sos):
     """Compute in intensities and position for rotational Raman bands of H2
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
               This does not include S1 bands, specific for the spectral
               range where no S1 bands observed.
-
      """
-
-    sos = sumofstate_D2(T)
-
     # call individual functions ------------------------
 
     O1 = H2_O1(T, OJ, sos)

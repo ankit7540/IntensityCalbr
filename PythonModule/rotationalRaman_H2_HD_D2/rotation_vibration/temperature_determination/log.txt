@@ -1,6 +1,66 @@
 <Logger T_determination.py (INFO)>
-2020-04-14 18:43:27
+2020-04-15 13:21:10
 
 
 ------------ Run log ------------
 
+
+ *******  Optimization run : D2  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[332.98224986],
+       [332.98224986]]), array([1.02080108, 1.02080108]))
+           fun: 1.0208010837901136
+       message: 'Optimization terminated successfully.'
+          nfev: 79
+           nit: 36
+        status: 0
+       success: True
+             x: array([332.98224986])
+
+
+ Optimized result : T = 332.98224986 
+
+ *******************************************
+
+ *******  Optimization run : HD  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[294.59326694],
+       [294.59326694]]), array([0.00394399, 0.00394399]))
+           fun: 0.003943994596138832
+       message: 'Optimization terminated successfully.'
+          nfev: 73
+           nit: 35
+        status: 0
+       success: True
+             x: array([294.59326694])
+
+
+ Optimized result : T = 294.59326694 
+
+ *******************************************
+
+ *******  Optimization run : H2  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[345.24293482],
+       [345.24293482]]), array([2.09851343, 2.09851343]))
+           fun: 2.098513433919842
+       message: 'Optimization terminated successfully.'
+          nfev: 81
+           nit: 37
+        status: 0
+       success: True
+             x: array([345.24293482])
+
+
+ Optimized result : T = 345.24293482 
+
+ *******************************************

@@ -5,7 +5,7 @@
 import math
 import numpy as np
 
-#import utils
+# FOR PARALLEL POLARIZATION 
 
 # Constants ------------------------------
 K = np.float64(1.38064852e-23) # J/K
@@ -80,7 +80,7 @@ def sumofstate_H2(T):
     Q = np.float64(0.0)
 
     # --- nuclear spin statistics ------------
-    g_even = 1 	# hydrogen nuclei
+    g_even = 1 	# hydrogen molecule
     g_odd = 3
     # ---------------------------------------
 
@@ -172,7 +172,7 @@ def sumofstate_D2(T):
     Q = np.float64(0.0)
 
     # --- nuclear spin statistics ------------
-    g_even = 6        # deuterium nuclei
+    g_even = 6        # deuterium molecule
     g_odd = 3
     # ----------------------------------------
 
@@ -344,6 +344,11 @@ def D2_S1(T, JMax, sos):
 
     specD2 = np.zeros(shape=(JMax+1, 4))
 
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------    
+
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
@@ -356,6 +361,12 @@ def D2_S1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(2/15)*(gamma**2)/sos
+
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd            
+            
 
         specD2[i][0] = i
         specD2[i][1] = position
@@ -371,6 +382,11 @@ def D2_O1(T, JMax, sos):
     given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
+    
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------      
 
     # O1 bands ----------------------------------
 
@@ -384,6 +400,11 @@ def D2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(2/15)*(gamma**2)/sos
+            
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd                   
 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -399,6 +420,11 @@ def D2_Q1(T, JMax, sos):
     and sum of state '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
+    
+    # --- nuclear spin statistics ------------
+    g_even = 6        # deuterium molecule
+    g_odd = 3
+    # ----------------------------------------      
 
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
@@ -412,6 +438,12 @@ def D2_Q1(T, JMax, sos):
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(4/45)*(gamma**2)+ alpha**2)
+                
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd  
+                
 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -427,9 +459,6 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
     # call individual functions ------------------------
 
@@ -449,9 +478,6 @@ def spectra_D2_o1s1(T, OJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
 
     # call individual functions ------------------------
@@ -473,6 +499,11 @@ def H2_S1(T, JMax, sos):
 
     specH2 = np.zeros(shape=(JMax+1, 4))
 
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------    
+
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJH2v0[i]
@@ -485,6 +516,11 @@ def H2_S1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(2/15)*(gamma**2)/sos
+
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd            
 
         specH2[i][0] = i
         specH2[i][1] = position
@@ -500,6 +536,11 @@ def H2_O1(T, JMax, sos):
     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax-1, 4))
+    
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------       
 
     # O1 bands ----------------------------------
 
@@ -513,6 +554,11 @@ def H2_O1(T, JMax, sos):
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
             *(2/15)*(gamma**2)/sos
+            
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd              
 
         #print(JMax-i)
 
@@ -530,6 +576,11 @@ def H2_Q1(T, JMax, sos):
     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
+    
+    # --- nuclear spin statistics ------------
+    g_even = 1 	# hydrogen molecule
+    g_odd = 3
+    # ---------------------------------------      
 
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
@@ -543,6 +594,11 @@ def H2_Q1(T, JMax, sos):
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(4/45)*(gamma**2)+ alpha**2)
+
+        if i % 2 == 0:
+            factor = factor*g_even
+        else:
+            factor = factor*g_odd                   
 
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
@@ -560,9 +616,6 @@ def spectra_H2(T, OJ, QJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
-
      """
     # call individual functions ------------------------
 
@@ -583,8 +636,6 @@ def spectra_H2_c(T, OJ, QJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
-              reverse = 0 or 1, will reverse the output
 
               This does not include S1 bands, specific for the spectral
               range where no S1 bands observed.

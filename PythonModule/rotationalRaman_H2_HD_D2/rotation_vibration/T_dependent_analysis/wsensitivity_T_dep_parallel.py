@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# pylint: disable=wildcard-import, method-hidden,C0103,E265,E303,R0914,W0621,W503
+# pylint: disable=method-hidden,C0103,E265,E303,R0914,W0621,W503,E305
 
 """Module describing the weighted non-linear optimization scheme used to
 determine the wavelength sensitivity of the spectrometer using a  polynomial
@@ -150,6 +150,8 @@ def run_all_fit():
 
 # Constants ------------------------------
 # these are used for scaling the coefs
+
+
 scale1 = 1e3
 scale2 = 1e6
 scale3 = 1e9
@@ -354,9 +356,16 @@ def residual_linear(param):
 
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+                                                   QJ_H2, sosH2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -400,7 +409,7 @@ def residual_linear(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
 
     return(E)
@@ -419,9 +428,16 @@ def residual_quadratic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+                                                   QJ_H2, sosH2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -465,8 +481,8 @@ def residual_quadratic(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) \
-    + np.sum(np.abs(eH2))
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
 
     return(E)
 
@@ -483,10 +499,17 @@ def residual_cubic(param):
 
     '''
     TK = param[0]
+    
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosH2 = compute_series_para.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+                                                   QJ_H2, sosH2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -530,7 +553,7 @@ def residual_cubic(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
 
     return(E)
@@ -549,9 +572,16 @@ def residual_quartic(param):
     '''
     TK = param[0]
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2)
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+                                                   QJ_H2, sosH2)
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
@@ -595,7 +625,7 @@ def residual_quartic(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
 
     return(E)
@@ -795,8 +825,6 @@ def run_fit_quartic ( init_T, init_k1, init_k2, init_k3, init_k4 ):
 # ***************************************************************
 
 
-# ------------------------------------------------
-
 wMat_D2 = 1
 wMat_HD = 1
 wMat_H2 = 1
@@ -804,10 +832,17 @@ wMat_H2 = 1
 # checks for input done here
 
 # generate calculated data for the entered J values
+TK = 299
+sosD2 = compute_series_para.sumofstate_D2(TK)
+sosHD = compute_series_para.sumofstate_HD(TK)    
+sosH2 = compute_series_para.sumofstate_H2(TK)
 
-computed_D2 = compute_series_para.spectra_D2(299, OJ_D2, QJ_D2, SJ_D2)
-computed_HD = compute_series_para.spectra_HD(299, OJ_HD, QJ_HD, SJ_HD)
-computed_H2 = compute_series_para.spectra_H2_c(299, OJ_H2, QJ_H2)
+computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+                                                   QJ_H2, sosH2)
 
 # checks for dimension match done here
 if (computed_D2.shape[0] != dataD2.shape[0]):
@@ -827,6 +862,7 @@ if (computed_H2.shape[0] != dataH2.shape[0]):
 
 # ------------------------------------------------
 # *******************************************************************
+
 
 def plot_curves(residual_array="None"):
     '''
@@ -951,5 +987,5 @@ resd_quar = residual_quartic(param_quartic)
 print('Value of residuals with default coefs are')
 print('\t linear \t:', resd_lin)
 print('\t quadratic \t:', resd_quad)
-print('\t cubic \t:', resd_cubic)
+print('\t cubic  \t:', resd_cubic)
 print('\t quartic \t:', resd_quar)

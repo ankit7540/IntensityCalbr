@@ -133,7 +133,7 @@ def run_all_fit():
     run_fit_cubic( -0.536, -0.3192, 0.015)
     resd_3 = run_fit_cubic( -0.5440, -0.355, +0.00215)
 
-    resd_4 = run_fit_quartic( -0.5445, -0.315, 0.05, +0.02)
+    resd_4 = run_fit_quartic( -0.485, -0.38, 0.195, +0.02)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4])
     return out

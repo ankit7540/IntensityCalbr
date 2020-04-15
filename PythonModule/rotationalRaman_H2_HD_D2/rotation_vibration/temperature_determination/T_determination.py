@@ -52,9 +52,9 @@ xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
 
 # Q(J) band intensities --------------------------------
 
-dataD2Q = np.loadtxt("./run_parallel/BA_D2_q1.txt")
-dataHDQ = np.loadtxt("./run_parallel/BA_HD_q1.txt")
-dataH2Q = np.loadtxt("./run_parallel/BA_H2_q1.txt")
+dataD2Q = np.loadtxt("./run_parallel_afterC2/BA_D2_q1.txt")
+dataHDQ = np.loadtxt("./run_parallel_afterC2/BA_HD_q1.txt")
+dataH2Q = np.loadtxt("./run_parallel_afterC2/BA_H2_q1.txt")
 
 # ------------------------------------------------------
 # PARALLEL POLARIZATION
@@ -258,7 +258,7 @@ def residual_Q_D2(param):
     # return the residual
     E=np.sum(np.square(diffD2))
 
-    return E/1e2
+    return E/1e1
 
 # *******************************************************************
 
@@ -300,7 +300,7 @@ def residual_Q_HD(param):
 
     # return the residual
     E=np.sum(np.square(diffHD))
-    return E/1e2
+    return E/1e1
 
 # *******************************************************************   
 
@@ -342,7 +342,7 @@ def residual_Q_H2(param):
 
     # return the residual
     E=np.sum(np.square(diffH2))
-    return E/1e2
+    return E/1e1
 
 # *******************************************************************    
 # *******************************************************************
