@@ -131,9 +131,9 @@ def run_all_fit():
     resd_2 = run_fit_quadratic( -0.5435, -0.352)
 
     run_fit_cubic( -0.536, -0.3192, 0.015)
-    resd_3 = run_fit_cubic( -0.5440, -0.355, +0.00215)
+    resd_3 = run_fit_cubic( -0.4840, -0.355, +0.0205)
 
-    resd_4 = run_fit_quartic( -0.485, -0.38, 0.195, +0.02)
+    resd_4 = run_fit_quartic( -0.483, -0.38, 0.195, +0.02)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4])
     return out
@@ -447,8 +447,11 @@ def residual_linear(param):
     #np.savetxt("error_test", errD2, fmt='%3.3f')
 
     # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eD2 = I_D2 - sD2
+    eHD = I_HD - sHD
+
+    eD2 = np.multiply(wMat_D2, eD2)
+    eHD = np.multiply(wMat_HD, eHD)
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
@@ -509,8 +512,11 @@ def residual_quadratic(param):
     sHD = gen_s_quadratic(computed_HD, param)
 
     # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eD2 = I_D2 - sD2
+    eHD = I_HD - sHD
+
+    eD2 = np.multiply(wMat_D2, eD2)
+    eHD = np.multiply(wMat_HD, eHD)
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
@@ -569,8 +575,11 @@ def residual_cubic(param):
     sHD = gen_s_cubic(computed_HD, param)
 
     # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eD2 = I_D2 - sD2
+    eHD = I_HD - sHD
+
+    eD2 = np.multiply(wMat_D2, eD2)
+    eHD = np.multiply(wMat_HD, eHD)
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
@@ -626,14 +635,16 @@ def residual_quartic(param):
     sHD = gen_s_quartic(computed_HD, param)
 
     # residual matrix
-    eD2 = (np.multiply(wMat_D2, I_D2)) - sD2
-    eHD = (np.multiply(wMat_HD, I_HD)) - sHD
+    eD2 = I_D2 - sD2
+    eHD = I_HD - sHD
+
+    eD2 = np.multiply(wMat_D2, eD2)
+    eHD = np.multiply(wMat_HD, eHD)
 
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
 
 
-    
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
@@ -987,7 +998,7 @@ resd_quar = residual_quartic(param_quartic)
 print('Value of residuals with default coefs are')
 print('\t linear \t:', resd_lin)
 print('\t quadratic \t:', resd_quad)
-print('\t cubic \t:', resd_cubic)
+print('\t cubic  \t:', resd_cubic)
 print('\t quartic \t:', resd_quar)
 # ********************************************************************
 

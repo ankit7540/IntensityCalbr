@@ -258,7 +258,7 @@ def residual_Q_D2(param):
     # return the residual
     E=np.sum(np.square(diffD2))
 
-    return E/1e1
+    return E
 
 # *******************************************************************
 
@@ -300,7 +300,7 @@ def residual_Q_HD(param):
 
     # return the residual
     E=np.sum(np.square(diffHD))
-    return E/1e1
+    return E
 
 # *******************************************************************   
 
@@ -326,7 +326,6 @@ def residual_Q_H2(param):
     errorP = errH2_output
     #errorP = 1/(np.divide( errH2_output, expt_H2))
     
-    
     calc_H2 = clean_mat(trueR_H2)
     expt_H2 = clean_mat(expt_H2)
     errorP = clean_mat(errorP)
@@ -342,7 +341,7 @@ def residual_Q_H2(param):
 
     # return the residual
     E=np.sum(np.square(diffH2))
-    return E/1e1
+    return E
 
 # *******************************************************************    
 # *******************************************************************
