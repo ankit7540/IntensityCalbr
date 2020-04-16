@@ -136,9 +136,9 @@ def run_all_fit():
     run_fit_cubic(299, -1.036, -0.2192, 0.0025)
     resd_3 = run_fit_cubic(299, -0.90, 0.055, +0.00215)
 
-    resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
+    #resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
 
-    out = np.array([resd_1, resd_2, resd_3, resd_4])
+    out = np.array([resd_1, resd_2, resd_3 ])
     return out
 
 # *******************************************************************
@@ -827,7 +827,7 @@ def plot_curves(residual_array="None"):
     correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
     correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
     correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
-    correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+    #correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
 
     # ---------------------------------------------------------------------
 
@@ -845,7 +845,7 @@ def plot_curves(residual_array="None"):
     plt.plot(xaxis, correction_line, 'r', linewidth=3, label='line_fit')
     plt.plot(xaxis, correction_quad, 'g', linewidth=4.2, label='quad_fit')
     plt.plot(xaxis, correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
-    plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+    #plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
 
     plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
     plt.ylabel('Relative sensitivity', fontsize=20)
@@ -872,7 +872,7 @@ def plot_curves(residual_array="None"):
             # -----------------------------------------------------
             # FIGURE 1 INITIALIZED
 
-            xv = np.arange(1, 5, 1)
+            xv = np.arange(1, 4, 1)
             plt.figure(1)
             ax1 = plt.axes()
             plt.title('Residuals', fontsize=21)

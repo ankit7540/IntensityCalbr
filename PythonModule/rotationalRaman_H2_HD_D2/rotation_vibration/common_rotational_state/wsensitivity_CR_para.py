@@ -108,7 +108,7 @@ param_quartic[3] = -0.000001
 #    Returns : np array of residuals, with 4 elements
 
 
-# plot_curves(residual_array="None")
+ # plot_curves(residual_array="None")
 #   Plotting the curves (from fit)
 #   and plot the residuals over the number of unknown variables
 #   np array of residuals to be passed for plot of residuals

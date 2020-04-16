@@ -52,10 +52,12 @@ xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
 
 # Q(J) band intensities --------------------------------
 
-dataD2Q = np.loadtxt("./run_parallel_afterC2/BA_D2_q1.txt")
-dataHDQ = np.loadtxt("./run_parallel_afterC2/BA_HD_q1.txt")
-dataH2Q = np.loadtxt("./run_parallel_afterC2/BA_H2_q1.txt")
+dataD2Q = np.loadtxt("./run_parallel/BA_D2_q1.txt")
+dataHDQ = np.loadtxt("./run_parallel/BA_HD_q1.txt")
+dataH2Q = np.loadtxt("./run_parallel/BA_H2_q1.txt")
 
+
+dataD2OS = np.loadtxt("./run_parallel/BA_D2_O_2_S_0.txt")
 # ------------------------------------------------------
 # PARALLEL POLARIZATION
 
@@ -110,7 +112,7 @@ temp_init[0] = 298
 #   np array of residuals to be passed for plot of residuals
 
 # ------------------------------------------------------
-def run_all_fit():
+def run_fit():
     '''
     Runs the fitting up to quartic polynomial
     Returns : np array of residuals, with 4 elements
@@ -124,6 +126,7 @@ def run_all_fit():
 #                COMMON FUNCTIONS
 # ------------------------------------------------
 # *******************************************************************
+
 
 def gen_intensity_mat(arr, index):
     """To obtain the intensity matrix for the numerator or denominator\
@@ -180,8 +183,10 @@ def inverse_square(array):
     """return the inverse square of array, for all elements"""
     return 1 / (array**2)
 
+# ------------------------------------------------
 
-def inverse (array):
+
+def inverse(array):
     """return the inverse square of array, for all elements"""
     return 1 / (array)
 
@@ -202,7 +207,7 @@ def residual_Q_D2(param):
 
     TK = param
     sosD2 = compute_series_para.sumofstate_D2(TK)
-    QJ_D2=4  # max J value of analyzed Q-bands
+    QJ_D2 = 2  # max J value of analyzed Q-bands
     computed_D2 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
 
     # ------ D2 ------
@@ -247,7 +252,7 @@ def residual_Q_HD(param):
     '''
     TK = param
     sosHD = compute_series_para.sumofstate_HD(TK)
-    QJ_HD=3
+    QJ_HD = 3
     computed_HD = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
 
     # ------ HD ------
@@ -256,8 +261,7 @@ def residual_Q_HD(param):
 
     errHD_output = gen_weight(dataHDQ)
     errorP = errHD_output
-    #errorP = 1/(np.divide( errHD_output, expt_HD))
-
+    # errorP = 1/(np.divide( errHD_output, expt_HD))
 
     calc_HD = clean_mat(trueR_HD)
     expt_HD = clean_mat(expt_HD)
@@ -267,13 +271,13 @@ def residual_Q_HD(param):
     diffHD = expt_HD - calc_HD
 
     # scale by weights
-    #diffHD = (np.multiply(errorP , diffHD))
+    # diffHD = (np.multiply(errorP , diffHD))
 
     # remove redundant terms
     diffHD = clean_mat(diffHD)
 
     # return the residual
-    E=np.sum(np.square(diffHD))
+    E = np.sum(np.square(diffHD))
     return E
 
 # *******************************************************************
@@ -314,8 +318,45 @@ def residual_Q_H2(param):
     diffH2 = clean_mat(diffH2)
 
     # return the residual
-    E=np.sum(np.square(diffH2))
+    E = np.sum(np.square(diffH2))
     return E
+
+
+# *******************************************************************
+
+
+def residual_O2S0_D2(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt with the corresponding calculated ratios. The calculated
+    ratios are computed for given T.
+
+    Param : T
+
+    '''
+
+    TK = param
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    O1 = compute_series_para.D2_O1(TK, 2, sosD2)
+    S1 = compute_series_para.D2_S1(TK, 0, sosD2)
+    
+    #print(O1,"\n",S1)
+    
+    O1calc = O1[0][2]
+    S1calc = S1[0][2]
+
+    r_calc = (O1calc/ S1calc)
+    
+    r_expt = (dataD2OS[0]/dataD2OS[1])
+    #print(r_calc, r_expt)
+
+    diff = r_expt - r_calc
+
+    return diff**2
+
+
+
+
+# *******************************************************************
 
 # *******************************************************************
 # *******************************************************************
@@ -419,6 +460,41 @@ def run_fit_H2(init_T ):
 
     # save log -----------
     log.info('\n *******  Optimization run : H2  *******')
+    log.info('\n\t Initial : T = %4.8f \n', init_T  )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : T = %4.8f \n', optT  )
+    log.info(' *******************************************')
+    return res.fun
+    # --------------------
+
+# *******************************************************************
+
+
+def run_fit_D2_O2S0(init_T ):
+    '''Function performing the actual fit using the residual_linear function
+    defined earlier '''
+
+    # init_k1 : Intial guess
+
+    param_init = np.array([ init_T  ])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0},   output = {1}".format(init_T, \
+          (residual_O2S0_D2(param_init))))
+
+
+    print("\nOptimization run: D2, O2S0     \n")
+    res = opt.minimize(residual_O2S0_D2, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9})
+
+    print(res)
+    optT = res.x[0]
+
+    print("\nOptimized result : T={0}  \n".format(round(optT, 6)))
+    print("**********************************************************")
+
+    # save log -----------
+    log.info('\n *******  Optimization run : D2, o2s0  *******')
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
