@@ -5,16 +5,16 @@
 import math
 import numpy as np
 
-# FOR PARALLEL POLARIZATION 
+# FOR PARALLEL POLARIZATION
 
 # Constants ------------------------------
-K = np.float64(1.38064852e-23) # J/K
+K = np.float64(1.38064852e-23)   # J/K
 H = np.float64(6.626070040e-34)  # J.s
 C = np.float64(2.99792458e+10)   # cm/s
 # ----------------------------------------
 
 # Laser properties------------------------
-omega = 18789.9850    #absolute cm-1
+omega = 18789.9850    # absolute cm-1
 omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
 # ----------------------------------------
 
@@ -93,10 +93,10 @@ def sumofstate_H2(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
     # contribution from the first vibrational state
     for i in range(0, jmaxv1):
@@ -104,16 +104,16 @@ def sumofstate_H2(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
 #   return the sum of states for H2
     return Q
 
-#********************************************************************
-#********************************************************************
+# ********************************************************************
+# ********************************************************************
 
 # compute the temperature dependent sum of state for HD which includes
 #  contributions from the ground and first vibrational state of electronic
@@ -139,10 +139,10 @@ def sumofstate_HD(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
     # contribution from the first vibrational state
     for i in range(0, jmaxv1):
@@ -150,10 +150,10 @@ def sumofstate_HD(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
 #   return the sum of states for HD
     return Q
@@ -185,10 +185,10 @@ def sumofstate_D2(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
     # contribution from the first vibrational state
     for i in range(0, jmaxv1):
@@ -196,10 +196,10 @@ def sumofstate_D2(T):
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd
-        Q = Q+factor
+            factor = factor * g_odd
+        Q = Q + factor
 
 #   return the sum of states for D2
     return Q
@@ -234,16 +234,17 @@ def HD_S1(T, JMax, sos):
         #print(i, E, popn, position ,gamma)
 
         factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+            *(2 / 15) * (gamma**2)/sos
 
         specHD[i][0] = i
         specHD[i][1] = position
         specHD[i][2] = factor  # unnormalized intensity, arbitrary unit
-        specHD[i][3] = omega-position
+        specHD[i][3] = omega - position
 
     return specHD
 
 # *****************************************************************************
+
 
 def HD_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given JMax and T
@@ -290,7 +291,7 @@ def HD_Q1(T, JMax, sos):
         position = (eJHDv1[i]-eJHDv0[i])
         alpha = ME_alpha_HD_532_Q1[i][4]
         gamma = ME_gamma_HD_532_Q1[i][4]
-        #print(i, E, popn, position, alpha, gamma)
+        print(i, E, popn, position, alpha, gamma)
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(4/45)*(gamma**2)+ alpha**2)
@@ -347,7 +348,7 @@ def D2_S1(T, JMax, sos):
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
-    # ----------------------------------------    
+    # ----------------------------------------
 
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
@@ -382,11 +383,11 @@ def D2_O1(T, JMax, sos):
     given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
-    
+
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
-    # ----------------------------------------      
+    # ----------------------------------------
 
     # O1 bands ----------------------------------
 
@@ -409,7 +410,7 @@ def D2_O1(T, JMax, sos):
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specD2[JMax-i][3] = omega-position
+        specD2[JMax-i][3] = omega - position
 
     return specD2
 # *****************************************************************************
@@ -424,7 +425,7 @@ def D2_Q1(T, JMax, sos):
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
-    # ----------------------------------------      
+    # ----------------------------------------
 
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
@@ -444,11 +445,10 @@ def D2_Q1(T, JMax, sos):
         else:
             factor = factor*g_odd  
                 
-
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specD2[JMax-i][3] = (omega-position)
+        specD2[JMax-i][3] = (omega - position)
 
     return specD2
 # *****************************************************************************
@@ -469,7 +469,6 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
     out = np.concatenate((O1, Q1, S1))
     return out
     # --------------------------------------------------
-
 # *****************************************************************************
 
 
@@ -502,7 +501,7 @@ def H2_S1(T, JMax, sos):
     # --- nuclear spin statistics ------------
     g_even = 1 	# hydrogen molecule
     g_odd = 3
-    # ---------------------------------------    
+    # ---------------------------------------
 
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
@@ -525,7 +524,7 @@ def H2_S1(T, JMax, sos):
         specH2[i][0] = i
         specH2[i][1] = position
         specH2[i][2] = factor  # unnormalized intensity, arbitrary unit
-        specH2[i][3] = omega-position
+        specH2[i][3] = omega - position
 
     return specH2
 
@@ -536,11 +535,11 @@ def H2_O1(T, JMax, sos):
     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax-1, 4))
-    
+
     # --- nuclear spin statistics ------------
     g_even = 1 	# hydrogen molecule
     g_odd = 3
-    # ---------------------------------------       
+    # ---------------------------------------
 
     # O1 bands ----------------------------------
 
@@ -565,7 +564,7 @@ def H2_O1(T, JMax, sos):
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
         specH2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specH2[JMax-i][3] = omega-position
+        specH2[JMax-i][3] = omega - position
 
     return specH2
 # *****************************************************************************
@@ -588,7 +587,7 @@ def H2_Q1(T, JMax, sos):
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
         bj = (i*(i+1))/((2*i-1)*(2*i+3))
-        position = (eJH2v1[i]-eJH2v0[i])
+        position = (eJH2v1[i] - eJH2v0[i])
         alpha = ME_alpha_H2_532_Q1[i][4]
         gamma = ME_gamma_H2_532_Q1[i][4]
 
