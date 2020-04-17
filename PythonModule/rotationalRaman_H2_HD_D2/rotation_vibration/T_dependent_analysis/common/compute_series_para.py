@@ -291,7 +291,7 @@ def HD_Q1(T, JMax, sos):
         position = (eJHDv1[i]-eJHDv0[i])
         alpha = ME_alpha_HD_532_Q1[i][4]
         gamma = ME_gamma_HD_532_Q1[i][4]
-        print(i, E, popn, position, alpha, gamma)
+        # print(i, E, popn, position, alpha, gamma)
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
                 (bj*(4/45)*(gamma**2)+ alpha**2)

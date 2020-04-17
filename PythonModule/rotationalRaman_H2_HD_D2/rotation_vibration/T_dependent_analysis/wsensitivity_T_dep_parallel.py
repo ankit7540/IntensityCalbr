@@ -16,6 +16,8 @@ import numpy as np
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 from common import compute_series_para
+
+from common import utils
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
@@ -89,12 +91,25 @@ param_cubic[1] = -0.9340
 param_cubic[2] = -0.2140
 param_cubic[3] = -0.00100
 
+# ----------------------------
+
 param_quartic = np.zeros((5))
 param_quartic[0] = 298
 param_quartic[1] = -0.9340
 param_quartic[2] = -0.2140
 param_quartic[3] = -0.00100
 param_quartic[4] = -0.000001
+
+# ----------------------------
+
+param_quintuple = np.zeros((6))
+param_quintuple[0] = 298
+param_quintuple[1] = -0.9340
+param_quintuple[2] = -0.2140
+param_quintuple[3] = -0.00100
+param_quintuple[4] = -0.000001
+param_quintuple[5] = -0.000001
+
 
 # initial run will be with above parameters
 # ------------------------------------------------
@@ -116,6 +131,12 @@ param_quartic[4] = -0.000001
 #   and plot the residuals over the number of unknown variables
 #   np array of residuals to be passed for plot of residuals
 
+# Example :
+#    resd = run_all_fit()
+#    plot_curves(resd)
+#
+#    resd = run_all_fit() ; plot_curves(resd) ;
+#
 # ------------------------------------------------------
 def run_all_fit():
     '''
@@ -126,6 +147,7 @@ def run_all_fit():
     resd_2 = 0
     resd_3 = 0
     resd_4 = 0
+    resd_5 = 0
 
     run_fit_linear(299, 1.04586)
     resd_1 = run_fit_linear(299, -1.04586)
@@ -134,11 +156,12 @@ def run_all_fit():
     resd_2 = run_fit_quadratic(299, 0.835, -0.052)
 
     run_fit_cubic(299, -1.036, -0.2192, 0.0025)
-    resd_3 = run_fit_cubic(299, -0.90, 0.055, +0.00215)
+    resd_3 = run_fit_cubic(299, -0.559, -0.215, +0.00215)
 
-    #resd_4 = run_fit_quartic(299, -0.925, -0.0715, 0.05, +0.02)
+    resd_4 = run_fit_quartic(299, -0.5566, -0.158, 0.05, +0.0012)
+    resd_5 = run_fit_quintuple(296, -0.5566, -0.158, 0.05, +0.0012, +0.0001)
 
-    out = np.array([resd_1, resd_2, resd_3 ])
+    out = np.array([resd_1, resd_2, resd_3, resd_4, resd_5])
     return out
 
 # *******************************************************************
@@ -156,6 +179,7 @@ scale1 = 1e3
 scale2 = 1e6
 scale3 = 1e9
 scale4 = 1e12
+scale5 = 1e14
 # ----------------------------------------
 scenter = 3316.3  # center of the spectra
 # used to scale the xaxis
@@ -247,12 +271,14 @@ def gen_s_linear(computed_data, param):
             # param[0] = temperature
             # param[1] = c1
 
-            mat[i, j] = (1 + (param[1] / scale1) * v1)/ \
+            mat[i, j] = (1 + (param[1] / scale1) * v1) / \
                 (1 + (param[1] / scale1) * v2)
 
     return mat
 
 # ------------------------------------------------
+
+
 def gen_s_quadratic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as a quadratic polynomial. Elements are
@@ -276,6 +302,8 @@ def gen_s_quadratic(computed_data, param):
     return mat
 
 # ------------------------------------------------
+
+
 def gen_s_cubic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as a cubic polynomial. Elements are
@@ -301,6 +329,8 @@ def gen_s_cubic(computed_data, param):
     return mat
 
 # ------------------------------------------------
+
+
 def gen_s_quartic(computed_data, param):
     """Generate the sensitivity matrix assuming the wavelength
     dependent sensitivity as quartic polynomial. Elements are
@@ -323,6 +353,35 @@ def gen_s_quartic(computed_data, param):
                        (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4)/ \
                 (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
                  + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4)
+
+    return mat
+# ------------------------------------------------
+
+
+def gen_s_quintuple(computed_data, param):
+    """Generate the sensitivity matrix assuming the wavelength
+    dependent sensitivity as quartic polynomial. Elements are
+    the ratio of sensitivity at two wavenumber/wavelength points"""
+
+    mat = np.zeros((computed_data.shape[0], computed_data.shape[0]))
+
+    for i in range(computed_data.shape[0]):
+        for j in range(computed_data.shape[0]):
+            v1 = computed_data[i, 1] - scenter
+            v2 = computed_data[j, 1] - scenter
+
+            # param[0] = temperature
+            # param[1] = c1
+            # param[2] = c2
+            # param[3] = c3
+            # param[4] = c4
+
+            mat[i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
+                       (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4 
+                       +  (param[5]/scale5)*v1**5 )/ \
+                (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
+                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4 
+                 + (param[5]/scale5)*v2**5 )
 
     return mat
 
@@ -487,18 +546,16 @@ def residual_cubic(param):
 
     '''
     TK = param[0]
-    
     sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosHD = compute_series_para.sumofstate_HD(TK)
     sosH2 = compute_series_para.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, 
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, 
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
-
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -561,7 +618,7 @@ def residual_quartic(param):
     TK = param[0]
 
     sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)    
+    sosHD = compute_series_para.sumofstate_HD(TK)
     sosH2 = compute_series_para.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
@@ -596,6 +653,78 @@ def residual_quartic(param):
     sD2 = gen_s_quartic(computed_D2, param)
     sHD = gen_s_quartic(computed_HD, param)
     sH2 = gen_s_quartic(computed_H2, param)
+
+    # residual matrix
+    eD2 = I_D2 - sD2
+    eHD = I_HD - sHD
+    eH2 = I_H2 - sH2
+
+    eD2 = np.multiply(wMat_D2, eD2)
+    eHD = np.multiply(wMat_HD, eHD)
+    eH2 = np.multiply(wMat_H2, eH2)
+
+    eD2 = clean_mat(eD2)
+    eHD = clean_mat(eHD)
+    eH2 = clean_mat(eH2)
+
+    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #    + np.sum(np.square(eH2))
+
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
+
+    return E
+
+# *******************************************************************
+# *******************************************************************
+
+
+def residual_quintuple(param):
+    '''Function which computes the residual (as sum of squares) comparing the
+    ratio of expt to theoretical intensity ratio to the sensitivity  profile
+    modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 + c4*x**4 )
+
+    param : T, c1, c2, c3, c4
+
+    '''
+    TK = param[0]
+
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
+                                                   QJ_H2, sosH2)
+
+    # ------ D2 ------
+    trueR_D2 = gen_intensity_mat(computed_D2, 2)
+    expt_D2 = gen_intensity_mat(dataD2, 0)
+    I_D2 = np.divide(expt_D2, trueR_D2)
+    I_D2 = clean_mat(I_D2)
+    # ----------------
+
+    # ------ HD ------
+    trueR_HD = gen_intensity_mat(computed_HD, 2)
+    expt_HD = gen_intensity_mat(dataHD, 0)
+    I_HD = np.divide(expt_HD, trueR_HD)
+    I_HD = clean_mat(I_HD)
+    # ----------------
+
+    # ------ H2 ------
+    trueR_H2 = gen_intensity_mat(computed_H2, 2)
+    expt_H2 = gen_intensity_mat(dataH2, 0)
+    I_H2 = np.divide(expt_H2, trueR_H2)
+    I_H2 = clean_mat(I_H2)
+    # ----------------
+
+    # generate the RHS : sensitivity factor
+    sD2 = gen_s_quintuple(computed_D2, param)
+    sHD = gen_s_quintuple(computed_HD, param)
+    sH2 = gen_s_quintuple(computed_H2, param)
 
     # residual matrix
     eD2 = I_D2 - sD2
@@ -668,7 +797,7 @@ def run_fit_linear(init_T, init_k1):
 # *******************************************************************
 
 def run_fit_quadratic(init_T, init_k1, init_k2):
-    '''Function performing the actual fit using the residual_linear function
+    '''Function performing the actual fit using the residual_quadratic function
     defined earlier '''
 
     # init_k1 : Intial guess
@@ -703,7 +832,7 @@ def run_fit_quadratic(init_T, init_k1, init_k2):
     log.info('\n *******  Optimization run : Quadratic  *******')
     log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f\n', init_k1, init_k2 )
     log.info('\n\t %s\n', res)
-    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f\n', optk1, optk2 )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f\n', optk1, optk2)
     log.info(' *******************************************')
     return res.fun
     # --------------------
@@ -712,7 +841,7 @@ def run_fit_quadratic(init_T, init_k1, init_k2):
 # *******************************************************************
 
 def run_fit_cubic(init_T, init_k1, init_k2, init_k3):
-    '''Function performing the actual fit using the residual_linear function
+    '''Function performing the actual fit using the residual_cubic function
     defined earlier '''
 
     # init_k1 : Intial guess
@@ -760,7 +889,7 @@ def run_fit_cubic(init_T, init_k1, init_k2, init_k3):
 # *******************************************************************
 
 def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
-    '''Function performing the actual fit using the residual_linear function
+    '''Function performing the actual fit using the residual_quartic function
     defined earlier '''
 
     # init_k1 : Intial guess
@@ -769,7 +898,8 @@ def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
     print("**********************************************************")
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".\
-          format(init_T, init_k1, init_k2, init_k3, init_k4, (residual_cubic(param_init))))
+          format(init_T, init_k1, init_k2, init_k3, init_k4,
+                 (residual_quartic(param_init))))
 
 
     print("\nOptimization run : Quartic     \n")
@@ -811,7 +941,60 @@ def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
 # *******************************************************************
 # *******************************************************************
 
+def run_fit_quintuple(init_T, init_k1, init_k2, init_k3, init_k4, init_k5):
+    '''Function performing the actual fit using the residual_quintuple function
+    defined earlier '''
 
+    # init_k1 : Intial guess
+
+    param_init = np.array([init_T, init_k1 , init_k2 , init_k3, init_k4, init_k5])
+    print("**********************************************************")
+    #print("Testing the residual function with data")
+    print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4}, k5={5} output = {6}".\
+          format(init_T, init_k1, init_k2, init_k3, init_k4, init_k5,
+                 (residual_quintuple(param_init))))
+
+
+    print("\nOptimization run : Quintuple  \n")
+    res = opt.minimize(residual_quintuple, param_init, method='Nelder-Mead', \
+                              options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
+
+    print(res)
+    optT = res.x[0]
+    optk1 = res.x[1]
+    optk2 = res.x[2]
+    optk3 = res.x[3]
+    optk4 = res.x[4]
+    optk5 = res.x[5]
+    print("\nOptimized result : T={0}, k1={1}, k2={2}, k3={3}, k4={4}, k5={5} \n".\
+          format(round(optT, 6) ,  round(optk1, 6), round(optk2, 6),\
+                 round(optk3, 6), round(optk4, 6), round(optk5, 6)))
+
+    # generate the correction curve
+    correction_curve= 1+(optk1/scale1)*(xaxis-scenter)  \
+        +(optk2/scale2)*(xaxis-scenter)**2  \
+          +(optk3/scale3)*(xaxis-scenter)**3 \
+            +(optk4/scale4)*(xaxis-scenter)**4 \
+              +(optk5/scale5)*(xaxis-scenter)**5
+
+    np.savetxt("correction_quintuple.txt", correction_curve, fmt='%2.8f',\
+               header='corrn_curve_quintuple', comments='')
+
+    print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Quintuple  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f, c5 = %4.8f\n', init_k1,\
+             init_k2, init_k3, init_k4, init_k5)
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f, c5 = %4.8f\n',\
+             optk1, optk2, optk3, optk4, optk5)
+    log.info(' *******************************************')
+    return res.fun
+    # --------------------
+
+
+# *******************************************************************
+# *******************************************************************
 # *******************************************************************
 
 
@@ -827,7 +1010,8 @@ def plot_curves(residual_array="None"):
     correction_line = np.loadtxt("./correction_linear.txt", skiprows=1)
     correction_quad = np.loadtxt("./correction_quadratic.txt", skiprows=1)
     correction_cubic = np.loadtxt("./correction_cubic.txt", skiprows=1)
-    #correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+    correction_quartic = np.loadtxt("./correction_quartic.txt", skiprows=1)
+    correction_quintuple = np.loadtxt("./correction_quintuple.txt", skiprows=1)
 
     # ---------------------------------------------------------------------
 
@@ -845,7 +1029,8 @@ def plot_curves(residual_array="None"):
     plt.plot(xaxis, correction_line, 'r', linewidth=3, label='line_fit')
     plt.plot(xaxis, correction_quad, 'g', linewidth=4.2, label='quad_fit')
     plt.plot(xaxis, correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
-    #plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+    plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
+    plt.plot(xaxis, correction_quintuple, 'r--', linewidth=2.25, label='5th order fit')
 
     plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
     plt.ylabel('Relative sensitivity', fontsize=20)
@@ -872,7 +1057,7 @@ def plot_curves(residual_array="None"):
             # -----------------------------------------------------
             # FIGURE 1 INITIALIZED
 
-            xv = np.arange(1, 4, 1)
+            xv = np.arange(1, 6, 1)
             plt.figure(1)
             ax1 = plt.axes()
             plt.title('Residuals', fontsize=21)
@@ -973,9 +1158,11 @@ resd_lin = residual_linear(param_linear)
 resd_quad = residual_quadratic(param_quadratic)
 resd_cubic = residual_cubic(param_cubic)
 resd_quar = residual_quartic(param_quartic)
+resd_quint = residual_quintuple(param_quintuple)
 
 print('Value of residuals with default coefs are')
 print('\t linear \t:', resd_lin)
 print('\t quadratic \t:', resd_quad)
 print('\t cubic  \t:', resd_cubic)
 print('\t quartic \t:', resd_quar)
+print('\t quintuple \t:', resd_quint)
