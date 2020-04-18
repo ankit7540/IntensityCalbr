@@ -241,13 +241,6 @@ def clean_and_scale_elements(array, index_array, factor):
 # ------------------------------------------------
 
 
-def clean_mat(square_array):
-    """Set the upper triangular portion of square matrix to zero
-        including the diagonal
-        input = any square array     """
-    np.fill_diagonal(square_array, 0)
-    return np.tril(square_array, k=0)
-
 # ------------------------------------------------    
 
 def T_independent_index():
@@ -888,6 +881,11 @@ def plot_curves(residual_array="None"):
     plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey", 
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
+    
+    
+    # markers for the band which are analyzed at present 
+    plt.plot(freqD2, dummyD2, 'kD' )    
+    plt.plot(freqHD, dummyHD, 'ms' )    
 
     if type(residual_array) != str:
         if isinstance(residual_array, (list,np.ndarray)):
@@ -1005,3 +1003,97 @@ print('\t quartic \t:', resd_quar)
 test_mat = np.arange(196).reshape(14,14)
 test_mat = clean_mat(test_mat)
 test_mat[indexD2] = 0
+
+# -----------------------------------------------------
+#  Dummy value for plot (frequencies)
+val=0.125
+dummyD2 = np.full(len(computed_D2), val)
+dummyHD = np.full(len(computed_HD), val)
+dummyH2 = np.full(len(computed_H2), val)
+
+# -----------------------------------------------------
+freqD2 = computed_D2[:,1]
+freqHD = computed_HD[:,1]
+
+# ------------------------------------------------    
+# For setting the bands which are not analyzed to nan in dummy array
+#  dummy array used for plot 
+def T_independent_D2_set_nan(array):
+    '''
+    elements in 'array' which correspond to frequencies not 
+    analyzed are set to nan, for D2
+    '''
+    TK = 298  #  --------------------------------
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    calc_298_D2 = gen_intensity_mat(computed_D2, 2)
+
+    TK = 1000  #  -------------------------------
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    calc_600_D2=gen_intensity_mat (computed_D2, 2)
+
+    diff_D2 = calc_298_D2 - calc_600_D2
+    cr_D2 = clean_mat(diff_D2)
+    
+    return set_nan_if_foundzero(cr_D2, array)
+# ------------------------------------------------
+# ------------------------------------------------    
+# For setting the bands which are not analyzed to nan in dummy array
+#  dummy array used for plot 
+def T_independent_HD_set_nan( array):
+    '''
+    elements in 'array' which correspond to frequencies not 
+    analyzed are set to nan, for HD
+    '''
+    TK = 298  #  --------------------------------
+
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+
+    calc_298_HD = gen_intensity_mat(computed_HD, 2)
+    TK = 1000  #  -------------------------------
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+
+    calc_600_HD=gen_intensity_mat (computed_HD, 2)
+    diff_HD = calc_298_HD - calc_600_HD
+    cr_HD = clean_mat(diff_HD)
+    
+    return set_nan_if_foundzero(cr_HD, array)
+    
+# ------------------------------------------------      
+
+def set_nan_if_foundzero(matrix, output):
+    # check over cols
+    
+    # scheme: check over for max in a col, if max is zero
+    #   then that freq was unused in the analysis
+    #and similarly for rows
+    
+    for i in range(len(output)):
+        col=matrix[:,i]
+        val=np.amax(col)
+        if (np.abs(val)<1e-7):
+            output[i]=np.nan
+            
+    # check over rows        
+    for i in range(len(output)):
+        val=np.amax(matrix[i, :])
+        if (np.abs(val)<1e-7):
+            output[i]=np.nan       
+    return output      
+# -----------------------------------------------------      
+#print (freqD2, T_independent_HD(  freqD2  )  )        
+dummyHD = T_independent_HD_set_nan( dummyHD )
+#print(freqHD,  T_independent_HD( dummyHD ))
+print(freqHD.shape[0], dummyHD.shape[0])
+
+dummyD2 = T_independent_D2_set_nan( dummyD2 )
+print(freqD2, dummyD2, dummyD2.shape[0])  
+        
