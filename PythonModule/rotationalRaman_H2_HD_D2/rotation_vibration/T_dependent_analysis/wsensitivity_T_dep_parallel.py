@@ -1051,6 +1051,11 @@ def plot_curves(residual_array="None"):
     plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
+    
+    # markers showing the bands positions whose data is used for fit 
+    plt.plot(computed_D2[:,1], dummyD2, 'mo' )
+    plt.plot(computed_HD[:,1], dummyHD, 'cv' )
+    plt.plot(computed_H2[:,1], dummyH2, 'gD' )
 
     if type(residual_array) != str:
         if isinstance(residual_array, (list, np.ndarray)):
@@ -1166,3 +1171,13 @@ print('\t quadratic \t:', resd_quad)
 print('\t cubic  \t:', resd_cubic)
 print('\t quartic \t:', resd_quar)
 print('\t quintuple \t:', resd_quint)
+
+# -----------------------------------------------------
+#  Dummy value for plot (vs frequencies)
+#   Shows which band were analyzed in the fitting
+val=0.125
+dummyD2 = np.full(len(computed_D2), val)
+dummyHD = np.full(len(computed_HD), val)
+dummyH2 = np.full(len(computed_H2), val)
+
+# -----------------------------------------------------
