@@ -386,6 +386,67 @@ def gen_s_quintuple(computed_data, param):
     return mat
 
 # ------------------------------------------------
+
+# ------------------------------------------------    
+
+def T_independent_index():
+    '''
+    Getting indices for the t-independent terms in the matrix
+    for all three gases, index output are for the terms which do not
+    change with temperature
+    '''
+
+    TK = 298  #  --------------------------------
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
+                                                   QJ_H2, sosH2 )    
+
+    calc_298_D2 = gen_intensity_mat(computed_D2, 2)
+    calc_298_HD = gen_intensity_mat(computed_HD, 2)
+    calc_298_H2 = gen_intensity_mat(computed_H2, 2)
+
+    TK = 1000  #  -------------------------------
+    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosH2 = compute_series_para.sumofstate_H2(TK)
+
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+                                                 SJ_D2, sosD2)
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+                                                 SJ_HD, sosHD)
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
+                                                   QJ_H2, sosH2 )      
+
+    calc_600_D2 = gen_intensity_mat (computed_D2, 2)
+    calc_600_HD = gen_intensity_mat (computed_HD, 2)
+    calc_600_H2 = gen_intensity_mat(computed_H2, 2) 
+    
+    # -------------------------------------------
+
+    diff_D2 = calc_298_D2 - calc_600_D2
+    diff_HD = calc_298_HD - calc_600_HD
+    diff_H2 = calc_298_H2 - calc_600_H2
+
+    cr_D2 = clean_mat(diff_D2)
+    cr_HD = clean_mat(diff_HD)
+    cr_H2 = clean_mat(diff_H2)
+    
+    # terms which are t-independet are selected here
+    index_D2 = np.nonzero(np.abs(cr_D2) < 1e-10) 
+    index_HD = np.nonzero(np.abs(cr_HD) < 1e-10) 
+    index_H2 = np.nonzero(np.abs(cr_H2) < 1e-10)     
+    
+    # index for t-independent terms
+    return index_D2, index_HD , index_H2
+
+# ------------------------------------------------       
 # ------------------------------------------------
 # *******************************************************************
 #     RESIDUAL FUNCTIONS DEFINED BELOW
@@ -455,6 +516,12 @@ def residual_linear(param):
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
+    
+    index = T_independent_index()
+    factor = 5
+    eD2[index[0]] = eD2[index[0]] * factor
+    eHD[index[1]] = eHD[index[1]] * factor
+    eH2[index[2]] = eH2[index[2]] * factor
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
@@ -527,6 +594,12 @@ def residual_quadratic(param):
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
+    
+    index = T_independent_index()
+    factor = 5
+    eD2[index[0]] = eD2[index[0]] * factor
+    eHD[index[1]] = eHD[index[1]] * factor
+    eH2[index[2]] = eH2[index[2]] * factor    
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
@@ -597,10 +670,12 @@ def residual_cubic(param):
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
-    
-    #np.savetxt("errorD2_cubic.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_cubic.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_cubic.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
+
+    index = T_independent_index()
+    factor = 5
+    eD2[index[0]] = eD2[index[0]] * factor
+    eHD[index[1]] = eHD[index[1]] * factor
+    eH2[index[2]] = eH2[index[2]] * factor    
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
@@ -674,9 +749,11 @@ def residual_quartic(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    #np.savetxt("errorD2_4.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_4.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_4.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
+    index = T_independent_index()
+    factor = 5
+    eD2[index[0]] = eD2[index[0]] * factor
+    eHD[index[1]] = eHD[index[1]] * factor
+    eH2[index[2]] = eH2[index[2]] * factor    
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
@@ -750,9 +827,11 @@ def residual_quintuple(param):
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
-    #np.savetxt("errorD2_5.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_5.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_5.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')    
+    index = T_independent_index()
+    factor = 5
+    eD2[index[0]] = eD2[index[0]] * factor
+    eHD[index[1]] = eHD[index[1]] * factor
+    eH2[index[2]] = eH2[index[2]] * factor    
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
@@ -1193,3 +1272,8 @@ dummyHD = np.full(len(computed_HD), val)
 dummyH2 = np.full(len(computed_H2), val)
 
 # -----------------------------------------------------
+
+index=T_independent_index()
+eD2[index[0]]=eD2[index[0]]*1.25
+
+eH2[index[2]]=eH2[index[2]]*10

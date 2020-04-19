@@ -228,13 +228,13 @@ def HD_S1(T, JMax, sos):
         E = eJHDv0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJHDv1[i+2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2 / 15) * (gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2 / 15) * (gamma**2)
 
         specHD[i][0] = i
         specHD[i][1] = position
@@ -258,12 +258,12 @@ def HD_O1(T, JMax, sos):
         E = eJHDv0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJHDv1[i-2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2/15)*(gamma**2)
 
         #print(JMax-i)
 
@@ -355,13 +355,13 @@ def D2_S1(T, JMax, sos):
         E = eJD2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJD2v1[i+2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2/15)*(gamma**2)
 
         if i % 2 == 0:
             factor = factor*g_even
@@ -395,12 +395,12 @@ def D2_O1(T, JMax, sos):
         E = eJD2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJD2v1[i-2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2/15)*(gamma**2)
             
         if i % 2 == 0:
             factor = factor*g_even
@@ -508,13 +508,13 @@ def H2_S1(T, JMax, sos):
         E = eJH2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJH2v1[i+2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2/15)*(gamma**2)
 
         if i % 2 == 0:
             factor = factor*g_even
@@ -547,12 +547,12 @@ def H2_O1(T, JMax, sos):
         E = eJH2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJH2v1[i-2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_O1[i-2][4]
 
-        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)/sos
+        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(2/15)*(gamma**2)
             
         if i % 2 == 0:
             factor = factor*g_even
