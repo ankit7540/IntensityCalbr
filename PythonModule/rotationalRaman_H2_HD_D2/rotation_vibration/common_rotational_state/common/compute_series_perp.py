@@ -5,7 +5,7 @@
 import math
 import numpy as np
 
-# FOR PERPENDICULAR POLARIZATION 
+# FOR PERPENDICULAR POLARIZATION
 
 # Constants ------------------------------
 K = np.float64(1.38064852e-23) # J/K
@@ -228,7 +228,7 @@ def HD_S1(T, JMax, sos):
         E = eJHDv0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJHDv1[i+2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
@@ -257,7 +257,7 @@ def HD_O1(T, JMax, sos):
         E = eJHDv0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJHDv1[i-2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_O1[i-2][4]
 
@@ -346,13 +346,13 @@ def D2_S1(T, JMax, sos):
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
-    # ----------------------------------------    
+    # ----------------------------------------
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJD2v1[i+2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
@@ -362,7 +362,7 @@ def D2_S1(T, JMax, sos):
         if i % 2 == 0:
             factor = factor*g_even
         else:
-            factor = factor*g_odd       
+            factor = factor*g_odd
         specD2[i][0] = i
         specD2[i][1] = position
         specD2[i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -373,21 +373,21 @@ def D2_S1(T, JMax, sos):
 # *****************************************************************************
 
 def D2_O1(T, JMax, sos):
-    '''compute the intensity for D2, O1 bands upto 
+    '''compute the intensity for D2, O1 bands upto
     given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
-    # ----------------------------------------     
+    # ----------------------------------------
     # O1 bands ----------------------------------
 
     for i in range(JMax, 1, -1):
         E = eJD2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJD2v1[i-2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_O1[i-2][4]
 
@@ -492,7 +492,7 @@ def H2_S1(T, JMax, sos):
         E = eJH2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i+1)*(i+2))/(2*(2*i+1)*(2*i+3))
+        bj = ((i+1)*(i+2))/((2*i+1)*(2*i+3))
         position = (eJH2v1[i+2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
@@ -527,7 +527,7 @@ def H2_O1(T, JMax, sos):
         E = eJH2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
-        bj = (3*(i)*(i-1))/(2*(2*i-1)*(2*i+1))
+        bj = ((i)*(i-1))/((2*i-1)*(2*i+1))
         position = (eJH2v1[i-2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_O1[i-2][4]
 
@@ -536,7 +536,7 @@ def H2_O1(T, JMax, sos):
         if i % 2 == 0:
             factor = factor*g_even
         else:
-            factor = factor*g_odd            
+            factor = factor*g_odd
 
         #print(JMax-i)
 
@@ -573,7 +573,7 @@ def H2_Q1(T, JMax, sos):
         if i % 2 == 0:
             factor = factor*g_even
         else:
-            factor = factor*g_odd                
+            factor = factor*g_odd
 
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
