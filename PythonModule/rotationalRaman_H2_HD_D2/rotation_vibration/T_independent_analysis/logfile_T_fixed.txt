@@ -1,0 +1,46 @@
+<Logger wavelength_sensitivity_main_T_fixed.py (INFO)>
+2020-04-24 11:45:55
+
+
+------------ Run log ------------
+
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04586000
+
+
+	  final_simplex: (array([[-6.07927132],
+       [-6.07927132]]), array([11.50555727, 11.50555727]))
+           fun: 11.50555726726023
+       message: 'Optimization terminated successfully.'
+          nfev: 78
+           nit: 39
+        status: 0
+       success: True
+             x: array([-6.07927132])
+
+
+ Optimized result : c1 = -6.07927132
+
+ *******************************************
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04586000
+
+
+	  final_simplex: (array([[-6.07927132],
+       [-6.07927132]]), array([11.50555727, 11.50555727]))
+           fun: 11.50555726726023
+       message: 'Optimization terminated successfully.'
+          nfev: 78
+           nit: 39
+        status: 0
+       success: True
+             x: array([-6.07927132])
+
+
+ Optimized result : c1 = -6.07927132
+
+ *******************************************

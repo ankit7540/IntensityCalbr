@@ -453,7 +453,7 @@ def residual_linear(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
@@ -525,7 +525,7 @@ def residual_quadratic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
@@ -595,15 +595,18 @@ def residual_cubic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
+
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
     
     #np.savetxt("errorD2_cubic.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_cubic.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorH2_cubic.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     return E
 
@@ -671,15 +674,18 @@ def residual_quartic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
+
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
 
     #np.savetxt("errorD2_4.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_4.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorH2_4.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     return E
 
@@ -747,15 +753,18 @@ def residual_quintuple(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
+
+    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+        np.sum(np.abs(eH2))
 
     #np.savetxt("errorD2_5.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_5.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorH2_5.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')    
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     return E
 

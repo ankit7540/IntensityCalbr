@@ -831,7 +831,7 @@ def residual_quintuple(param):
     factor = 5
     eD2[index[0]] = eD2[index[0]] * factor
     eHD[index[1]] = eHD[index[1]] * factor
-    eH2[index[2]] = eH2[index[2]] * factor    
+    eH2[index[2]] = eH2[index[2]] * factor
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
