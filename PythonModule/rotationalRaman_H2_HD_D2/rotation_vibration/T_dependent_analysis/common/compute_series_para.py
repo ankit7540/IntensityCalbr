@@ -127,7 +127,7 @@ def sumofstate_HD(T):
 
     # --- nuclear spin statistics ------------
     g_even = 1        # hydrogen deuteride
-    g_odd = 1
+    g_odd = 1         # not used
     # ---------------------------------------
 
     jmaxv0 = len(eJHDv0)
@@ -138,10 +138,6 @@ def sumofstate_HD(T):
         E = eJHDv0[i]
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor * g_even
-        else:
-            factor = factor * g_odd
         Q = Q + factor
 
     # contribution from the first vibrational state
@@ -149,10 +145,6 @@ def sumofstate_HD(T):
         E = eJHDv1[i]
         energy = (-1*E*H*C)
         factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor * g_even
-        else:
-            factor = factor * g_odd
         Q = Q + factor
 
 #   return the sum of states for HD
@@ -364,11 +356,10 @@ def D2_S1(T, JMax, sos):
             *(2/15)*(gamma**2)
 
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd            
+            factor = factor * g_odd            
             
-
         specD2[i][0] = i
         specD2[i][1] = position
         specD2[i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -403,9 +394,9 @@ def D2_O1(T, JMax, sos):
             *(2/15)*(gamma**2)
             
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd                   
+            factor = factor * g_odd                   
 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -441,9 +432,9 @@ def D2_Q1(T, JMax, sos):
                 (bj*(4/45)*(gamma**2)+ alpha**2)
                 
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd  
+            factor = factor * g_odd  
                 
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
@@ -555,9 +546,9 @@ def H2_O1(T, JMax, sos):
             *(2/15)*(gamma**2)
             
         if i % 2 == 0:
-            factor = factor*g_even
+            factor = factor * g_even
         else:
-            factor = factor*g_odd              
+            factor = factor * g_odd              
 
         #print(JMax-i)
 

@@ -1202,3 +1202,4 @@ dummyHD = np.full(len(computed_HD), val)
 dummyH2 = np.full(len(computed_H2), val)
 
 # -----------------------------------------------------
+print("For actual run, execeute following,\n\tresd = run_all_fit() ; plot_curves(resd) ;")
