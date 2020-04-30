@@ -1063,7 +1063,7 @@ def plot_curves(residual_array="None"):
     xmin = np.amin(xaxis - 10)
     xmax = np.amax(xaxis + 10)
     
-    plt.xlim((xmax, xmin)) #  setting xaxis range
+    plt.xlim((xmax, 2500)) #  setting xaxis range
     ax0.set_ylim([0, 2.1]) #  change this if the ylimit is not enough
 
     ax0.minorticks_on()
