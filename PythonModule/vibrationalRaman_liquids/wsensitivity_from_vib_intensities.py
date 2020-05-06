@@ -21,7 +21,7 @@ from common import utils
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./run_parallel_rem2/logfile_para.txt', 'w+')
+fileh = logging.FileHandler('./expt_data/logfile_para.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
