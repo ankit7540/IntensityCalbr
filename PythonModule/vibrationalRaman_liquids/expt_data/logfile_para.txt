@@ -1,0 +1,26 @@
+<Logger wsensitivity_from_vib_intensities.py (INFO)>
+2020-05-06 14:22:17
+
+
+------------ Run log ------------
+
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04500000
+
+
+	  final_simplex: (array([[-1.94017316],
+       [-1.94017316]]), array([76065.46179594, 76065.46179594]))
+           fun: 76065.46179593711
+       message: 'Optimization terminated successfully.'
+          nfev: 92
+           nit: 46
+        status: 0
+       success: True
+             x: array([-1.94017316])
+
+
+ Optimized result : c1 = -1.94017316
+
+ *******************************************

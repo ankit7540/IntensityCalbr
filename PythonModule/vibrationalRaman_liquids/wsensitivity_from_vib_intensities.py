@@ -15,9 +15,9 @@ import numpy as np
 
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
-from common import compute_series_para
 
-from common import utils
+
+
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
@@ -50,7 +50,7 @@ log.error("------------ Run log ------------\n")
 data_CCl4 = np.loadtxt("./expt_data/BA_CCl4.txt")
 data_C6H6 = np.loadtxt("./expt_data/BA_C6H6.txt")
 data_C6H12 = np.loadtxt("./expt_data/BA_C6H12.txt")
-xaxis = np.loadtxt("./expt_data/Ramanshift_axis_para.txt")
+xaxis = np.loadtxt("./expt_data/Wavenumber_axis_pa.txt")
 
 # ------------------------------------------------------
 
@@ -73,8 +73,8 @@ print('\t', data_C6H12.shape)
 
 # Constants ------------------------------
 # these are used for scaling the coefs
-scale1 = 1e3
-scale2 = 1e6
+scale1 = 1e4
+scale2 = 1e7
 scale3 = 1e9
 scale4 = 1e12
 scale5 = 1e14
@@ -198,8 +198,8 @@ def gen_weight(expt_data, factor):
                      (expt_data[j,1]/expt_data[j,0])**2   )
 
 
-    #return factor * inverse_square(error_mat)
-    return  np.abs(error_mat)
+    return  inverse_square(error_mat)  #  factor not used
+    #return  np.abs(error_mat)
 
 #------------------------------------------------
 
@@ -313,8 +313,8 @@ param_linear[0]= -1.045
 
 #----------------------------
 param_quadratic=np.zeros((2))
-param_quadratic[0]= -0.931
-param_quadratic[1]= -0.242
+param_quadratic[0]= -0.923
+param_quadratic[1]= -0.254
 
 #----------------------------
 param_cubic=np.zeros((3))
@@ -331,23 +331,32 @@ param_quartic[3]= -0.000001
 #*******************************************************************
 #  GENERATE WEIGHT MATRICES
 
-wMat_H2 = gen_weight(dataH2, 0.2)
-wMat_HD = gen_weight(dataHD, 0.2)
-wMat_D2 = gen_weight(dataD2, 0.2)
+wMat_C6H6 = gen_weight(data_C6H6, 1)
+wMat_C6H6 = clean_mat(wMat_C6H6)
+
+wMat_C6H12 = gen_weight(data_C6H12, 1)
+wMat_C6H12 = clean_mat(wMat_C6H12)
+
+wMat_CCl4 = gen_weight(data_CCl4, 1)
+wMat_CCl4 = clean_mat(wMat_CCl4)
+
+
+#wMat_HD = gen_weight(dataHD, 0.2)
+#wMat_D2 = gen_weight(dataD2, 0.2)
 
 #print(wMat_H2 )
 
-wMat_H2 = np.divide(wMat_H2, 300)
-wMat_HD = np.divide(wMat_HD, 300)
-wMat_D2 = np.divide(wMat_D2, 300)
+#wMat_H2 = np.divide(wMat_H2, 300)
+#wMat_HD = np.divide(wMat_HD, 300)
+#wMat_D2 = np.divide(wMat_D2, 300)
 
-wMat_H2=scale_opp_diagonal (wMat_H2, 500)
-wMat_HD=scale_opp_diagonal (wMat_HD, 500)
-wMat_D2=scale_opp_diagonal (wMat_D2, 500)
+#wMat_H2=scale_opp_diagonal (wMat_H2, 500)
+#wMat_HD=scale_opp_diagonal (wMat_HD, 500)
+#wMat_D2=scale_opp_diagonal (wMat_D2, 500)
 
-wMat_H2=1
-wMat_HD=1
-wMat_D2=1
+#wMat_C6H6=1
+#wMat_C6H12=1
+#wMat_CCl4=1
 #*******************************************************************
 
 #*******************************************************************
@@ -620,11 +629,12 @@ def run_fit_quadratic ( init_k1, init_k2 ):
 
     optk1 = res.x[0]
     optk2 = res.x[1]
-    print("\nOptimized result : k1={0}, k2={1} \n".format( round(optk1, 6), round(optk2, 6) ))
+    print("\nOptimized result : k1={0}, k2={1} \n".format( round(optk1, 6),
+                                                          round(optk2, 6) ))
 
     correction_curve= 1+(optk1/scale1)*(xaxis-scenter) \
         + ((optk2/scale2)*(xaxis-scenter)**2)  # generate the\
-                                                                               #correction curve
+    #correction curve
 
     np.savetxt("correction_quadratic.txt", correction_curve, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
@@ -656,7 +666,9 @@ def run_fit_cubic ( init_k1, init_k2, init_k3 ):
     optk1 = res.x[0]
     optk2 = res.x[1]
     optk3 = res.x[2]
-    print("\nOptimized result : k1={0}, k2={1}, k3={2} \n".format( round(optk1, 6), round(optk2, 6), round(optk3, 6)))
+    print("\nOptimized result : k1={0}, k2={1}, k3={2} \n".format( round(optk1, 6),
+                                                                  round(optk2, 6),
+                                                                  round(optk3, 6)))
 
     # generate the correction curve
     correction_curve = (1+(optk1/scale1)*(xaxis-scenter)) \
@@ -693,7 +705,8 @@ def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
     optk2 = res.x[1]
     optk3 = res.x[2]
     optk4 = res.x[3]
-    print("\nOptimized result : k1={0}, k2={1}, k3={2}, k4={3} \n".format( round(optk1, 6), round(optk2, 6), round(optk3, 6) ,round(optk4, 6) ))
+    print("\nOptimized result : k1={0}, k2={1}, k3={2}, k4={3} \n".format( 
+        round(optk1, 6), round(optk2, 6), round(optk3, 6) ,round(optk4, 6) ))
 
     # generate the correction curve
     correction_curve = (1+(optk1/scale1)*(xaxis-scenter))\
@@ -720,10 +733,11 @@ if (run == 1):
     resd_3 = 0
     resd_4 = 0
 
-    run_fit_linear(  -1.04586 )
-    run_fit_quadratic(  -0.931, -0.242 )
-    run_fit_cubic(  -0.931, -0.242 , -0.000001 )
-    run_fit_quartic(  -0.925, -0.0715, 0.05, +0.02 )
+    run_fit_linear(  param_linear[0] )
+    run_fit_quadratic( param_quadratic[0], param_quadratic[1] )
+    run_fit_cubic(  param_cubic[0], param_cubic[1], param_cubic[2] )
+    run_fit_quartic( param_quartic[0], param_quartic[1], 
+                    param_quartic[2], param_quartic[3] )
 
 
 #***************************************************************
@@ -774,13 +788,20 @@ def plot_curves(option):
 
 
         plt.xlim((xmax, xmin)) #  change this if the xlimit is not correct
-        ax0.set_ylim([0, 2.1]) # change this if the ylimit is not enough
+        ax0.set_ylim([0, 1.5]) # change this if the ylimit is not enough
 
         ax0.minorticks_on()
         ax0.tick_params(which='minor', right='on')
         ax0.tick_params(axis='y', labelleft='on', labelright='on')
         plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
                  transform=plt.gcf().transFigure)
+
+
+        # Add reference data to the plot
+        x=xaxis
+        yquadr=1+(-0.92351714/1e4)*x + (-0.25494267/1e7)*x**2
+        plt.plot(xaxis,  yquadr, 'k-', linewidth=2.65, label='REF-Quadratic')
+        
         plt.legend(loc='upper left', fontsize=16)
 
         # *********************
