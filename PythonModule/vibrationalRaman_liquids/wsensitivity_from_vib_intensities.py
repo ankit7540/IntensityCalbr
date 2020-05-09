@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./expt_data/logfile_para.txt', 'w+')
+fileh = logging.FileHandler('./expt_data2/logfile_para.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -47,18 +47,18 @@ log.error("------------ Run log ------------\n")
 
 # Experimental data
 # Change following paths
-data_CCl4 = np.loadtxt("./expt_data/BA_CCl4.txt")
-data_C6H6 = np.loadtxt("./expt_data/BA_C6H6.txt")
-data_C6H12 = np.loadtxt("./expt_data/BA_C6H12.txt")
+data_CCl4 = np.loadtxt("./expt_data2/BA_CCl4.txt")
+data_C6H6 = np.loadtxt("./expt_data2/BA_C6H6.txt")
+data_C6H12 = np.loadtxt("./expt_data2/BA_C6H12.txt")
 xaxis = np.loadtxt("./expt_data/Wavenumber_axis_pa.txt")
 
 # ------------------------------------------------------
 
 # Reference data
 # Change following paths
-ref_CCl4 = np.loadtxt("./ref_data/BA_ref_CCl4.txt")
-ref_C6H6 = np.loadtxt("./ref_data/BA_ref_C6H6.txt")
-ref_C6H12 = np.loadtxt("./ref_data/BA_ref_C6H12.txt")
+ref_CCl4 = np.loadtxt("./expt_data2/BA_ref_CCl4.txt")
+ref_C6H6 = np.loadtxt("./expt_data2/BA_ref_C6H6.txt")
+ref_C6H12 = np.loadtxt("./expt_data2/BA_ref_C6H12.txt")
 
 # ------------------------------------------------------
 # ------------------------------------------------------
@@ -341,6 +341,14 @@ wMat_CCl4 = gen_weight(data_CCl4, 1)
 wMat_CCl4 = clean_mat(wMat_CCl4)
 
 
+print(np.amax(wMat_C6H6))
+print(np.amax(wMat_C6H12))
+print(np.amax(wMat_CCl4))
+
+wMat_C6H6 = np.divide(wMat_C6H6, np.amax(wMat_C6H6))
+wMat_C6H12 = np.divide(wMat_C6H12, np.amax(wMat_C6H12))
+wMat_CCl4 = np.divide(wMat_CCl4, np.amax(wMat_CCl4))
+
 #wMat_HD = gen_weight(dataHD, 0.2)
 #wMat_D2 = gen_weight(dataD2, 0.2)
 
@@ -407,8 +415,21 @@ def residual_linear(param):
     e_C6H12 = np.multiply(wMat_C6H12, e_C6H12)
     e_CCl4 = np.multiply(wMat_CCl4, e_CCl4)
 
-    E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
-       + np.sum(np.abs(e_CCl4))
+    e_CCl4 = clean_mat(e_CCl4)
+    e_C6H6 = clean_mat(e_C6H6)
+    e_C6H12 = clean_mat(e_C6H12)
+
+    e_C6H6 = np.abs(e_C6H6)
+    e_C6H12 = np.abs(e_C6H12)
+    e_CCl4 = np.abs(e_CCl4)    
+
+    # savetxt
+    #np.savetxt('linear_e_C6H6.txt', e_C6H6, fmt='%5.3f', delimiter='\t')
+    #np.savetxt('linear_e_C6H12.txt', e_C6H12, fmt='%5.3f', delimiter='\t')
+    #np.savetxt('linear_e_CCl4.txt', e_CCl4, fmt='%5.3f', delimiter='\t')      
+
+    E = np.sum(e_C6H6) + np.sum(e_C6H12) \
+       + np.sum(e_CCl4)        
 
     return E
 
@@ -453,13 +474,29 @@ def residual_quadratic(param):
     e_C6H6 = I_C6H6 - sC6H6
     e_C6H12 = I_C6H12 - sC6H12
     e_CCl4 = I_CCl4 - sCCl4
-
+    
     e_C6H6 = np.multiply(wMat_C6H6, e_C6H6)
     e_C6H12 = np.multiply(wMat_C6H12, e_C6H12)
     e_CCl4 = np.multiply(wMat_CCl4, e_CCl4)
 
-    E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
-       + np.sum(np.abs(e_CCl4))
+    e_CCl4 = clean_mat(e_CCl4)
+    e_C6H6 = clean_mat(e_C6H6)
+    e_C6H12 = clean_mat(e_C6H12)
+    
+    e_C6H6 = np.abs(e_C6H6)
+    e_C6H12 = np.abs(e_C6H12)
+    e_CCl4 = np.abs(e_CCl4)    
+
+    # savetxt
+    np.savetxt('quadratic_e_C6H6.txt', e_C6H6, fmt='%2.6f', delimiter='\t')
+    np.savetxt('quadratic_e_C6H12.txt', e_C6H12, fmt='%2.6f', delimiter='\t')
+    np.savetxt('quadratic_e_CCl4.txt', e_CCl4, fmt='%2.6f', delimiter='\t')      
+
+    E = np.sum(e_C6H6) + np.sum(e_C6H12) \
+       + np.sum(e_CCl4)    
+
+    #E = np.sum(np.square(e_C6H6)) + np.sum(np.square(e_C6H12)) \
+    #   + np.sum(np.square(e_CCl4))   
 
     return E
 
@@ -509,8 +546,24 @@ def residual_cubic(param):
     e_C6H12 = np.multiply(wMat_C6H12, e_C6H12)
     e_CCl4 = np.multiply(wMat_CCl4, e_CCl4)
 
-    E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
-       + np.sum(np.abs(e_CCl4))
+    e_CCl4 = clean_mat(e_CCl4)
+    e_C6H6 = clean_mat(e_C6H6)
+    e_C6H12 = clean_mat(e_C6H12)        
+
+    e_C6H6 = np.abs(e_C6H6)
+    e_C6H12 = np.abs(e_C6H12)
+    e_CCl4 = np.abs(e_CCl4)    
+
+    # savetxt
+    #np.savetxt('cubic_e_C6H6.txt', e_C6H6, fmt='%5.3f', delimiter='\t')
+    #np.savetxt('cubic_e_C6H12.txt', e_C6H12, fmt='%5.3f', delimiter='\t')
+    #np.savetxt('cubic_e_CCl4.txt', e_CCl4, fmt='%5.3f', delimiter='\t')      
+
+    E = np.sum(e_C6H6) + np.sum(e_C6H12) \
+       + np.sum(e_CCl4)    
+
+    #E = np.sum(np.square(e_C6H6)) + np.sum(np.square(e_C6H12)) \
+    #   + np.sum(np.square(e_CCl4))   
 
     return E
 
@@ -559,9 +612,16 @@ def residual_quartic(param):
     e_C6H6 = np.multiply(wMat_C6H6, e_C6H6)
     e_C6H12 = np.multiply(wMat_C6H12, e_C6H12)
     e_CCl4 = np.multiply(wMat_CCl4, e_CCl4)
+    
+    e_CCl4 = clean_mat(e_CCl4)
+    e_C6H6 = clean_mat(e_C6H6)
+    e_C6H12 = clean_mat(e_C6H12)    
 
     E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
        + np.sum(np.abs(e_CCl4))
+
+    #E = np.sum(np.square(e_C6H6)) + np.sum(np.square(e_C6H12)) \
+    #   + np.sum(np.square(e_CCl4))   
 
     return E
 
@@ -605,6 +665,7 @@ def run_fit_linear ( init_k1 ):
     log.info('\n Optimized result : c1 = %4.8f\n', optk1 )
     log.info(' *******************************************')
     # --------------------
+    return res.fun
 
 #***************************************************************
 
@@ -640,6 +701,15 @@ def run_fit_quadratic ( init_k1, init_k2 ):
                header='corrn_curve_quadratic', comments='')
 
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Quadratic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f\n', init_k1,
+             init_k2 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f\n', optk1, optk2 )
+    log.info(' *******************************************')
+    # --------------------
+    return res.fun    
 
 #***************************************************************
 
@@ -678,6 +748,16 @@ def run_fit_cubic ( init_k1, init_k2, init_k3 ):
                header='corrn_curve_cubic', comments='')
 
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Cubic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3=%4.8f\n', init_k1,
+             init_k2, init_k3 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', 
+             optk1, optk2, optk3 )
+    log.info(' *******************************************')
+    # --------------------
+    return res.fun    
 
 #***************************************************************
 
@@ -717,6 +797,16 @@ def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
                header='corrn_curve_quartic', comments='')
 
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Cubic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3=%4.8f, c4=%4.8f\n', init_k1,
+             init_k2, init_k3, init_k4 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f, c4 = %4.8f\n', 
+             optk1, optk2, optk3, optk4 )
+    log.info(' *******************************************')
+    # --------------------
+    return res.fun     
 
 #***************************************************************
 
@@ -724,32 +814,40 @@ def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
 
 #***************************************************************
 
-run=1
-plot_option=1
-
-if (run == 1):
-    resd_1 = 0
-    resd_2 = 0
-    resd_3 = 0
-    resd_4 = 0
-
-    run_fit_linear(  param_linear[0] )
-    run_fit_quadratic( param_quadratic[0], param_quadratic[1] )
-    run_fit_cubic(  param_cubic[0], param_cubic[1], param_cubic[2] )
-    run_fit_quartic( param_quartic[0], param_quartic[1], 
-                    param_quartic[2], param_quartic[3] )
+def run_all_fit():
+    if (run == 1):
+        resd_1 = 0
+        resd_2 = 0
+        resd_3 = 0
+        resd_4 = 0
+    
+        resd_1 = run_fit_linear(  param_linear[0] )
+        resd_2 = run_fit_quadratic( param_quadratic[0], param_quadratic[1] )
+        resd_3 = run_fit_cubic(  param_cubic[0], param_cubic[1], param_cubic[2] )
+        resd_4 = run_fit_quartic( param_quartic[0], param_quartic[1], 
+                        param_quartic[2], param_quartic[3] )
+        
+    out = np.array([resd_1, resd_2, resd_3, resd_4 ])
+    return out        
 
 
 #***************************************************************
 #***************************************************************
 
 
-def plot_curves(option):
+def plot_curves(residual_array="None"):
+    '''
+    If array containing residuals is not provided
+    then the plot of residuals vs number of variables
+    will not be made
+    '''
+    
     '''
     option = 1 : plot
            = 0 : do not plot
 
     '''
+    option=1
     if option == 1:
         # Load the saved correction curves for  plotting
         # outputs from last run will be loaded
@@ -803,21 +901,43 @@ def plot_curves(option):
         plt.plot(xaxis,  yquadr, 'k-', linewidth=2.65, label='REF-Quadratic')
         
         plt.legend(loc='upper left', fontsize=16)
+        
+        # Add markers 
+        # markers showing the bands positions whose data is used for fit 
+        plt.plot(ref_CCl4[:,0], dummyCCl4, 'mo' )
+        plt.plot(ref_C6H12[:,0], dummyC6H12, 'cv' )
+        plt.plot(ref_C6H6[:,0], dummyC6H6, 'gD' )
 
         # *********************
-        marker_style = dict(linestyle=':', color='0.8', markersize=10,
-                    mfc="C0", mec="C0")
-        xv=np.arange(1,5,1)
-        plt.figure(1)
-        ax1 = plt.axes()
-        plt.title('Residuals', fontsize=21)
-        plt.plot(xv, [resd_1,resd_2,resd_3,resd_4],  'ro--' )
-        plt.xlabel('degree of polynomial', fontsize=20)
-        plt.ylabel('Residual', fontsize=20)
-        plt.grid(True )  # ax.grid(True, which='both')
-        ax1.tick_params(axis='both', labelsize =20)
+        if type(residual_array) != str:
+            if isinstance(residual_array, (list, np.ndarray)):
+                # -----------------------------------------------------
+                # FIGURE 1 INITIALIZED
+    
+                xv = np.arange(1, 5, 1)
+                plt.figure(1)
+                ax1 = plt.axes()
+                plt.title('Residuals', fontsize=21)
+                plt.plot(xv, residual_array, 'ro--')
+                plt.xlabel('degree of polynomial', fontsize=20)
+                plt.ylabel('Residual', fontsize=20)
+                plt.grid(True)  # ax.grid(True, which='both')
+                ax1.tick_params(axis='both', labelsize=20)
+            else:
+                print('\tWrong type of parameter : residual_array. \
+                      Quitting plotting.')
+        else:
+            print('\tResidual array not provided. plot of residuals not made!')
 
 
         #  For saving the plot
         #plt.savefig('fit_output.png', dpi=120)
 #********************************************************************
+# -----------------------------------------------------
+#  Dummy value for plot (vs frequencies)
+#   Shows which band were analyzed in the fitting
+val=0.125
+dummyCCl4 = np.full(len(ref_CCl4), val)
+dummyC6H12 = np.full(len(ref_C6H12), val)
+dummyC6H6 = np.full(len(ref_C6H6), val)
+# -----------------------------------------------------
