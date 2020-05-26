@@ -1,15 +1,9 @@
-## IntensityCalbr
+# IntensityCalbr
 
-Repository containing programs for performing intensity calibration using
-combination of pairs of bands in the spectroscopic intensity data.
-This approach has been used with rotational Raman spectra of molecular hydrogen and isotopes.
+Repository containing programs implementing the combinatorial approach for obtaining wavelength dependent sensitivity from measured spectroscopic intensities when reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously. Least squares minimization is used to determine the coefficients of a polynomial used to model the sensitivity.
 
-Application with emission spectra from Neon are also analyzed in a similar way to obtain the intensity correction curve.
-
-
-# Methodology
+## Methodology
 Observed intensities from selected bands are analysed as pairs among all such bands. Intensity ratios are compared to the true  ratios and the wavelength/wavenumber dependent sensitivity curve is obtained modelled as a polynomial function.
-
 
 
 ## Usage
