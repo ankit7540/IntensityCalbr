@@ -9,6 +9,25 @@ The general scheme is given as follows.
 
 <img align="center" src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" data-canonical-src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" width="450" height="629" />
 
+## References
+In the following works, the ratio of intensities from common rotational states are compared to the corresponding theoretical ratio to obtain the wavelength dependent sensitivity curve.
+
+  - H. Okajima, H. Hamaguchi, J. Raman Spectrosc. 2015, 46, 1140.
+  - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405.
+
+This principle of comparing intensities (rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring paramterizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. Refernce matrix can be computed if equations and required parameters are availble, or,  if known intensities are available then they can work as reference.
+
+
+## Input data required
+
+**Intensity calibration**
+
+ - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions will be required to call). In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands is given. (At present this is possible for H</sup>2</sup>, HD and D<sup>2</sup> since polarizability invariants are available for those.)
+
+ - List of all data required : experimental band area, theoretical band area ratio (Stokes/anti-Stokes), transition frequency (Stokes) in cm<sup>-1</sup>, transition frequency (anti-Stokes) in cm<sup>-1</sup> and the weight (used for fit). For  O<sub>2</sub>, when using the vibration-rotation transitions (S1- and O1-branch), include the data and the frequencies for these transitions. All of the above correspond to pair of observed bands originating from a common rotational state.
+
+See specific program's readme regarding the use of the above data in the program for fit.
+
 ## Usage
 
 Clone the repository or download the zip file. As per your choice of the programming environment ( Python or IgorPro) refer to the specific README inside the folders and proceed.
