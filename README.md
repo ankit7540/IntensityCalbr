@@ -7,7 +7,7 @@ Observed intensities from selected bands are analysed as pairs among all such ba
 
 The general scheme is given as follows.
 
-<img src="https://github.com/ankit7540/H2-PolarizabilityMatrixElements/blob/master/image/gamma.png" data-canonical-src="https://github.com/ankit7540/H2-PolarizabilityMatrixElements/blob/master/image/gamma.png" width="155" height="28" />
+<img src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" data-canonical-src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png"  />
 
 ## Usage
 
