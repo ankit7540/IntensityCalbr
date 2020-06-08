@@ -22,15 +22,18 @@ This principle of comparing intensities (rotational Raman and rotation-vibration
 
 **Intensity calibration**
 
- - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions will be required to call). In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands is given. (At present this is possible for H</sup>2</sup>, HD and D<sup>2</sup> since polarizability invariants are available for those.)
+ - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions will be required to call). 
+ 
+ In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands is given. (At present this is possible for H</sup>2</sup>, HD and D<sup>2</sup> since polarizability invariants are available for those.)
 
- - List of all data required : experimental band area, theoretical band area ratio (Stokes/anti-Stokes), transition frequency (Stokes) in cm<sup>-1</sup>, transition frequency (anti-Stokes) in cm<sup>-1</sup> and the weight (used for fit). For  O<sub>2</sub>, when using the vibration-rotation transitions (S1- and O1-branch), include the data and the frequencies for these transitions. All of the above correspond to pair of observed bands originating from a common rotational state.
+ - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, xaxis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotn-vibration bands and using these   reference data is computed on the fly.
+ 
 
-See specific program's readme regarding the use of the above data in the program for fit.
+See specific program's readme regarding the use of the above data.
 
 ## Usage
 
-Clone the repository or download the zip file. As per your choice of the programming environment ( Python or IgorPro) refer to the specific README inside the folders and proceed.
+Clone the repository or download the zip file. As per your choice of the programming environment and refer to the specific README inside the folders and proceed.
 
 ## Comments
 
