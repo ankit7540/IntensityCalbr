@@ -7,7 +7,7 @@ Observed intensities from selected bands are analysed as pairs among all such ba
 
 The general scheme is given as follows.
 
-<img src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" data-canonical-src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png"  />
+<img src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" data-canonical-src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" width="629" height="450" />
 
 ## Usage
 
