@@ -46,10 +46,11 @@ log.error("------------ Run log ------------\n")
 # without header in the following files
 
 # Change following paths
-dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt")
-dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
-dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
-xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
+
+dataH2 = np.loadtxt("./run_parallel_0531/BA_H2_1.txt")
+dataHD = np.loadtxt("./run_parallel_0531/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run_parallel_0531/BA_D2_1.txt")
+xaxis = np.loadtxt("./run_parallel_0531/Ramanshift_axis_para.txt")
 # ------------------------------------------------------
 # PARALLEL POLARIZATION
 
@@ -57,15 +58,15 @@ xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
 # these are required for computing spectra for given T
 
 OJ_H2 = 3
-QJ_H2 = 4
+QJ_H2 = 3
 
 OJ_HD = 3
 QJ_HD = 3
-SJ_HD = 2
+SJ_HD = 1
 
 OJ_D2 = 4
 QJ_D2 = 6
-SJ_D2 = 3
+SJ_D2 = 2
 # ------------------------------------------------------
 print('Dimension of input data')
 print('\t', dataH2.shape)
@@ -156,10 +157,10 @@ def run_all_fit():
     resd_2 = run_fit_quadratic(299, 0.835, -0.052)
 
     run_fit_cubic(299, -1.036, -0.2192, 0.0025)
-    resd_3 = run_fit_cubic(299, -0.559, -0.215, +0.00215)
+    resd_3 = run_fit_cubic(299, -0.249, -0.215, +0.00215)
 
-    resd_4 = run_fit_quartic(299, -0.5566, -0.158, 0.05, +0.0012)
-    resd_5 = run_fit_quintuple(296, -0.5566, -0.158, 0.05, +0.0012, +0.0001)
+    resd_4 = run_fit_quartic(299, -0.24966, -0.358, 0.05, +0.0012)
+    resd_5 = run_fit_quintuple(296, -0.24966, -0.368, 0.05, +0.0012, +0.0001)
 
     out = np.array([resd_1, resd_2, resd_3, resd_4, resd_5])
     return out
@@ -235,7 +236,7 @@ def gen_weight(expt_data):
                 * math.sqrt((expt_data[i, 1] / expt_data[i, 0])**2
                             + (expt_data[j, 1] / expt_data[j, 0])**2)
     # return factor * inverse_square(error_mat)
-    return error_mat
+    return inverse_square(error_mat)
 
 # ------------------------------------------------
 
@@ -453,11 +454,11 @@ def residual_linear(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     return E
 
@@ -525,11 +526,15 @@ def residual_quadratic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
+
+    np.savetxt("errorD2_2.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
+    np.savetxt("errorHD_2.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
+    np.savetxt("errorH2_2.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')      
 
     return E
 
@@ -595,11 +600,11 @@ def residual_cubic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
     
     #np.savetxt("errorD2_cubic.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_cubic.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
@@ -674,11 +679,11 @@ def residual_quartic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     #np.savetxt("errorD2_4.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_4.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
@@ -753,11 +758,11 @@ def residual_quintuple(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-    #    + np.sum(np.square(eH2))
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
+        + np.sum(np.square(eH2))
 
-    E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2))
+    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+    #    np.sum(np.abs(eH2))
 
     #np.savetxt("errorD2_5.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_5.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
@@ -830,7 +835,7 @@ def run_fit_quadratic(init_T, init_k1, init_k2):
          init_k2, (residual_quadratic(param_init))))
 
     print("\nOptimization run: Quadratic     \n")
-    res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
+    res = opt.minimize(residual_quadratic, param_init, method='powell', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -875,7 +880,7 @@ def run_fit_cubic(init_T, init_k1, init_k2, init_k3):
 
 
     print("\nOptimization run : Cubic     \n")
-    res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
+    res = opt.minimize(residual_cubic, param_init, method='powell', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2500})
 
     print(res)
@@ -924,7 +929,7 @@ def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
 
 
     print("\nOptimization run : Quartic     \n")
-    res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
+    res = opt.minimize(residual_quartic, param_init, method='powell', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -977,7 +982,7 @@ def run_fit_quintuple(init_T, init_k1, init_k2, init_k3, init_k4, init_k5):
 
 
     print("\nOptimization run : Quintuple  \n")
-    res = opt.minimize(residual_quintuple, param_init, method='Nelder-Mead', \
+    res = opt.minimize(residual_quintuple, param_init, method='powell', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -1048,10 +1053,10 @@ def plot_curves(residual_array="None"):
     plt.title('Fitting result', fontsize=22)
 
     plt.plot(xaxis, correction_line, 'r', linewidth=3, label='line_fit')
-    plt.plot(xaxis, correction_quad, 'g', linewidth=4.2, label='quad_fit')
-    plt.plot(xaxis, correction_cubic, 'b--', linewidth=2.65, label='cubic_fit')
-    plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.65, label='quartic_fit')
-    plt.plot(xaxis, correction_quintuple, 'r--', linewidth=2.25, label='5th order fit')
+    plt.plot(xaxis, correction_quad, 'g', linewidth=3, label='quad_fit')
+    plt.plot(xaxis, correction_cubic, 'b--', linewidth=3.75, label='cubic_fit')
+    plt.plot(xaxis, correction_quartic, 'k--', linewidth=2.75, label='quartic_fit')
+    plt.plot(xaxis, correction_quintuple, 'r--', linewidth=2.45, label='5th order fit')
 
     plt.xlabel('Wavenumber / $cm^{-1}$', fontsize=20)
     plt.ylabel('Relative sensitivity', fontsize=20)

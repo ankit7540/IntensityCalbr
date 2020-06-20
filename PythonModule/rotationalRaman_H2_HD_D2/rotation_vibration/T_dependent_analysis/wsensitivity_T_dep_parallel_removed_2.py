@@ -377,10 +377,10 @@ def gen_s_quintuple(computed_data, param):
             # param[4] = c4
 
             mat[i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
-                       (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4 
+                       (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4
                        +  (param[5]/scale5)*v1**5 )/ \
                 (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
-                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4 
+                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4
                  + (param[5]/scale5)*v2**5 )
 
     return mat
@@ -452,11 +452,11 @@ def residual_linear(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
-    
+
     # set specific rows/cols to 0
     eH2[:,1] = 0
     eH2[1,:] = 0
-    
+
     eHD[:,6] = 0
     eHD[6,:] = 0
 
@@ -531,11 +531,11 @@ def residual_quadratic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
-    
+
     # set specific rows/cols to 0
     eH2[:,1] = 0
     eH2[1,:] = 0
-    
+
     eHD[:,6] = 0
     eHD[6,:] = 0
 
@@ -608,23 +608,23 @@ def residual_cubic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
-    
+
     # set specific rows/cols to 0
     eH2[:,1] = 0
     eH2[1,:] = 0
-    
+
     eHD[:,6] = 0
-    eHD[6,:] = 0    
+    eHD[6,:] = 0
 
     #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
     E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
         np.sum(np.abs(eH2))
-    
+
     #np.savetxt("errorD2_cubic.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_cubic.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_cubic.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
+    #np.savetxt("errorH2_cubic.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
     #    np.sum(np.abs(eH2))
@@ -694,13 +694,13 @@ def residual_quartic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
-    
+
     # set specific rows/cols to 0
     eH2[:,1] = 0
     eH2[1,:] = 0
-    
+
     eHD[:,6] = 0
-    eHD[6,:] = 0    
+    eHD[6,:] = 0
 
     #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
@@ -710,7 +710,7 @@ def residual_quartic(param):
 
     #np.savetxt("errorD2_4.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_4.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_4.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
+    #np.savetxt("errorH2_4.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
     #    np.sum(np.abs(eH2))
@@ -784,10 +784,10 @@ def residual_quintuple(param):
     # set specific rows/cols to 0
     eH2[:,1] = 0
     eH2[1,:] = 0
-    
+
     eHD[:,6] = 0
     eHD[6,:] = 0
-    
+
     #E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
     #    + np.sum(np.square(eH2))
 
@@ -796,7 +796,7 @@ def residual_quintuple(param):
 
     #np.savetxt("errorD2_5.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
     #np.savetxt("errorHD_5.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_5.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')    
+    #np.savetxt("errorH2_5.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
     #    np.sum(np.abs(eH2))
@@ -1098,7 +1098,7 @@ def plot_curves(residual_array="None"):
 
     xmin = 2500
     xmax = np.amax(xaxis + 10)
-    
+
     plt.xlim((xmax, xmin)) #  setting xaxis range
     ax0.set_ylim([0, 2.1]) #  change this if the ylimit is not enough
 
@@ -1108,8 +1108,8 @@ def plot_curves(residual_array="None"):
     plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
-    
-    # markers showing the bands positions whose data is used for fit 
+
+    # markers showing the bands positions whose data is used for fit
     plt.plot(computed_D2[:,1], dummyD2, 'mo' )
     plt.plot(computed_HD[:,1], dummyHD, 'cv' )
     plt.plot(computed_H2[:,1], dummyH2, 'gD' )
@@ -1150,7 +1150,7 @@ wMat_H2 = 1
 # generate calculated data for the entered J values
 TK = 299
 sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)    
+sosHD = compute_series_para.sumofstate_HD(TK)
 sosH2 = compute_series_para.sumofstate_H2(TK)
 
 computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,

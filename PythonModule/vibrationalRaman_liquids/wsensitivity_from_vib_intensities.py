@@ -21,7 +21,7 @@ import matplotlib.pyplot as plt
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./expt_data2/logfile_para.txt', 'w+')
+fileh = logging.FileHandler('./expt_data_wch/logfile_para.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -47,18 +47,18 @@ log.error("------------ Run log ------------\n")
 
 # Experimental data
 # Change following paths
-data_CCl4 = np.loadtxt("./expt_data2/BA_CCl4.txt")
-data_C6H6 = np.loadtxt("./expt_data2/BA_C6H6.txt")
-data_C6H12 = np.loadtxt("./expt_data2/BA_C6H12.txt")
-xaxis = np.loadtxt("./expt_data/Wavenumber_axis_pa.txt")
+data_CCl4 = np.loadtxt("./expt_data_wch/BA_CCl4.txt")
+data_C6H6 = np.loadtxt("./expt_data_wch/BA_C6H6.txt")
+data_C6H12 = np.loadtxt("./expt_data_wch/BA_C6H12.txt")
+xaxis = np.loadtxt("./expt_data_wch/Wavenumber_axis_pa.txt")
 
 # ------------------------------------------------------
 
 # Reference data
 # Change following paths
-ref_CCl4 = np.loadtxt("./expt_data2/BA_ref_CCl4.txt")
-ref_C6H6 = np.loadtxt("./expt_data2/BA_ref_C6H6.txt")
-ref_C6H12 = np.loadtxt("./expt_data2/BA_ref_C6H12.txt")
+ref_CCl4 = np.loadtxt("./expt_data_wch/BA_ref_CCl4.txt")
+ref_C6H6 = np.loadtxt("./expt_data_wch/BA_ref_C6H6.txt")
+ref_C6H12 = np.loadtxt("./expt_data_wch/BA_ref_C6H12.txt")
 
 # ------------------------------------------------------
 # ------------------------------------------------------
@@ -492,8 +492,8 @@ def residual_quadratic(param):
     np.savetxt('quadratic_e_C6H12.txt', e_C6H12, fmt='%2.6f', delimiter='\t')
     np.savetxt('quadratic_e_CCl4.txt', e_CCl4, fmt='%2.6f', delimiter='\t')      
 
-    E = np.sum(e_C6H6) + np.sum(e_C6H12) \
-       + np.sum(e_CCl4)    
+    E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
+       + np.sum(np.abs(e_CCl4))    
 
     #E = np.sum(np.square(e_C6H6)) + np.sum(np.square(e_C6H12)) \
     #   + np.sum(np.square(e_CCl4))   
@@ -559,8 +559,8 @@ def residual_cubic(param):
     #np.savetxt('cubic_e_C6H12.txt', e_C6H12, fmt='%5.3f', delimiter='\t')
     #np.savetxt('cubic_e_CCl4.txt', e_CCl4, fmt='%5.3f', delimiter='\t')      
 
-    E = np.sum(e_C6H6) + np.sum(e_C6H12) \
-       + np.sum(e_CCl4)    
+    E = np.sum(np.abs(e_C6H6)) + np.sum(np.abs(e_C6H12)) \
+       + np.sum(np.abs(e_CCl4))   
 
     #E = np.sum(np.square(e_C6H6)) + np.sum(np.square(e_C6H12)) \
     #   + np.sum(np.square(e_CCl4))   
@@ -815,6 +815,7 @@ def run_fit_quartic ( init_k1, init_k2, init_k3, init_k4 ):
 #***************************************************************
 
 def run_all_fit():
+    run =1
     if (run == 1):
         resd_1 = 0
         resd_2 = 0

@@ -1,0 +1,166 @@
+<Logger T_determination_quartic.py (INFO)>
+2020-06-03 16:05:31
+
+
+------------ Run log ------------
+
+
+ *******  Optimization run : D2  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[289.77442774],
+       [289.77442774]]), array([0.18855142, 0.18855142]))
+           fun: 0.188551417118856
+       message: 'Optimization terminated successfully.'
+          nfev: 81
+           nit: 37
+        status: 0
+       success: True
+             x: array([289.77442774])
+
+
+ Optimized result : T = 289.77442774 
+
+ *******************************************
+
+ *******  Optimization run : HD  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[293.27320386],
+       [293.27320386]]), array([0.0403248, 0.0403248]))
+           fun: 0.04032480241716126
+       message: 'Optimization terminated successfully.'
+          nfev: 78
+           nit: 35
+        status: 0
+       success: True
+             x: array([293.27320386])
+
+
+ Optimized result : T = 293.27320386 
+
+ *******************************************
+
+ *******  Optimization run : H2  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[314.43686469],
+       [314.43686469]]), array([0.01869768, 0.01869768]))
+           fun: 0.01869768395918382
+       message: 'Optimization terminated successfully.'
+          nfev: 76
+           nit: 35
+        status: 0
+       success: True
+             x: array([314.43686469])
+
+
+ Optimized result : T = 314.43686469 
+
+ *******************************************
+
+ *******  Optimization run : D2, O2S0  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[301.83494041],
+       [301.83494041]]), array([6.56849963e-27, 1.61765710e-24]))
+           fun: 6.568499631129331e-27
+       message: 'Optimization terminated successfully.'
+          nfev: 70
+           nit: 35
+        status: 0
+       success: True
+             x: array([301.83494041])
+
+
+ Optimized result : T = 301.83494041 
+
+ *******************************************
+
+ *******  Optimization run : D2, O3S1  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[275.09237215],
+       [275.09237215]]), array([1.02236373e-27, 2.41243649e-24]))
+           fun: 1.0223637331664313e-27
+       message: 'Optimization terminated successfully.'
+          nfev: 74
+           nit: 37
+        status: 0
+       success: True
+             x: array([275.09237215])
+
+
+ Optimized result : T = 275.09237215 
+
+ *******************************************
+
+ *******  Optimization run : HD, O2S0  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[281.52873639],
+       [281.52873639]]), array([1.00715625e-25, 1.41819691e-24]))
+           fun: 1.0071562513618795e-25
+       message: 'Optimization terminated successfully.'
+          nfev: 72
+           nit: 36
+        status: 0
+       success: True
+             x: array([281.52873639])
+
+
+ Optimized result : T = 281.52873639 
+
+ *******************************************
+
+ *******  Optimization run : HD, O3S1  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[285.66318308],
+       [285.66318308]]), array([1.14455491e-25, 8.75371121e-25]))
+           fun: 1.1445549054521837e-25
+       message: 'Optimization terminated successfully.'
+          nfev: 72
+           nit: 36
+        status: 0
+       success: True
+             x: array([285.66318308])
+
+
+ Optimized result : T = 285.66318308 
+
+ *******************************************
+
+ *******  Optimization run : D2, o2s0  *******
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[286.76190332],
+       [286.76190332]]), array([0.1219752, 0.1219752]))
+           fun: 0.12197520256495747
+       message: 'Optimization terminated successfully.'
+          nfev: 75
+           nit: 36
+        status: 0
+       success: True
+             x: array([286.76190332])
+
+
+ Optimized result : T = 286.76190332 
+
+ *******************************************
