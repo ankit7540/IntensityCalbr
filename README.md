@@ -14,6 +14,7 @@ In the following works, the ratio of intensities from common rotational states a
 
   - H. Okajima, H. Hamaguchi, J. Raman Spectrosc. 2015, 46, 1140.
   - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405.
+  - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020 (submitted)
 
 This principle of comparing intensities (rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring paramterizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. Refernce matrix can be computed if equations and required parameters are availble, or,  if known intensities are available then they can work as reference.
 
@@ -22,11 +23,11 @@ This principle of comparing intensities (rotational Raman and rotation-vibration
 
 **Intensity calibration**
 
- - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions will be required to call). 
+ - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called). 
  
- In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands is given. (At present this is possible for H</sup>2</sup>, HD and D<sup>2</sup> since polarizability invariants are available for those.)
+ In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these.)
 
- - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, xaxis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotn-vibration bands and using these   reference data is computed on the fly.
+ - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, xaxis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotn-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
  
 
 See specific program's readme regarding the use of the above data.
@@ -39,7 +40,7 @@ Clone the repository or download the zip file. As per your choice of the program
 
  - On convergence of the minimization scheme in intensity calibration : The convergence of the optimization has been tested with artificial and actual data giving expected results. However, in certain cases convergence in the minimization may not be achieved based on the specific data set and the error in the intensity.
 
- - Accuracy of the calibration : It is highly suggested to perform an independent validation of the intensity calibration. This validation can be using anti-Stokes to Stokes intensity for determining the sample's temperature (for checking the accuracy of wavelength sensitivity correction) and calculating the depolarization ratio from spectra (for checking the polarization dependent sensitivity correction). New ideas regarding testing the validity of intensity calibration are welcome. Please give comments in the "Issues" section of this repository.
+ - Accuracy of the calibration : It is highly suggested to perform an independent validation of the intensity calibration. This validation can be using anti-Stokes to Stokes intensity for determining the sample's temperature (for checking the accuracy of wavelength sensitivity correction). New ideas regarding testing the validity of intensity calibration are welcome. Please give comments in the "Issues" section of this repository.
 
 
 ## Credits
