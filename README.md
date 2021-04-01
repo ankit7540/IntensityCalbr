@@ -1,6 +1,6 @@
 # IntensityCalbr
 
-Repository containing programs implementing the combinatorial approach for obtaining wavelength dependent sensitivity from measured spectroscopic intensities when reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously. Least squares minimization is used to determine the coefficients of a polynomial used to model the sensitivity.
+Repository containing programs implementing the combinatorial approach for obtaining wavelength dependent sensitivity from measured spectroscopic intensities when reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously. Least squares minimization is used to determine the coefficients of a polynomial used to model the sensitivity. (this is under active developement now !)
 
 ## Methodology
 Observed intensities from selected bands are analysed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the wavelength/wavenumber dependent sensitivity curve is obtained modelled as a polynomial function.
