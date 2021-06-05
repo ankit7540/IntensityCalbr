@@ -1,11 +1,8 @@
-## Python modules
+## Python module
 
-Three modules are given.
- - General scheme (in the 'general example' directory) includes the basic example code for the case where experimental intensities and true intensities are available as 1D array.
+**This module is for:**
 
- - Scheme for the pure rotational Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. This includes functions for computing the true intensities for a given temperature. If temperature is not needed as a fit variable then computation of spectra at some fixed temperature is also possible. Refer to the directory 'rotationalRaman_H2_HD_D2' directory and the common directory within.  
-
- - Scheme for vibration-rotation Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. This is the most detailed part of the repo, and includes functions for computing the true intensities for a given temperature. If temperature is not needed as a fit variable then computation of spectra at some fixed temperature is also possible. Refer to the directory 'rotationalRaman_H2_HD_D2' directory and the common directory within.
+ - Scheme for the pure rotational Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. This includes functions for computing the true intensities for a given temperature. If temperature is not needed as a fit variable then computation of spectra at some fixed temperature is also possible. 
 
 # Usage
 User supplied band area data arranged in 1D arrays are required. These should contain the band positions and experimental band intensities. Theoretical intensities will be computed within the iteration if temperature will be included as a fit parameter.
