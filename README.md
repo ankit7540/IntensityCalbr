@@ -12,6 +12,18 @@ The general scheme is given as follows.
 <p align="center">
 <img  src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" data-canonical-src="https://github.com/ankit7540/IntensityCalbr/blob/master/img/scheme.png" width="450" height="629" /> </p>
 
+Explanation for the steps of the scheme are following : 
+	 -  The experimental data available as 2D array is used to generate the $\mathbb{R}_{\text{obs}}$ matrix. Using the errors in band areas, the weights are generated.
+	 -  The reference data computed at the given temperature is used to generate the $\mathbb{R}_{\text{true}}$ matrix. 
+	 -  Next, using the band positions and initial coefs of the polynomial, the  $\mathbb{S}$ is generated.
+	 -  The dimensions of the four matrices are checked before moving to the next step.
+	 -  Difference matrix, $\mathbb{D}$, (for each species) is generated using the $\mathbb{R}_{\text{obs}}$, $\mathbb{R}_{\text{true}}$ and $\mathbb{S}$ matrix.
+	 -  The elements of the difference matrix are weighted using the corresponding elements of the weight matrix.
+	 -  The norm of the difference matrix is computed. The norm is minimized by varying the coefficients of the polynomial (recomputing the  $\mathbb{S}$ matrix and the reference matrix, $\mathbb{R}_{\text{true}}$ using the temperature ).
+	 -  Use the optimized coefficients of the polynomial to generate the $C_{2}$ correction. Check temperature for physical correctness.
+	
+
+
 ## References
 In the following works, the ratio of intensities from common rotational states are compared to the corresponding theoretical ratio to obtain the wavelength dependent sensitivity curve.
 
