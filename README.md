@@ -2,10 +2,10 @@
 
 Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)
 
-Repository containing programs implementing the combinatorial approach for obtaining wavelength dependent sensitivity from measured spectroscopic intensities when reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously. Least squares minimization is used to determine the coefficients of a polynomial used to model the sensitivity. (this is under active developement now !)
+Repository containing programs implementing the technique for obtaining wavelength-dependent sensitivity from measured spectroscopic intensities when the corresponding reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity.
 
 ## Methodology
-Observed intensities from selected bands are analysed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the wavelength/wavenumber dependent sensitivity curve is obtained modelled as a polynomial function.
+Observed intensities from selected bands are analyzed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the coefficients for the wavelength/wavenumber dependent sensitivity curve, modelled as a polynomial function, is obtained via non-linear minimization technique.
 
 The general scheme is given as follows.
 
@@ -18,19 +18,19 @@ In the following works, the ratio of intensities from common rotational states a
   - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405.
   - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020 (submitted)
 
-This principle of comparing intensities (rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring paramterizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. Refernce matrix can be computed if equations and required parameters are availble, or,  if known intensities are available then they can work as reference.
+This principle of comparing intensities (pure rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring parametrizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. The reference matrix can be computed if equations and required parameters are available, or,  if known intensities are available then they can work as reference (for given conditions).
 
 
 ## Input data required
 
 **Intensity calibration**
 
- - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called). 
- 
- In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these.)
+ - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
- - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, xaxis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotn-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
- 
+ In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work [See https://doi.org/10.1063/1.5011433 ].)
+
+ - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, x-axis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotational-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
+
 
 See specific program's readme regarding the use of the above data.
 
