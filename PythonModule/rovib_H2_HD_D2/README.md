@@ -7,7 +7,7 @@
     + use the computed intensities in a non-linear optimization analysis to determine the wavenumber dependent sensitivity
     + and, perform the above analysis with/witout temperauture as a fixed parameter
 + Apart from above,
-    * function is included for the determination of temperature by comparison of observed Raman intensities to computed ones.
+    + function is included for the determination of temperature by comparison of observed Raman intensities to computed ones.
 
 
 
@@ -42,4 +42,4 @@ If using Python3, directly import as
 
 ***When using Python IDE like Spyder***
 
-1. After cloning the repository and moving in the `python-module` directory,  refer to the readme.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. Open the  file in the IDE and make changes  to the file path if required. Run the code.
+1. After cloning the repository and moving in the `python-module` directory,  refer to the `readme`.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. Open the  file in the IDE and make changes  to the file path if required and run the code.
