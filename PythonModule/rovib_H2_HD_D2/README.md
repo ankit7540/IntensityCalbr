@@ -1,10 +1,15 @@
-## Python module for vibration-rotation intensities
 
-- Scheme for **vibration-rotation Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>.** This is the most detailed part of the repo, and includes functions:
- - for computing the true vibration-rotation Raman intensities for a given temperature.
- - 
+# Python module for vibration-rotation intensities
 
-For the determination of the wavenumber dependent sensitivity, the temperature can be either fixed or obtained by the analysis.
+
++ - Scheme for **vibration-rotation Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>.** This is the most detailed part of the repo and includes functions for :
+    + computing Raman intensities of sets of predefined transitions
+    + use the computed intensities in a non-linear optimization analysis to determine the wavenumber dependent sensitivity
+    + and, perform the above analysis with/witout temperauture as a fixed parameter
++ Apart from above,
+    * function is included for the determination of temperature by comparison of observed Raman intensities to computed ones.
+
+
 
 # Usage
 User supplied band area data arranged in 1D arrays are required. These should contain the band positions and experimental band intensities. Theoretical intensities will be computed within the iteration if temperature will be included as a fit parameter.
