@@ -4,7 +4,7 @@ Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](h
 
 Repository containing programs implementing the procedure for obtaining wavelength-dependent sensitivity for calibration of Raman spectrometers based on multi-channel detectors. The present scheme is a multi-step procedure based on following three steps:
 - C<sub>0</sub> : Correction for non-linear sampling of photons in the wavenumber scale.
-- C<sub>1</sub> : Correction for channel-to-channel variation in the sensiticity of the spectrometer.
+- C<sub>1</sub> : Correction for channel-to-channel variation in the sensitivity of the spectrometer.
 - C<sub>2</sub> : Final correction derived from Raman spectroscopic intensities.
 
 In order to determine the final correction (C<sub>2</sub>) the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
@@ -19,14 +19,16 @@ The general scheme is given as follows.
 
 Explanation for the steps of the scheme are following :
 
- -  The experimental data available as 2D array is used to generate the $\mathbb{R}_{\text{obs}}$ matrix. Using the errors in band areas, the weights are generated.
- -  The reference data computed at the given temperature is used to generate the $\mathbb{R}_{\text{true}}$ matrix.
+
+-  The experimental data available as 2D array is used to generate the **R**<sub>obs.</sub> matrix. Using the errors in band areas, the weights are generated.
+ -  The reference data computed at the given temperature is used to generate the **R**<sub>true</sub> matrix.
  -  Next, using the band positions and initial coefs of the polynomial, the  $\mathbb{S}$ is generated.
  -  The dimensions of the four matrices are checked before moving to the next step.
- -  Difference matrix, \\(\mathbb{D}\\), (for each species) is generated using the $\mathbb{R}_{\text{obs}}$, $\mathbb{R}_{\text{true}}$ and $\mathbb{S}$ matrix.
+ -  Difference matrix, **D**<sub></sub>, (for each species) is generated using the $\mathbb{R}_{\text{obs}}$, $\mathbb{R}_{\text{true}}$ and $\mathbb{S}$ matrix.
  -  The elements of the difference matrix are weighted using the corresponding elements of the weight matrix.
  -  The norm of the difference matrix is computed. The norm is minimized by varying the coefficients of the polynomial (recomputing the  $\mathbb{S}$ matrix and the reference matrix, $\mathbb{R}_{\text{true}}$ using the temperature ).
  -  Use the optimized coefficients of the polynomial to generate the \\(C_{2}\\) correction. Check temperature for physical correctness.
+
 
 
 
