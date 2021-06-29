@@ -5,6 +5,7 @@ from numpy.polynomial import Polynomial
 import math
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
+plt.rcParams["font.family"] = "Arial"
 
 #############################################################################
 
@@ -55,7 +56,7 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask=None, set_mask_n
         gen_C1 (Ramanshift, laser_nm ,  wl_norm_C0 ,   norm_pnt)
         
     elif (isinstance(mask, np.ndarray) == 1):
-        print ("\t Mask is available.")
+        print ("\t Mask is available. Using mask and fitting.")
         gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask,  norm_pnt)
 
 
@@ -88,7 +89,7 @@ def gen_C0 (Ramanshift, norm_pnt):
 #############################################################################
 
 def photons_per_unit_wavenum_abs(x,a,T) :
-    return (a*599584916*x**2)/(np.exp(0.1438776877e-1*x/T)-1)
+    return (a*599584916*(x**2))/(np.exp(0.1438776877e-1*x/T)-1)
 
 #############################################################################
 #############################################################################
@@ -109,11 +110,15 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
     print("\t Optimized coefs :", popt)
 
     # generate fit
-    fit = photons_per_unit_wavenum_abs(Ramanshift, *popt)
+    fit = photons_per_unit_wavenum_abs(abs_wavenumber, *popt)
 
     plt.plot(abs_wavenumber, wl_spectra,'o',abs_wavenumber, fit)
     #plt.plot(abs_wavenumber, wl_spectra,'o' )
     plt.grid()
+    plt.ylim([0, 1.2])
+    plt.title('Fit of broadband white light spectrum with black-body emission' )
+    plt.xlabel('Wavenumber / $cm^{-1}$ (absolute)')
+    plt.ylabel('Relative intensity')
     plt.show()
     
 
@@ -131,9 +136,9 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
     abs_wavenumber = ((1e7/laser_nm)-Ramanshift)*100
 
     masked_wl  =   np.ma.masked_array(wl_spectra, mask=mask)
-    masked_xaxis = np.ma.masked_array(Ramanshift, mask=mask)
+    masked_xaxis = np.ma.masked_array(abs_wavenumber, mask=mask)
     
-    init_guess=np.array([1e-19, 2999 ])
+    init_guess=np.array([1e-19, 2899 ])
     # perform fit
     popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
     masked_xaxis, masked_wl, p0=init_guess,  
@@ -142,11 +147,16 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
     print("\t Optimized coefs :", popt)
 
     # generate fit
-    fit = photons_per_unit_wavenum_abs(Ramanshift, *popt)
+    fit = photons_per_unit_wavenum_abs(abs_wavenumber, *popt)
 
-    plt.plot(abs_wavenumber, masked_wl,'o',abs_wavenumber, fit)
+    plt.plot(abs_wavenumber, masked_wl,'o',abs_wavenumber, fit,'--')
     #plt.plot(abs_wavenumber, wl_spectra,'o' )
     plt.grid()
+    plt.ylim([0, 1.2])
+    plt.title('Fit of broadband white light spectrum with black-body emission' )
+    plt.xlabel('Wavenumber / $cm^{-1}$ (absolute)')
+    plt.ylabel('Relative intensity')
+
     plt.show()
     
 
