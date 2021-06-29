@@ -1,4 +1,4 @@
-# Generating $$C_{0}/C_{1}$$ correction 
+# Generating $C_{0}/C_{1}$ correction 
 
 The module `gen_correction.py` allows one to generate the correction ($$C_{0}/C_{1}$$)
 
