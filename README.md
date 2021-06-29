@@ -2,7 +2,12 @@
 
 Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)
 
-Repository containing programs implementing the technique for obtaining wavelength-dependent sensitivity from measured spectroscopic intensities when the corresponding reference data is available. In this scheme, relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity.
+Repository containing programs implementing the procedure for obtaining wavelength-dependent sensitivity for calibration of Raman spectrometers based on multi-channel detectors. The present scheme is a multi-step procedure based on following three steps:
+- C<sub>0</sub> : Correction for non-linear sampling of photons in the wavenumber scale.
+- C<sub>1</sub> : Correction for channel-to-channel variation in the sensiticity of the spectrometer.
+- C<sub>2</sub> : Final correction derived from Raman spectroscopic intensities.
+
+In order to determine the final correction (C<sub>2</sub>) the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
 
 ## Methodology
 Observed intensities from selected bands are analyzed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the coefficients for the wavelength/wavenumber dependent sensitivity curve, modelled as a polynomial function, is obtained via non-linear minimization technique.
