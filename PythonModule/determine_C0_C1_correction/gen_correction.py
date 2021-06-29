@@ -9,17 +9,60 @@ plt.rcParams["font.family"] = "Arial"
 
 #############################################################################
 
-axis=np.loadtxt('axis.txt')
-wl=np.loadtxt('wl.txt')
-mask=np.loadtxt('mask.txt')
-mask = mask.astype(bool)
-mask_array =  np.invert(mask)
+# define input arrays here 
+
+#axis=np.loadtxt('axis.txt')  # xaxis, in relative wavenumbers
+#wl=np.loadtxt('wl.txt')      # white light spectra, 1D or 2D 
+#mask=np.loadtxt('mask.txt')  # mask, integers, set 1 for masked region
+#mask = mask.astype(bool)     # convert mask to boolean
+#mask_array =  np.invert(mask)  # use this if mask is required to be inverted 
+
+#############################################################################
+
+print('\t**********************************************************')
+
+print('\t ')
+print('\t This module is for generating the wavenumber-dependent')
+print('\t intensity correction curve.')
+
+print('\n\t Main function is listed below.')
+print('\t ')
+print('\t**********************************************************')
+print('\tgen_C0_C1 ( Ramanshift,  laser_nm, wl_spectra, norm_pnt,  ')
+print ( '\t\t        mask = None, set_mask_nan = None, export = None) ') 
+print('\t**********************************************************')
+print('\n\t REQUIRED PARAMETERS')
+print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
+print('\t\t\t laser_nm = scalar, the laser wavelength in nanometers')
+print('\t\t\t wl_spectra = broadband whitelight spectra (1D or 2D)')
+print('\t\t\t norm_pnt =  normalization point (corrections will be set')
+print('\t\t\t                to unity at this point')
+print('\t  OPTIONAL PARAMETERS')
+print('\t\t\t mask = vector, mask wave for selecting specific region to fit')
+print('\t\t\t set_mask_nan= boolean, 1 will set the masked region in')
+print('\t\t\t                the output correction to nan, 0 will not do so.')
+print('\t\t\t export = 0 or 1, setting to 1 will export the correction as a txt')
+print('\t\t\t             file with name intensity_correction.txt')
+
+print('\t\t\t  ------------------------------------------')
+print('\t\t\t  All vectors required here should be numpy arrays.')
+print('\t\t\t  See line 14 to 18 to define/load the numpy arrays')
+print('\t\t\t                      before execution.')
+
+print('\t**********************************************************')
+
+#############################################################################
+
+
+#############################################################################
+
 
 # This file has function(s) for determination of the C0 and C1 corrections
 
-def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask=None, set_mask_nan=None):
+def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None, 
+               set_mask_nan = None, export = None):
 
-    '''Ramanshift = vector, the x-axis in wavenumbers
+    '''Ramanshift = vector, the x-axis in relative wavenumbers
        laser_nm = scalar, the laser wavelength in nanometers,
        wl_spectra = broadband whitelight spectra (1D or 2D),
        norm_pnt =  normalization point (corrections will be set
@@ -42,7 +85,7 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask=None, set_mask_n
     if (dim[1] > 1 and dim[1] ):
         print ("\t wl spectra is 2D")
         wl_spectra = np.mean(wl_spectra, axis=1)
-        print(wl_spectra.shape)
+        #print(wl_spectra.shape)
 
     # normalize the wl
     wl_norm = wl_spectra / np.amax(wl_spectra)
@@ -50,16 +93,33 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask=None, set_mask_n
     # correct wl with C0
     wl_norm_C0 = np.multiply(wl_norm , C0)
 
-    # check if mask supplied
+    # check if mask supplied --------
     if (isinstance(mask, np.ndarray) != 1):
         print ("\t Mask not available. Proceeding with fit..")
-        gen_C1 (Ramanshift, laser_nm ,  wl_norm_C0 ,   norm_pnt)
+        C1 = gen_C1 (Ramanshift, laser_nm ,  wl_norm_C0 ,   norm_pnt)
         
     elif (isinstance(mask, np.ndarray) == 1):
         print ("\t Mask is available. Using mask and fitting.")
-        gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask,  norm_pnt)
-
-
+        C1 = gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask, 
+                               norm_pnt)
+        
+        if (set_mask_nan==1 ):
+            
+            C1 [mask] = np.nan
+    
+    correction = (C0/C1) 
+    #--------------------------------
+    # export output 
+    
+    if (export == 1):
+        print('\t Correction will be exported as intensity_correction.txt')
+        
+        # export the correction as txt 
+        filename = 'intensity_correction.txt'
+        np.savetxt(filename, correction, fmt='%3.7f', newline='\n', 
+                   header='intensity_corr')
+    
+    return correction
     #----------------------------------------------------------
 
 
@@ -117,13 +177,15 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
     plt.grid()
     plt.ylim([0, 1.2])
     plt.title('Fit of broadband white light spectrum with black-body emission' )
-    plt.xlabel('Wavenumber / $cm^{-1}$ (absolute)')
+    plt.xlabel('Wavenumber / cm$^{-1}$ (absolute)')
     plt.ylabel('Relative intensity')
     plt.show()
     
+    #---------------------------
+    C1 = wl_spectra / fit
+    
 
-
-    return fit
+    return C1
 
 #############################################################################
 
@@ -154,11 +216,14 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
     plt.grid()
     plt.ylim([0, 1.2])
     plt.title('Fit of broadband white light spectrum with black-body emission' )
-    plt.xlabel('Wavenumber / $cm^{-1}$ (absolute)')
+    plt.xlabel('Wavenumber / cm$^{-1}$ (absolute)')
     plt.ylabel('Relative intensity')
 
     plt.show()
     
+    #---------------------------
+    C1 = wl_spectra / fit
+    
 
-    return fit
+    return C1
 #############################################################################
