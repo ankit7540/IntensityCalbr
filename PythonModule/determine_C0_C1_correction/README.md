@@ -2,10 +2,14 @@
 
 The module `gen_correction.py` allows one to generate the correction (C<sub>0</sub>/C<sub>1</sub>)
 using the function `gen_C0_C1`.
+
 ---
+
 For a similar program written in IgorPro see [gen_correction.ipf](https://github.com/ankit7540/RamanSpec_BasicOperations/blob/master/intensity_corr/) in my other repository.
----
+
+
 ## Requirements
+
 Python 3.6 or higher, numpy, scipy and Matplotlib
 
 
