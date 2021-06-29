@@ -8,8 +8,9 @@ Python 3.6 or higher, numpy, scipy and Matplotlib
 
 <hr>
 ## Functions
-`
->>> import gen_correction
+
+
+`>>> import gen_correction
         **********************************************************
 
          This module is for generating the wavenumber-dependent
