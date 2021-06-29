@@ -9,8 +9,8 @@ Python 3.6 or higher, numpy, scipy and Matplotlib
 <hr>
 ## Functions
 
-
-`>>> import gen_correction
+```
+>>> import gen_correction
         **********************************************************
 
          This module is for generating the wavenumber-dependent
@@ -39,7 +39,5 @@ Python 3.6 or higher, numpy, scipy and Matplotlib
                           All vectors required here should be numpy arrays.
                           See line 14 to 18 to define/load the numpy arrays
                                               before execution.
-        **********************************************************`
-
-
-        
+        **********************************************************
+        ```
