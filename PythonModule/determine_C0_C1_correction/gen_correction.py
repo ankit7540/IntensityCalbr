@@ -10,7 +10,9 @@ import matplotlib.pyplot as plt
 
 axis=np.loadtxt('axis.txt')
 wl=np.loadtxt('wl.txt')
-
+mask=np.loadtxt('mask.txt')
+mask = mask.astype(bool)
+mask_array =  np.invert(mask)
 
 # This file has function(s) for determination of the C0 and C1 corrections
 
@@ -48,10 +50,13 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask=None, set_mask_n
     wl_norm_C0 = np.multiply(wl_norm , C0)
 
     # check if mask supplied
-    if (mask==None):
+    if (isinstance(mask, np.ndarray) != 1):
         print ("\t Mask not available. Proceeding with fit..")
-    else (isinstance(obj, np.ndarray) == 1):
+        gen_C1 (Ramanshift, laser_nm ,  wl_norm_C0 ,   norm_pnt)
+        
+    elif (isinstance(mask, np.ndarray) == 1):
         print ("\t Mask is available.")
+        gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask,  norm_pnt)
 
 
     #----------------------------------------------------------
@@ -63,9 +68,6 @@ def gen_C0 (Ramanshift, norm_pnt):
     '''Ramanshift = vector, the x-axis in wavenumbers
        norm_pnt =  normalization point (corrections will be set
                                         to unity at this point) '''
-
-    nPnts = Ramanshift.shape[0]
-
 
     spacing = np.diff(Ramanshift)
 
@@ -86,7 +88,7 @@ def gen_C0 (Ramanshift, norm_pnt):
 #############################################################################
 
 def photons_per_unit_wavenum_abs(x,a,T) :
-    return (a*599584916*x**2)/(math.exp(0.1438776877e-1*x/T)-1)
+    return (a*599584916*x**2)/(np.exp(0.1438776877e-1*x/T)-1)
 
 #############################################################################
 #############################################################################
@@ -98,45 +100,55 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
 
     abs_wavenumber = ((1e7/laser_nm)-Ramanshift)*100
 
+    
+    init_guess=np.array([1e-18, 2799 ])
     # perform fit
     popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
-    abs_wavenumber, wl_spectra, bounds=([0.856e-30,0]], [300., 10000.]))
+    abs_wavenumber, wl_spectra, p0=init_guess, bounds=([0.1e-24,0.1e-9], [1000., 9000.]))
 
     print("\t Optimized coefs :", popt)
 
     # generate fit
-    fit = func(Ramanshift, *popt)
-
+    fit = photons_per_unit_wavenum_abs(Ramanshift, *popt)
 
     plt.plot(abs_wavenumber, wl_spectra,'o',abs_wavenumber, fit)
+    #plt.plot(abs_wavenumber, wl_spectra,'o' )
     plt.grid()
     plt.show()
+    
 
 
-    return wavenum_corr
+    return fit
 
 #############################################################################
 
-def gen_C1_with_mask (Ramanshift, norm_pnt):
+def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
+
     '''Ramanshift = vector, the x-axis in wavenumbers
        norm_pnt =  normalization point (corrections will be set
                                         to unity at this point) '''
 
-    nPnts = Ramanshift.shape[0]
+    abs_wavenumber = ((1e7/laser_nm)-Ramanshift)*100
 
+    masked_wl  =   np.ma.masked_array(wl_spectra, mask=mask)
+    masked_xaxis = np.ma.masked_array(Ramanshift, mask=mask)
+    
+    init_guess=np.array([1e-19, 2999 ])
+    # perform fit
+    popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
+    masked_xaxis, masked_wl, p0=init_guess,  
+    method='lm')
 
-    spacing = np.diff(Ramanshift)
+    print("\t Optimized coefs :", popt)
 
-    # normalization
-    wavenum_corr  = spacing / spacing [norm_pnt]
-    temp_xaxis = np.arange(spacing.shape[0])
+    # generate fit
+    fit = photons_per_unit_wavenum_abs(Ramanshift, *popt)
 
+    plt.plot(abs_wavenumber, masked_wl,'o',abs_wavenumber, fit)
+    #plt.plot(abs_wavenumber, wl_spectra,'o' )
+    plt.grid()
+    plt.show()
+    
 
-    # fitting the wavenumber diff
-    c = Polynomial.fit(temp_xaxis , wavenum_corr, deg=3)
-
-    # extrpolate the last point
-    wavenum_corr = np.append(wavenum_corr, c(spacing.shape[0]+1))
-
-    return wavenum_corr
+    return fit
 #############################################################################
