@@ -26,7 +26,7 @@ Explanation for the steps of the scheme are following :
 -  The dimensions of the four matrices are checked before moving to the next step.
 -  Difference matrix, **D**<sub></sub>, (for each species) is generated using the **R**<sub>obs</sub>, **R**<sub>true</sub> and **S**  matrix.
 -  The elements of the difference matrix are weighted using the corresponding elements of the weight matrix **W**.
--  The norm of the difference matrix is computed. This norm is minimized by varying the coefficients of the polynomial (recomputing the  **S**  matrix and the reference matrix, **R**<sub>true</sub> using the temperature ).
+-  The norm of the difference matrix is computed. This norm is minimized by varying the coefficients of the polynomial (re-computing the  **S**  matrix using updated values of the coefficients of the polynomial and the reference matrix **R**<sub>true</sub> using the updated value of the temperature ).
 -  Use the optimized coefficients of the polynomial to generate the C<sub>2</sub> correction. Check temperature obtained from the Raman intensities for physical correctness.
 
 
