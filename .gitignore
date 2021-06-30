@@ -8,6 +8,7 @@ launch.json
 settings.json
 
 
+*.txt
 
 # Uncomment when approaching release
 #test.py
