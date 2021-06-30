@@ -21,16 +21,13 @@ Explanation for the steps of the scheme are following :
 
 
 -  The experimental data available as 2D array is used to generate the **R**<sub>obs.</sub> matrix. Using the errors in band areas, the weights are generated.
- -  The reference data computed at the given temperature is used to generate the **R**<sub>true</sub> matrix.
- -  Next, using the band positions and initial coefs of the polynomial, the  $\mathbb{S}$ is generated.
- -  The dimensions of the four matrices are checked before moving to the next step.
- -  Difference matrix, **D**<sub></sub>, (for each species) is generated using the $\mathbb{R}_{\text{obs}}$, $\mathbb{R}_{\text{true}}$ and $\mathbb{S}$ matrix.
- -  The elements of the difference matrix are weighted using the corresponding elements of the weight matrix.
- -  The norm of the difference matrix is computed. The norm is minimized by varying the coefficients of the polynomial (recomputing the  $\mathbb{S}$ matrix and the reference matrix, $\mathbb{R}_{\text{true}}$ using the temperature ).
- -  Use the optimized coefficients of the polynomial to generate the \\(C_{2}\\) correction. Check temperature for physical correctness.
-
-
-
+-  The reference data computed at the given temperature is used to generate the **R**<sub>true</sub> matrix.
+-  Next, using the band positions and initial coefs of the polynomial, the  **S**  matrix is generated.
+-  The dimensions of the four matrices are checked before moving to the next step.
+-  Difference matrix, **D**<sub></sub>, (for each species) is generated using the **R**<sub>obs</sub>, **R**<sub>true</sub> and **S**  matrix.
+-  The elements of the difference matrix are weighted using the corresponding elements of the weight matrix **W**.
+-  The norm of the difference matrix is computed. This norm is minimized by varying the coefficients of the polynomial (recomputing the  **S**  matrix and the reference matrix, **R**<sub>true</sub> using the temperature ).
+-  Use the optimized coefficients of the polynomial to generate the C<sub>2</sub> correction. Check temperature obtained from the Raman intensities for physical correctness.
 
 
 ## References
@@ -46,6 +43,8 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 ## Input data required
 
 **Intensity calibration**
+
+ - Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work).
 
  - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
