@@ -3,6 +3,8 @@
 The module `gen_correction.py` allows one to generate the correction (C<sub>0</sub>/C<sub>1</sub>)
 using the function `gen_C0_C1`.
 
+Here, the C<sub>0</sub> correction is obtained from the wavenumber axis supplied by the user. The C<sub>1</sub> correction is determined from a broadband white light spectrum, which is assumed to be a Black-Body emitter (standard tungsten lamps work well for this purpose).
+
 ---
 
 For a similar program written in IgorPro see [gen_correction.ipf](https://github.com/ankit7540/RamanSpec_BasicOperations/blob/master/intensity_corr/) in my other repository.
@@ -10,7 +12,7 @@ For a similar program written in IgorPro see [gen_correction.ipf](https://github
 
 ## Requirements
 
-Python 3.6 or higher, numpy, scipy and Matplotlib
+Python 3.6 or higher with numpy, scipy and matplotlib modules.
 
 
 ## Function
@@ -46,5 +48,5 @@ Python 3.6 or higher, numpy, scipy and Matplotlib
                           See line 14 to 18 to define/load the numpy arrays
                                               before execution.
         **********************************************************
-        
+
 ```
