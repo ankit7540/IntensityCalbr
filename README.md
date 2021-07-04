@@ -35,7 +35,7 @@ In the following works, the ratio of intensities from common rotational states a
 
   - H. Okajima, H. Hamaguchi, J. Raman Spectrosc. 2015, 46, 1140.
   - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405.
-  - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020 (submitted)
+  - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020, 51, 2066.
 
 This principle of comparing intensities (pure rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring parametrizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. The reference matrix can be computed if equations and required parameters are available, or,  if known intensities are available then they can work as reference (for given conditions).
 
