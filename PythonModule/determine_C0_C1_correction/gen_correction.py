@@ -9,13 +9,13 @@ plt.rcParams["font.family"] = "Arial"
 
 #############################################################################
 
-# define input arrays here 
+# define input arrays here
 
 #axis=np.loadtxt('axis.txt')  # xaxis, in relative wavenumbers
-#wl=np.loadtxt('wl.txt')      # white light spectra, 1D or 2D 
+#wl=np.loadtxt('wl.txt')      # white light spectra, 1D or 2D
 #mask=np.loadtxt('mask.txt')  # mask, integers, set 1 for masked region
 #mask = mask.astype(bool)     # convert mask to boolean
-#mask_array =  np.invert(mask)  # use this if mask is required to be inverted 
+#mask_array =  np.invert(mask)  # use this if mask is required to be inverted
 
 #############################################################################
 
@@ -29,7 +29,7 @@ print('\n\t Main function is listed below.')
 print('\t ')
 print('\t**********************************************************')
 print('\tgen_C0_C1 ( Ramanshift,  laser_nm, wl_spectra, norm_pnt,  ')
-print ( '\t\t        mask = None, set_mask_nan = None, export = None) ') 
+print ( '\t\t        mask = None, set_mask_nan = None, export = None) ')
 print('\t**********************************************************')
 print('\n\t REQUIRED PARAMETERS')
 print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
@@ -55,11 +55,9 @@ print('\t**********************************************************')
 
 
 #############################################################################
-
-
 # This file has function(s) for determination of the C0 and C1 corrections
 
-def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None, 
+def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None,
                set_mask_nan = None, export = None):
 
     '''Ramanshift = vector, the x-axis in relative wavenumbers
@@ -97,28 +95,26 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None,
     if (isinstance(mask, np.ndarray) != 1):
         print ("\t Mask not available. Proceeding with fit..")
         C1 = gen_C1 (Ramanshift, laser_nm ,  wl_norm_C0 ,   norm_pnt)
-        
+
     elif (isinstance(mask, np.ndarray) == 1):
         print ("\t Mask is available. Using mask and fitting.")
-        C1 = gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask, 
+        C1 = gen_C1_with_mask (Ramanshift, laser_nm ,  wl_norm_C0 , mask,
                                norm_pnt)
-        
+
         if (set_mask_nan==1 ):
-            
             C1 [mask] = np.nan
-    
-    correction = (C0/C1) 
+
+    correction = (C0/C1)
     #--------------------------------
-    # export output 
-    
+    # export output
     if (export == 1):
         print('\t Correction will be exported as intensity_correction.txt')
-        
-        # export the correction as txt 
+
+        # export the correction as txt
         filename = 'intensity_correction.txt'
-        np.savetxt(filename, correction, fmt='%3.7f', newline='\n', 
+        np.savetxt(filename, correction, fmt='%3.7f', newline='\n',
                    header='intensity_corr')
-    
+
     return correction
     #----------------------------------------------------------
 
@@ -161,7 +157,7 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
 
     abs_wavenumber = ((1e7/laser_nm)-Ramanshift)*100
 
-    
+
     init_guess=np.array([1e-18, 2799 ])
     # perform fit
     popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
@@ -180,10 +176,10 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
     plt.xlabel('Wavenumber / cm$^{-1}$ (absolute)')
     plt.ylabel('Relative intensity')
     plt.show()
-    
+
     #---------------------------
     C1 = wl_spectra / fit
-    
+
 
     return C1
 
@@ -199,11 +195,11 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
 
     masked_wl  =   np.ma.masked_array(wl_spectra, mask=mask)
     masked_xaxis = np.ma.masked_array(abs_wavenumber, mask=mask)
-    
+
     init_guess=np.array([1e-19, 2899 ])
     # perform fit
     popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
-    masked_xaxis, masked_wl, p0=init_guess,  
+    masked_xaxis, masked_wl, p0=init_guess,
     method='lm')
 
     print("\t Optimized coefs :", popt)
@@ -220,10 +216,10 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
     plt.ylabel('Relative intensity')
 
     plt.show()
-    
+
     #---------------------------
     C1 = wl_spectra / fit
-    
+
 
     return C1
 #############################################################################

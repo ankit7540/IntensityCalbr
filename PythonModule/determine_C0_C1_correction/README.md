@@ -50,3 +50,17 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
         **********************************************************
 
 ```
+
+## Input parameters
+
+ - Ramanshift =  numpy array, 1D
+ - laser_nm = scalar
+ - wl_spectra =  numpy array, 1D or 2D
+ - norm_pnt =  scalar
+ - mask = numpy array, 1D, boolean ( 0 for points which are to be fit and 1
+                                     for the points to be masked )
+ - set_mask_nan = scalar 0 or 1
+ - export = 0 or 1
+
+
+---
