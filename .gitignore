@@ -9,6 +9,7 @@ settings.json
 
 
 *.txt
+*.log
 
 # Uncomment when approaching release
 #test.py
