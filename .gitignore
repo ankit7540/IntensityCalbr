@@ -12,9 +12,6 @@ logfil*.txt
 *.log
 
 # Uncomment when approaching release
-#test.py
+test.py
 
 #**/notes
-
-#run_parallel/
-#run_perperpendicular/
