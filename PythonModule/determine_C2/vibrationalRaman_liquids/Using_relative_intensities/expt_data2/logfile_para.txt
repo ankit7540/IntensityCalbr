@@ -1,6 +1,0 @@
-<Logger wsensitivity_from_vib_intensities.py (INFO)>
-2020-06-02 11:28:14
-
-
------------- Run log ------------
-

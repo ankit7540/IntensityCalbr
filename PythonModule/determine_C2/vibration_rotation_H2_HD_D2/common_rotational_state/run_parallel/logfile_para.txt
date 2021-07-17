@@ -1,6 +1,0 @@
-<Logger wsensitivity_T_dep_parallel_q_sep.py (INFO)>
-2020-04-10 00:38:52
-
-
------------- Run log ------------
-
