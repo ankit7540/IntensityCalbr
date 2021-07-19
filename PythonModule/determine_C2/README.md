@@ -12,7 +12,7 @@ User supplied band area data arranged in 1D arrays are required. These should co
 
 Requirements
 ----------------
-Python 2.7 or Python 3.x with NumPy, SciPy and math modules, matplotlib required for plotting.
+Python 2.7 or Python 3.x with NumPy, SciPy and math modules. Matplotlib required for plotting.
 
 Usage
 ----------------
