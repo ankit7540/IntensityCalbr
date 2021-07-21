@@ -66,6 +66,24 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
 ## Examples
 
 
+### loading files
+
+```
+
+wavenumber = np.loadtxt("wavenumber.txt")
+
+wl = np.loadtxt("wl.txt")
+
+mask = np.loadtxt("mask.txt")
+
+mask = mask.astype(bool)
+
+mask_array =  np.invert(mask)
+
+```
+
+### Running the main program.
+
 ```
 
 corr = gen_C0_C1 (Ramanshift, 532.2, wl, 582, mask = mask_array,
