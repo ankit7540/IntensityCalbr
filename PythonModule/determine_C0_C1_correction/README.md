@@ -63,4 +63,17 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
  - export = 0 or 1
 
 
+## Examples
+
+
+```
+
+corr = gen_C0_C1 (Ramanshift, 532.2, wl, 582, mask = mask_array,
+               set_mask_nan = 1, export = 1)
+	 Mask is available. Using mask and fitting.
+	 Optimized coefs : [3.33443440e-19 3.76715151e+03]
+	 Correction will be exported as intensity_correction.txt
+
+```
+
 ---
