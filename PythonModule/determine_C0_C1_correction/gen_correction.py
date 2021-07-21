@@ -53,6 +53,14 @@ print('\t\t\t                      before execution.')
 
 print('\t**********************************************************')
 
+print('\t\t\t  Example:')
+
+print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500 )')
+print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500, mask=maskw, ')
+print('\t\t\t\t\t\t                  set_mask_nan=0, export=1 )')
+
+print('\t**********************************************************')
+
 #############################################################################
 
 
@@ -81,8 +89,8 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None,
     dim = wl_spectra.shape
     if(dim[0] != Ramanshift.shape[0]):
         print ("\t Error : Dimension mismatch for wl spectra and the xaxis")
-
-    if (dim[1] > 1 and dim[1] ):
+        
+    if (wl_spectra.ndim > 1    ):
         print ("\t wl spectra is 2D")
         wl_spectra = np.mean(wl_spectra, axis=1)
         #print(wl_spectra.shape)
@@ -157,13 +165,13 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
        norm_pnt =  normalization point (corrections will be set
                                         to unity at this point) '''
 
-    abs_wavenumber = ((1e7/laser_nm)-Ramanshift)*100
+    abs_wavenumber = ((1e7/laser_nm)-Ramanshift) 
 
 
     init_guess=np.array([1e-18, 2799 ])
     # perform fit
     popt, pcov = curve_fit(photons_per_unit_wavenum_abs,
-    abs_wavenumber, wl_spectra, p0=init_guess, bounds=([0.1e-24,0.1e-9], [1000., 9000.]))
+    abs_wavenumber, wl_spectra, p0=init_guess, bounds=([1e-28,1e-8], [900., 9000.]))
 
     print("\t Optimized coefs :", popt)
 
