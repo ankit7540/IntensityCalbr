@@ -1,5 +1,7 @@
 #############################################################################
 
+import package_util
+
 import numpy as np
 from numpy.polynomial import Polynomial
 import math
@@ -46,7 +48,7 @@ print('\t\t\t             file with name intensity_correction.txt')
 
 print('\t\t\t  ------------------------------------------')
 print('\t\t\t  All vectors required here should be numpy arrays.')
-print('\t\t\t  See line 14 to 18 to define/load the numpy arrays')
+print('\t\t\t  See line 14 to 18 in the file to define/load the numpy arrays')
 print('\t\t\t                      before execution.')
 
 print('\t**********************************************************')
