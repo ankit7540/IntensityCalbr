@@ -14,4 +14,5 @@ logfil*.txt
 # Uncomment when approaching release
 test.py
 
-#**/notes
+# ignore the Examples folder
+!PythonModule/determine_C0_C1_correction/Examples
