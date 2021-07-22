@@ -67,7 +67,7 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
 
 ## Examples
 
-Check this jupyter notebook showing an example with data. https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb
+Check this jupyter notebook showing an example with data. [Examples/Example_for_C0_C1.ipynb](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb)
 
 ### loading files
 
@@ -79,9 +79,9 @@ wl = np.loadtxt("wl.txt")
 
 mask = np.loadtxt("mask.txt")
 
-mask = mask.astype(bool)
+mask = mask.astype(bool)    # conversion to boolean
 
-mask_array =  np.invert(mask)
+mask_array =  np.invert(mask)   # inverting bool, scipy required masked region to be true
 
 ```
 
