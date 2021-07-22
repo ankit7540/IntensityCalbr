@@ -44,7 +44,7 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
 **Intensity calibration**
 
- - Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work).
+ - Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work). [See example](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb)
 
  - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
