@@ -7,7 +7,7 @@ from numpy.polynomial import Polynomial
 import math
 from scipy.optimize import curve_fit
 import matplotlib.pyplot as plt
-plt.rcParams["font.family"] = "Arial"
+#plt.rcParams["font.family"] = "Arial"
 
 #############################################################################
 
@@ -201,7 +201,7 @@ def gen_C1_with_mask (Ramanshift, laser_nm ,  wl_spectra , mask ,  norm_pnt):
        norm_pnt =  normalization point (corrections will be set
                                         to unity at this point) '''
 
-    abs_wavenumber = ((1e7/laser_nm)-Ramanshift) 
+    abs_wavenumber = ((1e7/laser_nm)-Ramanshift)
 
     masked_wl  =   np.ma.masked_array(wl_spectra, mask=mask)
     masked_xaxis = np.ma.masked_array(abs_wavenumber, mask=mask)
