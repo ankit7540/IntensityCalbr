@@ -67,6 +67,7 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
 
 ## Examples
 
+Check this jupyter notebook showing an example with data. https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb
 
 ### loading files
 
