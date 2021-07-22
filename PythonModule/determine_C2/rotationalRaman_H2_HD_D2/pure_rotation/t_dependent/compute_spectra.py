@@ -27,21 +27,20 @@ omega_sc = omega/1e4  # scaled frequency (for better numerical accuracy)
 #        and K. Pachucki, J. Chem. Theory and Comput. 7, 3105 (2011).
 #
 #   b) K. Pachucki and J. Komasa, Phys. Chem. Chem. Phys. 12, 9188 (2010).
-
-eJH2v0 = np.loadtxt("./energy_levels_and_gamma/H2eV0.txt")
-eJH2v1 = np.loadtxt("./energy_levels_and_gamma/H2eV1.txt")
-eJHDv0 = np.loadtxt("./energy_levels_and_gamma/HDeV0.txt")
-eJHDv1 = np.loadtxt("./energy_levels_and_gamma/HDeV1.txt")
-eJD2v0 = np.loadtxt("./energy_levels_and_gamma/D2eV0.txt")
-eJD2v1 = np.loadtxt("./energy_levels_and_gamma/D2eV1.txt")
+eJH2v0 = np.loadtxt("./energy_levels_and_gamma/H2eV0.dat")
+eJH2v1 = np.loadtxt("./energy_levels_and_gamma/H2eV1.dat")
+eJHDv0 = np.loadtxt("./energy_levels_and_gamma/HDeV0.dat")
+eJHDv1 = np.loadtxt("./energy_levels_and_gamma/HDeV1.dat")
+eJD2v0 = np.loadtxt("./energy_levels_and_gamma/D2eV0.dat")
+eJD2v1 = np.loadtxt("./energy_levels_and_gamma/D2eV1.dat")
 
 #   Data on the matrix elements of polarizability anisotropy has been taken from
 #   our previous work.
 #   c) A. Raj, H. Hamaguchi, and H. A. Witek, J. Chem. Phys. 148, 104308 (2018).
 
-ME_H2_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_H2.txt")
-ME_HD_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_HD.txt")
-ME_D2_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_D2.txt")
+ME_H2_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_H2.dat")
+ME_HD_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_HD.dat")
+ME_D2_532 = np.loadtxt("./energy_levels_and_gamma/ME_gamma_532.199323_D2.dat")
 
 #print(eJH2v0)
 #print(eJH2v1)

@@ -9,9 +9,9 @@ C = np.float64(2.99792458e+10)   # cm/s
 ##################################
 ############ COMMON ##############
 
-eJH2 = np.genfromtxt("./energy_levels/H2.txt", delimiter="\t")
-eJHD = np.genfromtxt("./energy_levels/HD.txt", delimiter="\t")
-eJD2 = np.genfromtxt("./energy_levels/D2.txt", delimiter="\t")
+eJH2 = np.genfromtxt("./energy_levels/H2.dat", delimiter="\t")
+eJHD = np.genfromtxt("./energy_levels/HD.dat", delimiter="\t")
+eJD2 = np.genfromtxt("./energy_levels/D2.dat", delimiter="\t")
 
 
 #********************************************************************
