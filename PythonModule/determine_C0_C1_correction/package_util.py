@@ -26,6 +26,8 @@ for i in req:
     found = check_package(i)
     if (found != 1):
         print("\t\tError: Required package not found.  ",i)
+        print("\t\tExiting.  ",i)
+        quit()
 
 
 #################################################

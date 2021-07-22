@@ -37,7 +37,7 @@ print('\n\t REQUIRED PARAMETERS')
 print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
 print('\t\t\t laser_nm = scalar, the laser wavelength in nanometers')
 print('\t\t\t wl_spectra = broadband whitelight spectra (1D or 2D)')
-print('\t\t\t norm_pnt =  normalization point (corrections will be set')
+print('\t\t\t norm_pnt =  scalar, normalization point (corrections will be set')
 print('\t\t\t                to unity at this point')
 print('\t  OPTIONAL PARAMETERS')
 print('\t\t\t mask = vector, mask wave for selecting specific region to fit')
@@ -89,7 +89,7 @@ def gen_C0_C1 (Ramanshift, laser_nm, wl_spectra, norm_pnt, mask = None,
     dim = wl_spectra.shape
     if(dim[0] != Ramanshift.shape[0]):
         print ("\t Error : Dimension mismatch for wl spectra and the xaxis")
-        
+
     if (wl_spectra.ndim > 1    ):
         print ("\t wl spectra is 2D")
         wl_spectra = np.mean(wl_spectra, axis=1)
@@ -165,7 +165,7 @@ def gen_C1 (Ramanshift, laser_nm ,  wl_spectra ,   norm_pnt):
        norm_pnt =  normalization point (corrections will be set
                                         to unity at this point) '''
 
-    abs_wavenumber = ((1e7/laser_nm)-Ramanshift) 
+    abs_wavenumber = ((1e7/laser_nm)-Ramanshift)
 
 
     init_guess=np.array([1e-18, 2799 ])

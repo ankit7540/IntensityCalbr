@@ -35,7 +35,7 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
                          Ramanshift = vector, the x-axis in relative wavenumbers
                          laser_nm = scalar, the laser wavelength in nanometers
                          wl_spectra = broadband whitelight spectra (1D or 2D)
-                         norm_pnt =  normalization point (corrections will be set
+                         norm_pnt =  scalar, normalization point (corrections will be set
                                         to unity at this point
           OPTIONAL PARAMETERS
                          mask = vector, mask wave for selecting specific region to fit
@@ -56,7 +56,9 @@ Python 3.6 or higher with numpy, scipy and matplotlib modules.
  - Ramanshift =  numpy array, 1D
  - laser_nm = scalar
  - wl_spectra =  numpy array, 1D or 2D
- - norm_pnt =  scalar
+ - norm_pnt =  scalar (index where the normalization is performed)
+               Should be a number between 0 and (n-1) where n is the number of rows
+               in the wavenumber axis.
  - mask = numpy array, 1D, boolean ( 0 for points which are to be fit and 1
                                      for the points to be masked )
  - set_mask_nan = scalar 0 or 1
@@ -86,8 +88,7 @@ mask_array =  np.invert(mask)
 
 ```
 
-corr = gen_C0_C1 (Ramanshift, 532.2, wl, 582, mask = mask_array,
-               set_mask_nan = 1, export = 1)
+corr = gen_C0_C1 (wavenumber, 532.2, wl, 582, mask = mask_array, set_mask_nan = 1, export = 1)
 	 Mask is available. Using mask and fitting.
 	 Optimized coefs : [3.33443440e-19 3.76715151e+03]
 	 Correction will be exported as intensity_correction.txt
