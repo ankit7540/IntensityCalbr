@@ -19,7 +19,7 @@ from datetime import datetime
 # LOAD EXPERIMENTAL BAND AREA DATA
 
 # see readme for data formatting for these expt. data
-# Do not change the variable name on the LHS 
+# Do not change the variable name on the LHS
 
 dataH2 = np.loadtxt("./BA_H2_1.txt")
 dataHD = np.loadtxt("./BA_HD_1.txt")
@@ -27,39 +27,39 @@ dataD2 = np.loadtxt("./BA_D2_1.txt")
 xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
 
 
-# data format for O2 differs from that of H2 and isotopologues 
+# data format for O2 differs from that of H2 and isotopologues
 # see readme for more details
-# Do not change the variable name on the LHS 
+# Do not change the variable name on the LHS
 dataO2 = np.loadtxt("./DataO2_o1s1.txt")
 dataO2_p = np.loadtxt("./DataO2_pR.txt")
 
 # Constants ------------------------------
 # these are used for scaling the coefs
-# do not change the variable name on the LHS 
+# do not change the variable name on the LHS
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
 scale4 = 1e12
 # ----------------------------------------
 
-# norm type 
-# Do not change the variable name on the LHS 
+# norm type
+# Do not change the variable name on the LHS
 # available norm types : frobenius, frobenius_sq, absolute
 norm =  'frobenius'
 
-# if norm is not set then the default is sum of absolute values 
+# if norm is not set then the default is sum of absolute values
 # See readme for more details
 
 
 # these are used for scaling the weights for O2 as needed
-# Do not change the variable name on the LHS 
+# Do not change the variable name on the LHS
 
 scale_O2_S1O1 = 0.5
 scale_O2_pureRotn= 0.5
-# weight = 1.0 means that the net uncertainty depends on the 
+# weight = 1.0 means that the net uncertainty depends on the
 #          error of the band
 
-#  weight = 0.0 means that the bands are not included 
+#  weight = 0.0 means that the bands are not included
 #           in the fit altogether
 
 # ----------------------------------------
@@ -105,7 +105,8 @@ print('\t intensity correction curve termed as C2 from ')
 print('\t  experimental Raman intensities. ')
 
 print('\n\t This modeule requires edit on line 17 to 54 to ')
-print('\n\t  load and set parameters for the analysis.')
+print('\n\t  load data and set parameters for the analysis.')
+print('\n\t  Temperature is determined simultaneously.')
 print('\t ')
 print('\t**********************************************************')
 print('\n\t\t Checking imported data and set params')
@@ -115,31 +116,31 @@ if isinstance(dataH2, np.ndarray):
     print("\t\t ", "dataH2 found, OK")
 else:
     print("\t\t ", "dataH2 not found.")
-    
+
 if isinstance(dataHD, np.ndarray):
     print("\t\t ", "dataHD found, OK")
 else:
     print("\t\t ", "dataHD not found.")
-    
+
 if isinstance(dataD2, np.ndarray):
     print("\t\t ", "dataD2 found, OK")
 else:
     print("\t\t ", "dataD2 not found.")
-    
+
 if isinstance(xaxis, np.ndarray):
     print("\t\t ", "xaxis found, OK")
 else:
     print("\t\t ", "xaxis not found.")
-    
+
 if isinstance(dataO2, np.ndarray):
     print("\t\t ", "dataO2 found, OK")
 else:
     print("\t\t ", "dataO2 not found.")
-    
+
 if isinstance(dataO2_p, np.ndarray):
     print("\t\t ", "dataO2_p found, OK")
 else:
-    print("\t\t ", "dataO2_p not found.")    
+    print("\t\t ", "dataO2_p not found.")
 
 print('\n\t\t  Analysis parameters:')
 
@@ -245,9 +246,9 @@ def inverse_square(array):
 #------------------------------------------------
 
 def gen_s_linear(computed_data, param ):
-    '''Generates the S-matrix assuming linear function 
+    '''Generates the S-matrix assuming linear function
     for the wavelength dependent sensitivity'''
-    
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -266,7 +267,7 @@ def gen_s_linear(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quadratic(computed_data, param ):
-    '''Generates the S-matrix assuming quadratic function 
+    '''Generates the S-matrix assuming quadratic function
     for the wavelength dependent sensitivity'''
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
@@ -287,9 +288,9 @@ def gen_s_quadratic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_cubic(computed_data, param ):
-    '''Generates the S-matrix assuming cubic function 
+    '''Generates the S-matrix assuming cubic function
     for the wavelength dependent sensitivity'''
-        
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -312,9 +313,9 @@ def gen_s_cubic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quartic(computed_data, param, scale1):
-    '''Generates the S-matrix assuming quartic function 
-    for the wavelength dependent sensitivity'''    
-    
+    '''Generates the S-matrix assuming quartic function
+    for the wavelength dependent sensitivity'''
+
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -409,10 +410,10 @@ def residual_linear(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the 
-    # O2 are not avaiable, Raman intensities from common rotational 
+    # since information on all the polarizability invariants of the
+    # O2 are not avaiable, Raman intensities from common rotational
     # states are utilized below
-    
+
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + param[0]/scale1 * dataO2[:, 3] )/ (1.0 +\
@@ -432,14 +433,14 @@ def residual_linear(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
-        
+
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p) 
-        
+            np.sum(np.square(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
+
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)      
+            np.sum(np.square(eH2))**2 +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
 
     return(E)
 
@@ -502,10 +503,10 @@ def residual_quadratic(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the 
-    # O2 are not avaiable, Raman intensities from common rotational 
+    # since information on all the polarizability invariants of the
+    # O2 are not avaiable, Raman intensities from common rotational
     # states are utilized below
-    
+
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2))/ (1.0 +\
@@ -526,14 +527,14 @@ def residual_quadratic(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
-        
+
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
-        
+            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)
+
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
+            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2
 
     return(E)
 
@@ -598,10 +599,10 @@ def residual_cubic(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the 
-    # O2 are not avaiable, Raman intensities from common rotational 
+    # since information on all the polarizability invariants of the
+    # O2 are not avaiable, Raman intensities from common rotational
     # states are utilized below
-    
+
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2)+\
@@ -623,14 +624,14 @@ def residual_cubic(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
-        
+
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
-        
+            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)
+
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
+            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2
 
 
     return(E)
@@ -750,5 +751,3 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
     print("**********************************************************")
 
 #***************************************************************
-
-

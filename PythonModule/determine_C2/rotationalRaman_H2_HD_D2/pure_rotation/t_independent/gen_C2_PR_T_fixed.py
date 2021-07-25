@@ -66,6 +66,7 @@ xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
 
 T_fixed = 298   # Kelvin
 
+
 print(dataH2.shape)
 print(dataHD.shape)
 print(dataD2.shape)
@@ -79,15 +80,113 @@ scale3 = 1e9
 scale4 = 1e12
 
 
+# norm type
+# Do not change the variable name on the LHS
+# available norm types : frobenius, frobenius_sq, absolute
+norm =  'frobenius'
 
-# these are used for scaling the weights for O2 is needed
-# edit as needed
-scale_O2_S1O1 = 2.0
-scale_O2_pureRotn= 0.1
+# if norm is not set then the default is sum of absolute values
+# See readme for more details
+
+
+# these are used for scaling the weights for O2 as needed
+# Do not change the variable name on the LHS
+
+scale_O2_S1O1 = 0.5
+scale_O2_pureRotn= 0.5
+# weight = 1.0 means that the net uncertainty depends on the
+#          error of the band
+
+#  weight = 0.0 means that the bands are not included
+#           in the fit altogether
+
+# ----------------------------------------
 # ----------------------------------------
 
-# ----------------------------------------
+print('\t**********************************************************')
 
+print('\t ')
+print('\t This module is for generating the wavenumber-dependent')
+print('\t intensity correction curve termed as C2 from ')
+print('\t  experimental Raman intensities. ')
+
+print('\n\t This modeule requires edit on line 17 to 54 to ')
+print('\n\t  load data and set parameters for the analysis.')
+print('\n\t  Temperature is fixed in this analysis. See line 67.')
+print('\t**********************************************************')
+print('\n\t\t Checking imported data and set params')
+
+
+if isinstance(dataH2, np.ndarray):
+    print("\t\t ", "dataH2 found, OK")
+else:
+    print("\t\t ", "dataH2 not found.")
+
+if isinstance(dataHD, np.ndarray):
+    print("\t\t ", "dataHD found, OK")
+else:
+    print("\t\t ", "dataHD not found.")
+
+if isinstance(dataD2, np.ndarray):
+    print("\t\t ", "dataD2 found, OK")
+else:
+    print("\t\t ", "dataD2 not found.")
+
+if isinstance(xaxis, np.ndarray):
+    print("\t\t ", "xaxis found, OK")
+else:
+    print("\t\t ", "xaxis not found.")
+
+if isinstance(dataO2, np.ndarray):
+    print("\t\t ", "dataO2 found, OK")
+else:
+    print("\t\t ", "dataO2 not found.")
+
+if isinstance(dataO2_p, np.ndarray):
+    print("\t\t ", "dataO2_p found, OK")
+else:
+    print("\t\t ", "dataO2_p not found.")
+
+print('\n\t\t  Analysis parameters:')
+
+print("\t\t Temperature (will be fixed) :", T_fixed)
+print("\t\t scaling factors (for c1 to c3) :", scale1, scale2, scale3)
+print("\t\t Norm (defn of residual) : ", norm)
+
+print("\t\t Scaling factor for O2 (ro-vibrn, O1 and S1): ", scale_O2_S1O1)
+print("\t\t Scaling factor for O2 (pure rotn): ", scale_O2_pureRotn)
+
+
+print('\t**********************************************************')
+print('\n\t REQUIRED PARAMETERS')
+print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
+print('\t\t\t laser_nm = scalar, the laser wavelength in nanometers')
+print('\t\t\t wl_spectra = broadband whitelight spectra (1D or 2D)')
+print('\t\t\t norm_pnt =  scalar, normalization point (corrections will be set')
+print('\t\t\t                to unity at this point')
+print('\t  OPTIONAL PARAMETERS')
+print('\t\t\t mask = vector, mask wave for selecting specific region to fit')
+print('\t\t\t set_mask_nan= boolean, 1 will set the masked region in')
+print('\t\t\t                the output correction to nan, 0 will not do so.')
+print('\t\t\t export = 0 or 1, setting to 1 will export the correction as a txt')
+print('\t\t\t             file with name intensity_correction.txt')
+
+print('\t\t\t  ------------------------------------------')
+print('\t\t\t  All vectors required here should be numpy arrays.')
+print('\t\t\t  See line 14 to 18 in the file to define/load the numpy arrays')
+print('\t\t\t                      before execution.')
+
+print('\t**********************************************************')
+
+print('\t\t\t  Example:')
+
+print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500 )')
+print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500, mask=maskw, ')
+print('\t\t\t\t\t\t                  set_mask_nan=0, export=1 )')
+
+print('\t**********************************************************')
+
+#############################################################################
 
 #------------------------------------------------
 #                COMMON FUNCTIONS
