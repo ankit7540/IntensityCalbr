@@ -158,31 +158,22 @@ print("\t\t Scaling factor for O2 (pure rotn): ", scale_O2_pureRotn)
 
 
 print('\t**********************************************************')
-print('\n\t REQUIRED PARAMETERS')
+print('\n\t REQUIRED DATA')
 print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
-print('\t\t\t laser_nm = scalar, the laser wavelength in nanometers')
-print('\t\t\t wl_spectra = broadband whitelight spectra (1D or 2D)')
-print('\t\t\t norm_pnt =  scalar, normalization point (corrections will be set')
-print('\t\t\t                to unity at this point')
-print('\t  OPTIONAL PARAMETERS')
-print('\t\t\t mask = vector, mask wave for selecting specific region to fit')
-print('\t\t\t set_mask_nan= boolean, 1 will set the masked region in')
-print('\t\t\t                the output correction to nan, 0 will not do so.')
-print('\t\t\t export = 0 or 1, setting to 1 will export the correction as a txt')
-print('\t\t\t             file with name intensity_correction.txt')
+print('\t\t\t band area and error = 2D (2 columns), for H2, HD and D2')
+print('\n\t\t\t J_max = scalar, for H2, HD and D2 (to compute reference spectra)')
+print('\t\t\t band area and error = 2D (6 columns), for O2, pure rotation ')
+print('\t\t\t                            and for rotation-vibration bands ')
 
-print('\t\t\t  ------------------------------------------')
-print('\t\t\t  All vectors required here should be numpy arrays.')
-print('\t\t\t  See line 14 to 18 in the file to define/load the numpy arrays')
-print('\t\t\t                      before execution.')
+
 
 print('\t**********************************************************')
 
-print('\t\t\t  Example:')
+print('\n\t\t\t  Example:')
 
-print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500 )')
-print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500, mask=maskw, ')
-print('\t\t\t\t\t\t                  set_mask_nan=0, export=1 )')
+print('\t\t\t  run_fit_linear_TF(  1.04586 )')
+print('\t\t\t  run_fit_quadratic_TF(  -1, -0.242 ) ')
+
 
 print('\t**********************************************************')
 
@@ -740,8 +731,8 @@ def run_fit_cubic_TF ( init_k1, init_k2, init_k3 ):
 
 # RUN ACTUAL FIT
 
-run_fit_linear_TF(  1.04586 )
-run_fit_quadratic_TF(  -1, -0.242 )
-run_fit_cubic_TF(  -0.931, -0.242 , -0.000001 )
+#run_fit_linear_TF(  1.04586 )
+#run_fit_quadratic_TF(  -1, -0.242 )
+#run_fit_cubic_TF(  -0.931, -0.242 , -0.000001 )
 
 #***************************************************************
