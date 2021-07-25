@@ -1,7 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
 
-
 """Module describing the weighted non-linear optimization scheme used to
 determine the wavelength sensitivity of the spectrometer using a  polynomial
 as a model function"""
@@ -65,6 +64,7 @@ dataO2_p = np.loadtxt("./DataO2_pR.txt")
 
 xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
 
+T_fixed = 298   # Kelvin
 
 print(dataH2.shape)
 print(dataHD.shape)
@@ -258,83 +258,11 @@ def gen_s_quartic(computed_data, param, scale1):
 
     return mat
 
-#------------------------------------------------
-#------------------------------------------------
-
-# GENERATE  INIT COEFS
-
-
-param_linear=np.zeros((1))
-param_linear[0]= -1.045
-
-#----------------------------
-param_quadratic=np.zeros((2))
-param_quadratic[0]= -0.931
-param_quadratic[1]= -0.242
-
-#----------------------------
-param_cubic=np.zeros((3))
-param_cubic[0]= -0.9340
-param_cubic[1]= -0.2140
-param_cubic[2]= -0.00100
-
-param_quartic=np.zeros((4))
-param_quartic[0]= -0.9340
-param_quartic[1]= -0.2140
-param_quartic[2]= -0.00100
-param_quartic[3]= -0.000001
 
 #------------------------------------------------
 #------------------------------------------------
 
-computed_D2=compute_spectra.spectra_D2( 298, 7, 7)
-computed_HD=compute_spectra.spectra_HD( 298, 5, 5)
-computed_H2=compute_spectra.spectra_H2( 298, 5, 5)
 
-
-trueR_D2=gen_intensity_mat (computed_D2, 2)
-expt_D2=gen_intensity_mat (dataD2, 0)
-
-trueR_HD=gen_intensity_mat (computed_HD, 2)
-expt_HD=gen_intensity_mat (dataHD, 0)
-
-trueR_H2=gen_intensity_mat (computed_H2, 2)
-expt_H2=gen_intensity_mat (dataH2, 0)
-
-I_D2=np.divide(expt_D2,trueR_D2 )
-I_HD=np.divide(expt_HD,trueR_HD )
-I_H2=np.divide(expt_H2,trueR_H2 )
-print(I_D2)
-
-I_D2=clean_mat(I_D2)
-I_HD=clean_mat(I_HD)
-I_H2=clean_mat(I_H2)
-print(I_D2)
-
-
-errH2_output=gen_weight(dataH2, 0.1)
-errHD_output=gen_weight(dataHD, 0.2)
-errD2_output=gen_weight(dataD2, 0.2)
-
-errH2_output=scale_opp_diagonal (errH2_output, 400)
-errHD_output=scale_opp_diagonal (errHD_output, 400)
-errD2_output=scale_opp_diagonal (errD2_output, 400)
-
-sD2=gen_s_linear(computed_D2, param_linear)
-sHD=gen_s_linear(computed_HD, param_linear)
-sH2=gen_s_linear(computed_H2, param_linear)
-
-eD2 = ( np.multiply(errD2_output, I_D2 ) - sD2 )
-eHD = ( np.multiply(errHD_output, I_HD ) - sHD )
-eH2 = ( np.multiply(errH2_output, I_H2 ) - sH2 )
-
-eD2=clean_mat(eD2)
-eHD=clean_mat(eHD)
-eH2=clean_mat(eH2)
-
-#E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) + np.sum(np.square(eH2))
-E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) + np.sum(np.abs(eH2))
-print(E )
 
 
 #*******************************************************************
@@ -368,15 +296,14 @@ def residual_linear_TF(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x )
 
-    param : T, c1
+    param : c1
 
     '''
-    TK=298.6
-    #param_init = np.array([ init_k1  ])
+    # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
 
 
     # ------ D2 ------
@@ -445,15 +372,14 @@ def residual_quadratic_TF(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x + c2*x**2 )
 
-    param : T, c1, c2
+    param : c1, c2
 
     '''
-    TK=298.6
-    #param
+    # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
 
 
     # ------ D2 ------
@@ -526,14 +452,14 @@ def residual_cubic_TF(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 )
 
-    param : T, c1, c2, c3
+    param :  c1, c2, c3
 
     '''
-    TK = 298.6
+    # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
 
 
     # ------ D2 ------
@@ -601,8 +527,6 @@ def residual_cubic_TF(param):
     return(E)
 
 #*******************************************************************
-
-#***************************************************************
 #***************************************************************
 # Fit functions
 #***************************************************************
@@ -712,13 +636,13 @@ def run_fit_cubic_TF ( init_k1, init_k2, init_k3 ):
     print("**********************************************************")
 
 #***************************************************************
-print(param_linear)
+
 
 
 # RUN ACTUAL FIT
 
 run_fit_linear_TF(  1.04586 )
-run_fit_quadratic_TF(  -0.931, -0.242 )
+run_fit_quadratic_TF(  -1, -0.242 )
 run_fit_cubic_TF(  -0.931, -0.242 , -0.000001 )
 
 #***************************************************************

@@ -1,0 +1,25 @@
+<Logger D:\Git\IntensityCalbr\PythonModule\determine_C2\rotationalRaman_H2_HD_D2\pure_rotation\t_independent\get_sensitivity_PR_T_fixed.py (INFO)>
+
+
+------------ Run log ------------
+
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 1.04586000
+
+
+	  final_simplex: (array([[-1.06039031],
+       [-1.06039031]]), array([26.69656209, 26.69656209]))
+           fun: 26.69656209147284
+       message: 'Optimization terminated successfully.'
+          nfev: 72
+           nit: 36
+        status: 0
+       success: True
+             x: array([-1.06039031])
+
+
+ Optimized result : c1 = -1.06039031
+
+ *******************************************
