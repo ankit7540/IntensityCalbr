@@ -1,0 +1,53 @@
+
+
+------------ Run log ------------
+
+
+	 Input data
+
+	 OK
+
+	 Input data shape:
+		 H2:	 (10, 2)
+
+		 HD:	 (10, 2)
+
+		 D2:	 (14, 2)
+
+		 O2_O1S1:	 (7, 6)
+
+		 O2_pureRotn:	 (10, 6)
+
+
+	 Parameters:
+		 Norm:	 Frobenius
+		 Scaling factor (O2 O1-S1):	 0.5
+
+		 Scaling factor (O2 pure rotation):	 0.5
+
+
+	 Weights:
+		 Weight for H2  :	 1
+		 Weight for HD  :	 1
+		 Weight for D2  :	 1
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : T = 298.00000000, c1 = -0.93100000
+
+
+	  final_simplex: (array([[316.54271803,  -0.46825743],
+       [316.54271803,  -0.46825743],
+       [316.54271803,  -0.46825743]]), array([26.36491824, 26.36491824, 26.36491824]))
+           fun: 26.364918243809072
+       message: 'Optimization terminated successfully.'
+          nfev: 164
+           nit: 75
+        status: 0
+       success: True
+             x: array([316.54271803,  -0.46825743])
+
+
+ Optimized result : T = 316.54271803, c1 = -0.46825743
+
+ *******************************************
