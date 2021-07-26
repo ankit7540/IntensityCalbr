@@ -56,9 +56,11 @@ scale4 = 1e12
 
 # norm type 
 # Do not change the variable name on the LHS 
-# available norm types : frobenius, frobenius_sq, absolute
+# available norm types : Frobenius, Frobenius_sq, absolute
+# lower case :           frobenius, frobenius_sq, absolute
+# or abbreviations:      F  , FS , A
 
-norm =  'frobenius'
+norm =  'Frobenius'
 
 # if norm is not set then the default is sum of absolute values 
 # See readme for more details
@@ -69,6 +71,7 @@ norm =  'frobenius'
 
 scale_O2_S1O1 = 0.5
 scale_O2_pureRotn= 0.5
+
 # weight = 1.0 means that the net uncertainty depends on the 
 #          error of the band
 
@@ -106,6 +109,7 @@ logger= logging.getLogger( __file__ )
 log.info(logger)
 logging.getLogger().setLevel(logging.INFO)
 log.warning('\n',)
+log.info('================================================' )  
 log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
 
@@ -123,36 +127,43 @@ print('\t ')
 print('\t**********************************************************')
 print('\n\t\t Checking imported data and set params')
 
+data_error=0
 
 if isinstance(dataH2, np.ndarray):
     print("\t\t ", "dataH2 found, OK")
 else:
     print("\t\t ", "dataH2 not found.")
+    data_error=1
     
 if isinstance(dataHD, np.ndarray):
     print("\t\t ", "dataHD found, OK")
 else:
     print("\t\t ", "dataHD not found.")
+    data_error=1
     
 if isinstance(dataD2, np.ndarray):
     print("\t\t ", "dataD2 found, OK")
 else:
     print("\t\t ", "dataD2 not found.")
+    data_error=1
     
 if isinstance(xaxis, np.ndarray):
     print("\t\t ", "xaxis found, OK")
 else:
     print("\t\t ", "xaxis not found.")
+    data_error=1
     
 if isinstance(dataO2, np.ndarray):
     print("\t\t ", "dataO2 found, OK")
 else:
     print("\t\t ", "dataO2 not found.")
+    data_error=1
     
 if isinstance(dataO2_p, np.ndarray):
     print("\t\t ", "dataO2_p found, OK")
 else:
-    print("\t\t ", "dataO2_p not found.")    
+    print("\t\t ", "dataO2_p not found.")
+    data_error=1
 
 print('\n\t\t  Analysis parameters:')
 
@@ -185,6 +196,27 @@ print('\t**********************************************************')
 
 #############################################################################
 
+# write analysis data to log
+log.info('\n\t Input data')
+if data_error==0 :
+    log.info('\n\t OK')
+else:
+    log.info('\n\t Some data is missing. Exiting...')
+    sys.exit()
+    
+log.info('\n\t Input data shape:')
+log.info('\t\t H2:\t %s\n', dataH2.shape )
+log.info('\t\t HD:\t %s\n', dataHD.shape )
+log.info('\t\t D2:\t %s\n', dataD2.shape )
+log.info('\t\t O2_O1S1:\t %s\n', dataO2.shape )
+log.info('\t\t O2_pureRotn:\t %s\n', dataO2_p.shape )
+
+log.info('\n\t Parameters:')
+log.info('\t\t Norm:\t %s', norm)
+log.info('\t\t Scaling factor (O2 O1-S1):\t %s\n', scale_O2_S1O1 )
+log.info('\t\t Scaling factor (O2 pure rotation):\t %s\n', scale_O2_pureRotn )
+
+#############################################################################
 
 #------------------------------------------------
 #                COMMON FUNCTIONS
@@ -221,7 +253,7 @@ def gen_weight(expt_data, factor):
         expt_data  =  2D array of expt data where
                       0th column is the band area
 
-                      1st column is the error
+                      1st column is the corresponding error
     """
     error_mat=np.zeros((expt_data.shape[0],expt_data.shape[0]))
 
@@ -232,8 +264,7 @@ def gen_weight(expt_data, factor):
                      (expt_data[j,1]/expt_data[j,0])**2   )
 
 
-    #return factor * inverse_square(error_mat)
-    return  (error_mat)
+    return clean_mat(factor * inverse_square(error_mat))
 
 #------------------------------------------------
 
@@ -345,14 +376,33 @@ def gen_s_quartic(computed_data, param, scale1):
 
 #  GENERATE WEIGHT MATRICES
 
-wMat_H2 = gen_weight(dataH2, 0.2)
-wMat_HD = gen_weight(dataHD, 0.2)
-wMat_D2 = gen_weight(dataD2, 0.2)
+wMat_H2 = gen_weight(dataH2, 1e-6)
+wMat_HD = gen_weight(dataHD, 1e-6)
+wMat_D2 = gen_weight(dataD2, 1e-6)
 
+#  or below we can set all weights as unity
+#   that is no specific band ratio is preferred
 wMat_H2 = 1
 wMat_HD = 1
 wMat_D2 = 1
 
+log.info('\n\t Weights:')
+if isinstance(wMat_H2, np.ndarray):
+    log.info('\t\t Weight for H2 is array, size :\t %s', wMat_H2.shape)
+else:
+    log.info('\t\t Weight for H2  :\t %s', wMat_H2 )
+    
+if isinstance(wMat_HD, np.ndarray):
+    log.info('\t\t Weight for HD is array, size :\t %s', wMat_HD.shape)
+else:
+    log.info('\t\t Weight for HD  :\t %s', wMat_HD )
+    
+if isinstance(wMat_D2, np.ndarray):
+    log.info('\t\t Weight for D2 is array size :\t %s', wMat_D2.shape)
+else:
+    log.info('\t\t Weight for D2  :\t %s', wMat_D2 )    
+
+log.info('================================================' )    
 
 # ----------------------------------------
 
@@ -433,17 +483,18 @@ def residual_linear(param):
 	# ------
 
 
-    if norm=='' or norm=='absolute':
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-            np.sum(np.abs(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
         
-    elif norm=='frobenius':
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p) 
-        
-    elif norm=='frobenius_square':
-        E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)      
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))     
 
     return(E)
 
@@ -527,17 +578,18 @@ def residual_quadratic(param):
     resd_O2p = (dataO2_p[:, 5]* scale_O2_pureRotn ) * ((ratio_O2p - RHS_O2p)**2)
 	# ------
 
-    if norm=='' or norm=='absolute':
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-            np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
         
-    elif norm=='frobenius':
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
-        
-    elif norm=='frobenius_square':
-        E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))       
 
     return(E)
 
@@ -624,17 +676,18 @@ def residual_cubic(param):
     resd_O2p = (dataO2_p[:, 5] * scale_O2_pureRotn  ) * ((ratio_O2p - RHS_O2p)**2)
 	# ------
 
-    if norm=='' or norm=='absolute':
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-            np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
         
-    elif norm=='frobenius':
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
-        
-    elif norm=='frobenius_square':
-        E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))      
 
 
     return(E)
