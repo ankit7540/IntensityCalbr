@@ -19,47 +19,60 @@ from datetime import datetime
 # LOAD EXPERIMENTAL BAND AREA DATA
 
 # see readme for data formatting for these expt. data
-# Do not change the variable name on the LHS
+# Do not change the variable name on the LHS 
 
 dataH2 = np.loadtxt("./BA_H2_1.txt")
 dataHD = np.loadtxt("./BA_HD_1.txt")
 dataD2 = np.loadtxt("./BA_D2_1.txt")
 xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
 
+# Jlevels information for the three gases
+#  This is required to correspond to the input expt band area provided above
+#  see readme and examples for more details
+H2_aSJmax = 5
+H2_SJmax = 5
 
-# data format for O2 differs from that of H2 and isotopologues
+HD_aSJmax = 5
+HD_SJmax = 5
+
+D2_aSJmax = 7
+D2_SJmax = 7
+# ----------------------------------------
+
+# data format for O2 differs from that of H2 and isotopologues 
 # see readme for more details
-# Do not change the variable name on the LHS
+# Do not change the variable name on the LHS 
 dataO2 = np.loadtxt("./DataO2_o1s1.txt")
 dataO2_p = np.loadtxt("./DataO2_pR.txt")
 
 # Constants ------------------------------
 # these are used for scaling the coefs
-# do not change the variable name on the LHS
+# do not change the variable name on the LHS 
 scale1 = 1e4
 scale2 = 1e7
 scale3 = 1e9
 scale4 = 1e12
 # ----------------------------------------
 
-# norm type
-# Do not change the variable name on the LHS
+# norm type 
+# Do not change the variable name on the LHS 
 # available norm types : frobenius, frobenius_sq, absolute
+
 norm =  'frobenius'
 
-# if norm is not set then the default is sum of absolute values
+# if norm is not set then the default is sum of absolute values 
 # See readme for more details
 
 
 # these are used for scaling the weights for O2 as needed
-# Do not change the variable name on the LHS
+# Do not change the variable name on the LHS 
 
 scale_O2_S1O1 = 0.5
 scale_O2_pureRotn= 0.5
-# weight = 1.0 means that the net uncertainty depends on the
+# weight = 1.0 means that the net uncertainty depends on the 
 #          error of the band
 
-#  weight = 0.0 means that the bands are not included
+#  weight = 0.0 means that the bands are not included 
 #           in the fit altogether
 
 # ----------------------------------------
@@ -105,8 +118,7 @@ print('\t intensity correction curve termed as C2 from ')
 print('\t  experimental Raman intensities. ')
 
 print('\n\t This modeule requires edit on line 17 to 54 to ')
-print('\n\t  load data and set parameters for the analysis.')
-print('\n\t  Temperature is determined simultaneously.')
+print('\n\t  load and set parameters for the analysis.')
 print('\t ')
 print('\t**********************************************************')
 print('\n\t\t Checking imported data and set params')
@@ -116,31 +128,31 @@ if isinstance(dataH2, np.ndarray):
     print("\t\t ", "dataH2 found, OK")
 else:
     print("\t\t ", "dataH2 not found.")
-
+    
 if isinstance(dataHD, np.ndarray):
     print("\t\t ", "dataHD found, OK")
 else:
     print("\t\t ", "dataHD not found.")
-
+    
 if isinstance(dataD2, np.ndarray):
     print("\t\t ", "dataD2 found, OK")
 else:
     print("\t\t ", "dataD2 not found.")
-
+    
 if isinstance(xaxis, np.ndarray):
     print("\t\t ", "xaxis found, OK")
 else:
     print("\t\t ", "xaxis not found.")
-
+    
 if isinstance(dataO2, np.ndarray):
     print("\t\t ", "dataO2 found, OK")
 else:
     print("\t\t ", "dataO2 not found.")
-
+    
 if isinstance(dataO2_p, np.ndarray):
     print("\t\t ", "dataO2_p found, OK")
 else:
-    print("\t\t ", "dataO2_p not found.")
+    print("\t\t ", "dataO2_p not found.")    
 
 print('\n\t\t  Analysis parameters:')
 
@@ -237,9 +249,9 @@ def inverse_square(array):
 #------------------------------------------------
 
 def gen_s_linear(computed_data, param ):
-    '''Generates the S-matrix assuming linear function
+    '''Generates the S-matrix assuming linear function 
     for the wavelength dependent sensitivity'''
-
+    
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -258,7 +270,7 @@ def gen_s_linear(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quadratic(computed_data, param ):
-    '''Generates the S-matrix assuming quadratic function
+    '''Generates the S-matrix assuming quadratic function 
     for the wavelength dependent sensitivity'''
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
@@ -279,9 +291,9 @@ def gen_s_quadratic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_cubic(computed_data, param ):
-    '''Generates the S-matrix assuming cubic function
+    '''Generates the S-matrix assuming cubic function 
     for the wavelength dependent sensitivity'''
-
+        
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -304,9 +316,9 @@ def gen_s_cubic(computed_data, param ):
 
 #------------------------------------------------
 def gen_s_quartic(computed_data, param, scale1):
-    '''Generates the S-matrix assuming quartic function
-    for the wavelength dependent sensitivity'''
-
+    '''Generates the S-matrix assuming quartic function 
+    for the wavelength dependent sensitivity'''    
+    
     mat=np.zeros((computed_data.shape[0],computed_data.shape[0]))
     #print(mat.shape)
 
@@ -359,9 +371,9 @@ def residual_linear(param):
     #TK = param[0]
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( TK, H2_aSJmax, H2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( TK, HD_aSJmax, HD_SJmax)
+    computed_D2=compute_spectra.spectra_D2( TK, D2_aSJmax, D2_SJmax)
 
 
     # ------ D2 ------
@@ -401,10 +413,10 @@ def residual_linear(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the
-    # O2 are not avaiable, Raman intensities from common rotational
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
     # states are utilized below
-
+    
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + param[0]/scale1 * dataO2[:, 3] )/ (1.0 +\
@@ -424,14 +436,14 @@ def residual_linear(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
-
+        
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
-
+            np.sum(np.square(eH2)) +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p) 
+        
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)
+            np.sum(np.square(eH2))**2 +  np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)      
 
     return(E)
 
@@ -448,9 +460,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( TK, H2_aSJmax, H2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( TK, HD_aSJmax, HD_SJmax)
+    computed_D2=compute_spectra.spectra_D2( TK, D2_aSJmax, D2_SJmax)
 
 
     # ------ D2 ------
@@ -494,10 +506,10 @@ def residual_quadratic(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the
-    # O2 are not avaiable, Raman intensities from common rotational
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
     # states are utilized below
-
+    
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2))/ (1.0 +\
@@ -518,14 +530,14 @@ def residual_quadratic(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
-
+        
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)
-
+            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
+        
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2
+            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
 
     return(E)
 
@@ -542,9 +554,9 @@ def residual_cubic(param):
     '''
     TK = param[0]
     #c1 = param[1]
-    computed_D2=compute_spectra.spectra_D2( TK, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( TK, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( TK, 5, 5)
+    computed_H2=compute_spectra.spectra_H2( TK, H2_aSJmax, H2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( TK, HD_aSJmax, HD_SJmax)
+    computed_D2=compute_spectra.spectra_D2( TK, D2_aSJmax, D2_SJmax)
 
 
     # ------ D2 ------
@@ -590,10 +602,10 @@ def residual_cubic(param):
 
 
     # oxygen----------------------------
-    # since information on all the polarizability invariants of the
-    # O2 are not avaiable, Raman intensities from common rotational
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
     # states are utilized below
-
+    
 	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2)+\
@@ -615,21 +627,19 @@ def residual_cubic(param):
     if norm=='' or norm=='absolute':
         E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
             np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
-
+        
     elif norm=='frobenius':
         E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
-            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)
-
+            np.sum(np.square(eH2)) +  np.square(resd_O2)  + np.square(resd_O2p)    
+        
     elif norm=='frobenius_square':
         E=np.sum(np.square(eD2))**2 + np.sum(np.square(eHD))**2 +\
-            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2
+            np.sum(np.square(eH2))**2 +  np.square(resd_O2)**2  + np.square(resd_O2p)**2   
 
 
     return(E)
 
 #***************************************************************
-
-
 #***************************************************************
 # Fit functions
 #***************************************************************
@@ -643,7 +653,8 @@ def run_fit_linear ( init_T, init_k1 ):
 
     param_init = np.array([ init_T, init_k1  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    print("\t\t -- Linear fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)
     print("Initial coef :  T={0}, k1={1} output = {2}".format(init_T, init_k1, \
           (residual_linear(param_init))))
 
@@ -659,11 +670,11 @@ def run_fit_linear ( init_T, init_k1 ):
 
     correction_curve_line= 1+(optk1/scale1)*xaxis     # generate the correction curve
 
-    np.savetxt("correction_linearv2.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_linear.txt", correction_curve_line, fmt='%2.8f',\
                header='corrn_curve_linear', comments='')
 
     print("**********************************************************")
-
+    print("\n C2 correction curve (as linear polynomial) saved as correction_linear.txt\n")
     # save log -----------
     log.info('\n *******  Optimization run : Linear  *******')
     log.info('\n\t Initial : T = %4.8f, c1 = %4.8f\n', init_T, init_k1 )
@@ -684,7 +695,8 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
 
     param_init = np.array([ init_T, init_k1 , init_k2  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    print("\t\t -- Quadratic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)
     print("Initial coef :  T={0}, k1={1}, k2={2} output = {3}".format(init_T, init_k1, \
          init_k2, (residual_quadratic(param_init))))
 
@@ -701,10 +713,17 @@ def run_fit_quadratic ( init_T, init_k1, init_k2 ):
 
     correction_curve_line= 1+(optk1/scale1)*xaxis  +(optk2/scale2)*xaxis**2    # generate the correction curve
 
-    np.savetxt("correction_quadraticv2.txt", correction_curve_line, fmt='%2.8f',\
+    np.savetxt("correction_quadratic.txt", correction_curve_line, fmt='%2.8f',\
                header='corrn_curve_quadratic', comments='')
-
+    print("\n C2 correction curve (as quadratic polynomial) saved as quadratic_cubic.txt\n")
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Quadratic  *******')
+    log.info('\n\t Initial : T = %4.8f, c1 = %4.8f, c2 = %4.8f\n', init_T, init_k1, init_k2 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : T = %4.8f, c1 = %4.8f, c2 = %4.8f\n', optT, optk1, optk2 )
+    log.info(' *******************************************')
+    # --------------------    
 
 #***************************************************************
 
@@ -717,7 +736,8 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
 
     param_init = np.array([ init_T, init_k1 , init_k2 , init_k3  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    print("\t\t -- Cubic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {3}".format(init_T, init_k1, \
          init_k2, init_k3, (residual_cubic(param_init))))
 
@@ -738,7 +758,13 @@ def run_fit_cubic ( init_T, init_k1, init_k2, init_k3 ):
 
     np.savetxt("correction_cubic.txt", correction_curve_line, fmt='%2.8f',\
                header='corrn_curve_cubic', comments='')
-
+    print("\n C2 correction curve (as cubic polynomial) saved as correction_cubic.txt\n")
     print("**********************************************************")
-
+    # save log -----------
+    log.info('\n *******  Optimization run : Cubic  *******')
+    log.info('\n\t Initial : T = %4.8f, c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_T, init_k1, init_k2, init_k3 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : T = %4.8f, c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optT, optk1, optk2, optk3 )
+    log.info(' *******************************************')
+    # -------------------- 
 #***************************************************************
