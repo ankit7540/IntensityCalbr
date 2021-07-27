@@ -22,11 +22,11 @@ In most cases, determining the individual performance of each optical element is
 In our work, we assume <i>M</i>(&nu;) &‌asymp; C<sub>1</sub>(&nu;) C<sub>2</sub>(&nu;) / C<sub>0</sub>(&nu;) [The wavenumber dependence in not explicitly stated when C<sub>0</sub>, C<sub>1</sub> and C<sub>2</sub> are discussed in the following text. ]  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
 
 - In the first step, (C<sub>0</sub> / C<sub>1</sub>) correction are determined using the wavenumber axis and the spectrum of a broad band white light source.
-- $C_{2}$ is determined from the observed Raman intensities, where the reference or true intensities are known or can be computed.
+- C<sub>2</sub> is determined from the observed Raman intensities, where the reference or true intensities are known or can be computed.
 
 The multiplicative correction to the Raman spectrum is then : (C<sub>0</sub> / C<sub>1</sub>C<sub>2</sub>)
 
-
+---
 
 ## Methodology
 Observed intensities from selected bands are analyzed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the coefficients for the wavelength/wavenumber dependent sensitivity curve, modelled as a polynomial function, is obtained via non-linear minimization technique.
