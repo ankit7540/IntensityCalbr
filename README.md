@@ -69,7 +69,7 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
  + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
-     + Pure rotational Raman intensities as reference: [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_dependent/Example/example.ipynb)
+     + Pure rotational Raman intensities as reference: [(See example, t-dependent analysis)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_dependent/Example/example.ipynb) [See example, t_independent analysis](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_independent/Example/example.ipynb)
      + Vibration-rotation Raman intensities as reference: [(See example)]()
      + Vibrational Raman intensities of liquids as reference: [(See example)]()
 
