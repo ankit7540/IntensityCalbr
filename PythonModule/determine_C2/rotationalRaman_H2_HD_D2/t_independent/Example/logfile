@@ -1,0 +1,119 @@
+
+
+------------ Run log ------------
+
+
+	 Input data
+
+	 OK
+
+	 Input data shape:
+		 H2:	 (10, 2)
+
+		 HD:	 (10, 2)
+
+		 D2:	 (14, 2)
+
+		 O2_O1S1:	 (7, 6)
+
+		 O2_pureRotn:	 (10, 6)
+
+		 Temperature (fixed):	 298
+
+
+	 Parameters:
+		 Norm:	 Frobenius
+		 Scaling factor (O2 O1-S1):	 0.5
+
+		 Scaling factor (O2 pure rotation):	 0.5
+
+
+	 Weights:
+		 Weight for H2  :	 1
+		 Weight for HD  :	 1
+		 Weight for D2  :	 1
+================================================
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -0.96000000
+
+
+	  final_simplex: (array([[-1.02724546],
+       [-1.02724546]]), array([7.77943916, 7.77943916]))
+           fun: 7.779439164033701
+       message: 'Optimization terminated successfully.'
+          nfev: 57
+           nit: 27
+        status: 0
+       success: True
+             x: array([-1.02724546])
+
+
+ Optimized result : c1 = -1.02724546
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = -1.07000000, c2 = -0.02000000
+
+
+	  final_simplex: (array([[-1.05742757,  0.082163  ],
+       [-1.05742757,  0.082163  ],
+       [-1.05742757,  0.082163  ]]), array([7.77753859, 7.77753859, 7.77753859]))
+           fun: 7.777538593935777
+       message: 'Optimization terminated successfully.'
+          nfev: 146
+           nit: 70
+        status: 0
+       success: True
+             x: array([-1.05742757,  0.082163  ])
+
+
+ Optimized result : c1 = -1.05742757, c2 = 0.08216300
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = 0.64000000, c2 = 0.01000000
+
+
+	  final_simplex: (array([[-1.05742759,  0.08216304],
+       [-1.05742759,  0.08216304],
+       [-1.05742759,  0.08216304]]), array([7.77753859, 7.77753859, 7.77753859]))
+           fun: 7.777538593935777
+       message: 'Optimization terminated successfully.'
+          nfev: 168
+           nit: 81
+        status: 0
+       success: True
+             x: array([-1.05742759,  0.08216304])
+
+
+ Optimized result : c1 = -1.05742759, c2 = 0.08216304
+
+ *******************************************
+
+ *******  Optimization run : Cubic  *******
+
+	 Initial : c1 = -0.93100000, c2 = -0.24200000, c3 = -0.00000100
+
+
+	  final_simplex: (array([[-0.70226044,  0.6430877 , -0.05479143],
+       [-0.70226044,  0.6430877 , -0.05479143],
+       [-0.70226044,  0.6430877 , -0.05479143],
+       [-0.70226044,  0.6430877 , -0.05479143]]), array([7.71503658, 7.71503658, 7.71503658, 7.71503658]))
+           fun: 7.715036575714204
+       message: 'Optimization terminated successfully.'
+          nfev: 425
+           nit: 229
+        status: 0
+       success: True
+             x: array([-0.70226044,  0.6430877 , -0.05479143])
+
+
+ Optimized result : c1 = -0.70226044, c2 = 0.64308770, c3 = -0.05479143
+
+ *******************************************

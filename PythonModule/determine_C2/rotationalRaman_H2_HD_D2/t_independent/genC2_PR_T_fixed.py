@@ -17,6 +17,88 @@ import cProfile
 import time
 import utils
 # ----------------------------------------
+
+################ EDIT FOLLOWING BLOCK  ##################
+
+# LOAD EXPERIMENTAL BAND AREA DATA
+
+dataH2 = np.loadtxt("./BA_H2_1.txt")
+dataHD = np.loadtxt("./BA_HD_1.txt")
+dataD2 = np.loadtxt("./BA_D2_1.txt")
+
+
+dataO2 = np.loadtxt("./DataO2_o1s1.txt")
+dataO2_p = np.loadtxt("./DataO2_pR.txt")
+
+xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
+
+# -------------------------------------------------
+
+# Jlevels information for the three gases
+#  This is required to correspond to the input expt band area provided above
+#  see readme and examples for more details
+H2_aSJmax = 5
+H2_SJmax = 5
+
+HD_aSJmax = 5
+HD_SJmax = 5
+
+D2_aSJmax = 7
+D2_SJmax = 7
+
+# -------------------------------------------------
+
+T_fixed = 298   # Kelvin
+
+
+#print(dataH2.shape)
+#print(dataHD.shape)
+#print(dataD2.shape)
+
+
+# scaling Constants ------------------------------
+# these are used for scaling the coefs
+scale1 = 1e4
+scale2 = 1e7
+scale3 = 1e9
+scale4 = 1e12
+
+# -------------------------------------------------
+
+# norm type 
+# Do not change the variable name on the LHS 
+# available norm types : Frobenius, Frobenius_sq, absolute
+# lower case :           frobenius, frobenius_sq, absolute
+# or abbreviations:      F  , FS , A
+
+norm =  'Frobenius'
+
+# if norm is not set then the default is sum of absolute values 
+# See readme for more details
+
+
+# these are used for scaling the weights for O2 as needed
+# Do not change the variable name on the LHS 
+
+scale_O2_S1O1 = 0.5
+scale_O2_pureRotn= 0.5
+
+# weight = 1.0 means that the net uncertainty depends on the 
+#          error of the band
+
+#  weight = 0.0 means that the bands are not included 
+#           in the fit altogether
+
+# ----------------------------------------
+
+# enable this to check the shape of the imported data
+
+#print(dataH2.shape)
+#print(dataHD.shape)
+#print(dataD2.shape)
+
+# ----------------------------------------
+
 def timeme(method):
     def wrapper(*args, **kw):
         startTime = int(round(time.time() * 1000))
@@ -32,7 +114,6 @@ def timeme(method):
 
 # Set logging ------------------------------------------
 fileh = logging.FileHandler('logfile', 'w+')
-#formatter = logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -52,57 +133,6 @@ log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
 
 
-# LOAD EXPERIMENTAL BAND AREA DATA
-
-dataH2 = np.loadtxt("./BA_H2_1.txt")
-dataHD = np.loadtxt("./BA_HD_1.txt")
-dataD2 = np.loadtxt("./BA_D2_1.txt")
-
-
-dataO2 = np.loadtxt("./DataO2_o1s1.txt")
-dataO2_p = np.loadtxt("./DataO2_pR.txt")
-
-xaxis  = np.loadtxt("./Wavenumber_axis_pa.txt")
-
-T_fixed = 298   # Kelvin
-
-
-print(dataH2.shape)
-print(dataHD.shape)
-print(dataD2.shape)
-
-
-# Constants ------------------------------
-# these are used for scaling the coefs
-scale1 = 1e4
-scale2 = 1e7
-scale3 = 1e9
-scale4 = 1e12
-
-
-# norm type
-# Do not change the variable name on the LHS
-# available norm types : frobenius, frobenius_sq, absolute
-norm =  'frobenius'
-
-# if norm is not set then the default is sum of absolute values
-# See readme for more details
-
-
-# these are used for scaling the weights for O2 as needed
-# Do not change the variable name on the LHS
-
-scale_O2_S1O1 = 0.5
-scale_O2_pureRotn= 0.5
-# weight = 1.0 means that the net uncertainty depends on the
-#          error of the band
-
-#  weight = 0.0 means that the bands are not included
-#           in the fit altogether
-
-# ----------------------------------------
-# ----------------------------------------
-
 print('\t**********************************************************')
 
 print('\t ')
@@ -110,12 +140,13 @@ print('\t This module is for generating the wavenumber-dependent')
 print('\t intensity correction curve termed as C2 from ')
 print('\t  experimental Raman intensities. ')
 
-print('\n\t This modeule requires edit on line 17 to 54 to ')
+print('\n\t This modeule requires edit on line 21 to 92 to ')
 print('\n\t  load data and set parameters for the analysis.')
-print('\n\t  Temperature is fixed in this analysis. See line 67.')
+print('\n\t  Temperature is fixed in this analysis. See line 51.')
 print('\t**********************************************************')
 print('\n\t\t Checking imported data and set params')
 
+data_error=0
 
 if isinstance(dataH2, np.ndarray):
     print("\t\t ", "dataH2 found, OK")
@@ -178,7 +209,31 @@ print('\t\t\t  run_fit_quadratic_TF(  -1, -0.242 ) ')
 print('\t**********************************************************')
 
 #############################################################################
+#############################################################################
 
+# write analysis data to log
+log.info('\n\t Input data')
+if data_error==0 :
+    log.info('\n\t OK')
+else:
+    log.info('\n\t Some data is missing. Exiting...')
+    sys.exit()
+    
+log.info('\n\t Input data shape:')
+log.info('\t\t H2:\t %s\n', dataH2.shape )
+log.info('\t\t HD:\t %s\n', dataHD.shape )
+log.info('\t\t D2:\t %s\n', dataD2.shape )
+log.info('\t\t O2_O1S1:\t %s\n', dataO2.shape )
+log.info('\t\t O2_pureRotn:\t %s\n', dataO2_p.shape )
+
+log.info('\t\t Temperature (fixed):\t %s\n', T_fixed )
+
+log.info('\n\t Parameters:')
+log.info('\t\t Norm:\t %s', norm)
+log.info('\t\t Scaling factor (O2 O1-S1):\t %s\n', scale_O2_S1O1 )
+log.info('\t\t Scaling factor (O2 pure rotation):\t %s\n', scale_O2_pureRotn )
+
+#############################################################################
 #------------------------------------------------
 #                COMMON FUNCTIONS
 #------------------------------------------------
@@ -204,7 +259,7 @@ def gen_intensity_mat (arr, index):
 def scale_opp_diagonal (square_array, multiplicative_factor):
     """Scale the elements, scale down the non-diagonal elements if
     value larger than 0.4 of the max value,
-    opposite diagonal of a sqaure array with the
+    opposite diagonal of a square array with the
     multiplicative factor"""
 
     Y = square_array[:, ::-1]
@@ -351,32 +406,36 @@ def gen_s_quartic(computed_data, param, scale1):
 
 #------------------------------------------------
 #------------------------------------------------
-
-
-
-
 #*******************************************************************
 #  GENERATE WEIGHT MATRICES
 
-wMat_H2 = gen_weight(dataH2, 0.2)
-wMat_HD = gen_weight(dataHD, 0.2)
-wMat_D2 = gen_weight(dataD2, 0.2)
-
-#print(wMat_H2 )
-
-wMat_H2 = np.divide(wMat_H2, 300)
-wMat_HD = np.divide(wMat_HD, 300)
-wMat_D2 = np.divide(wMat_D2, 300)
-
-wMat_H2=scale_opp_diagonal (wMat_H2, 500)
-wMat_HD=scale_opp_diagonal (wMat_HD, 500)
-wMat_D2=scale_opp_diagonal (wMat_D2, 500)
+wMat_H2 = gen_weight(dataH2, 1e-6)
+wMat_HD = gen_weight(dataHD, 1e-6)
+wMat_D2 = gen_weight(dataD2, 1e-6)
 
 wMat_H2=1
 wMat_HD=1
 wMat_D2=1
 #*******************************************************************
+log.info('\n\t Weights:')
+if isinstance(wMat_H2, np.ndarray):
+    log.info('\t\t Weight for H2 is array, size :\t %s', wMat_H2.shape)
+else:
+    log.info('\t\t Weight for H2  :\t %s', wMat_H2 )
+    
+if isinstance(wMat_HD, np.ndarray):
+    log.info('\t\t Weight for HD is array, size :\t %s', wMat_HD.shape)
+else:
+    log.info('\t\t Weight for HD  :\t %s', wMat_HD )
+    
+if isinstance(wMat_D2, np.ndarray):
+    log.info('\t\t Weight for D2 is array size :\t %s', wMat_D2.shape)
+else:
+    log.info('\t\t Weight for D2  :\t %s', wMat_D2 )    
 
+log.info('================================================' )    
+
+# ----------------------------------------
 #*******************************************************************
 # Define the residual function
 #*******************************************************************
@@ -391,9 +450,9 @@ def residual_linear_TF(param):
     '''
     # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
+    computed_D2=compute_spectra.spectra_D2( T_fixed, D2_aSJmax, D2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, HD_aSJmax, HD_SJmax)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, H2_aSJmax, H2_SJmax)
 
 
     # ------ D2 ------
@@ -433,7 +492,10 @@ def residual_linear_TF(param):
 
 
     # oxygen----------------------------
-	# - O2 high frequency -
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
+    # states are utilized below
+	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + param[0]/scale1 * dataO2[:, 3] )/ (1.0 +\
              param[0]/scale1 * dataO2[:, 4] )
@@ -441,7 +503,7 @@ def residual_linear_TF(param):
 	# ------
 
 
-    # - O2 pure rotation -
+    # - O2 pure rotation : -150 to +150 cm-1
     ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
     RHS_O2p = (1.0 + param[0]/scale1 * dataO2_p[:, 3] )/ (1.0 +\
              param[0]/scale1 * dataO2_p[:, 4] )
@@ -449,8 +511,18 @@ def residual_linear_TF(param):
 	# ------
 
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))   
 
     return(E)
 
@@ -467,9 +539,9 @@ def residual_quadratic_TF(param):
     '''
     # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
+    computed_D2=compute_spectra.spectra_D2( T_fixed, D2_aSJmax, D2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, HD_aSJmax, HD_SJmax)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, H2_aSJmax, H2_SJmax)
 
 
     # ------ D2 ------
@@ -507,12 +579,16 @@ def residual_quadratic_TF(param):
     eHD=clean_mat(eHD)
     eH2=clean_mat(eH2)
 
+
     # oxygen----------------------------
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
+    # states are utilized below
     c1=param[0]
     c2=param[1]
 
 
-	# - O2 high frequency -
+	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2))/ (1.0 +\
              c1/scale1 * dataO2[:, 4] + c2/scale2 * (dataO2[:, 4]**2))
@@ -520,7 +596,7 @@ def residual_quadratic_TF(param):
     resd_O2 = (dataO2[:, 5] * scale_O2_S1O1 ) * ((ratio_O2 - RHS_O2)**2)
 	# ------
 
-    # - O2 pure rotation -
+    # - O2 pure rotation : -150 to +150 cm-1
     ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
     RHS_O2p = (1.0 + c1/scale1 * dataO2_p[:, 3] + c2/scale2 * (dataO2_p[:, 3]**2))/ (1.0 +\
              c1/scale1 * dataO2_p[:, 4] + c2/scale2 * (dataO2_p[:, 4]**2))
@@ -529,8 +605,18 @@ def residual_quadratic_TF(param):
     resd_O2p = (dataO2_p[:, 5]* scale_O2_pureRotn ) * ((ratio_O2p - RHS_O2p)**2)
 	# ------
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))   
 
     return(E)
 
@@ -547,10 +633,9 @@ def residual_cubic_TF(param):
     '''
     # temperature is read from the variable `T_fixed` defined earlier
 
-    computed_D2=compute_spectra.spectra_D2( T_fixed, 7, 7)
-    computed_HD=compute_spectra.spectra_HD( T_fixed, 5, 5)
-    computed_H2=compute_spectra.spectra_H2( T_fixed, 5, 5)
-
+    computed_D2=compute_spectra.spectra_D2( T_fixed, D2_aSJmax, D2_SJmax)
+    computed_HD=compute_spectra.spectra_HD( T_fixed, HD_aSJmax, HD_SJmax)
+    computed_H2=compute_spectra.spectra_H2( T_fixed, H2_aSJmax, H2_SJmax)
 
     # ------ D2 ------
     trueR_D2=gen_intensity_mat (computed_D2, 2)
@@ -588,12 +673,15 @@ def residual_cubic_TF(param):
     eH2=clean_mat(eH2)
 
     # oxygen----------------------------
+    # since information on all the polarizability invariants of the 
+    # O2 are not avaiable, Raman intensities from common rotational 
+    # states are utilized below
     c1=param[0]
     c2=param[1]
     c3=param[2]
 
 
-	# - O2 high frequency -
+	# - O2 high frequency : 1400 to 1700 cm-1
     ratio_O2 = dataO2[:, 1]/dataO2[:, 2]
     RHS_O2 = (1.0 + c1/scale1 * dataO2[:, 3] + c2/scale2 * (dataO2[:, 3]**2)+\
               c3/scale3 * (dataO2[:, 3]**3))/ ( 1.0 + c1/scale1 * dataO2[:, 4] +\
@@ -602,7 +690,7 @@ def residual_cubic_TF(param):
     resd_O2 =( dataO2[:, 5]  * scale_O2_S1O1 ) * ((ratio_O2 - RHS_O2)**2)
 	# ------
 
-    # - O2 pure rotation -
+    # - O2 pure rotation : -150 to +150 cm-1
     ratio_O2p = dataO2_p[:, 1]/dataO2_p[:, 2]
     RHS_O2p = (1.0 + c1/scale1 * dataO2_p[:, 3] + c2/scale2 * (dataO2_p[:, 3]**2)+\
                c3/scale3 * (dataO2_p[:, 3]**3))/ ( 1.0 + c1/scale1 * dataO2_p[:, 4] +\
@@ -611,8 +699,18 @@ def residual_cubic_TF(param):
     resd_O2p = (dataO2_p[:, 5] * scale_O2_pureRotn  ) * ((ratio_O2p - RHS_O2p)**2)
 	# ------
 
-    E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-        np.sum(np.abs(eH2)) +  np.sum(resd_O2)  + np.sum(resd_O2p)
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
+            np.sum(np.abs(eH2)) +    np.sum(np.abs(resd_O2))  + np.sum(resd_O2p)    
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) +\
+            np.sqrt(np.sum(np.square(eH2))) +   np.sqrt(np.sum(np.abs(resd_O2)))  +\
+        np.sqrt(np.sum(resd_O2p))
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD)) +\
+            np.sum(np.square(eH2)) +  np.sum(np.square(resd_O2))  + np.sum(np.square(resd_O2p))   
 
     return(E)
 
@@ -630,7 +728,11 @@ def run_fit_linear_TF ( init_k1 ):
 
     param_init = np.array([ init_k1  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    
+    print("\t\t -- Linear fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)
+    print("\t\t Temperature (K) [fixed]: ", T_fixed)
+    
     print("Initial coef :  k1={0} output = {1}".format( init_k1, \
           (residual_linear_TF(param_init))))
 
@@ -667,7 +769,10 @@ def run_fit_quadratic_TF ( init_k1, init_k2 ):
 
     param_init = np.array([   init_k1 , init_k2  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    print("\t\t -- Quadratic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)
+    print("\t\t Temperature (K) [fixed]: ", T_fixed)
+    
     print("Initial coef :  k1={0}, k2={1} output = {2}".format( init_k1, \
          init_k2, (residual_quadratic_TF(param_init))))
 
@@ -689,6 +794,13 @@ def run_fit_quadratic_TF ( init_k1, init_k2 ):
                header='corrn_curve_quadraticv3', comments='')
 
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Quadratic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f\n', init_k1, init_k2 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f\n', optk1, optk2 )
+    log.info(' *******************************************')
+    # --------------------    
 
 #***************************************************************
 
@@ -701,7 +813,10 @@ def run_fit_cubic_TF ( init_k1, init_k2, init_k3 ):
 
     param_init = np.array([ init_k1 , init_k2 , init_k3  ])
     print("**********************************************************")
-    #print("Testing the residual function with data")
+    print("\t\t -- Cubic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)    
+    print("\t\t Temperature (K) [fixed]: ", T_fixed)
+    
     print("Initial coef :  k1={0}, k2={1}, k3={2}, output = {3}".format( init_k1, \
          init_k2, init_k3, (residual_cubic_TF(param_init))))
 
@@ -724,6 +839,13 @@ def run_fit_cubic_TF ( init_k1, init_k2, init_k3 ):
                header='corrn_curve_cubicv3', comments='')
 
     print("**********************************************************")
+    # save log -----------
+    log.info('\n *******  Optimization run : Cubic  *******')
+    log.info('\n\t Initial : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', init_k1, init_k2, init_k3 )
+    log.info('\n\t %s\n', res )
+    log.info('\n Optimized result : c1 = %4.8f, c2 = %4.8f, c3 = %4.8f\n', optk1, optk2, optk3 )
+    log.info(' *******************************************')
+    # --------------------      
 
 #***************************************************************
 
