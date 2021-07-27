@@ -19,7 +19,7 @@ The net modulation to the light intensity, defined as <i>M</i>(&nu;), over the s
 
 In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of <i>M</i>(&nu;), from experimental data. By relative form, it is meant that <i>M</i>(&nu;) is normalized to unity within the studied spectral range. If <i>M</i>(&nu;) is known, then we can correct the observed intensities in the Raman spectrum by dividing those by <i>M</i>(&nu;).
 
-In our work, we assume <i>M</i>(&nu;) &‌asymp; C<sub>1</sub>(&nu;) C<sub>2</sub>(&nu;) / C<sub>0</sub>(&nu;) [The wavenumber dependence in not explicitly stated when C<sub>0</sub>, C<sub>1</sub> and C<sub>2</sub> are discussed in the following text. ]  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
+In our work, we assume <i>M</i>(&nu;) &cong; C<sub>1</sub>(&nu;) C<sub>2</sub>(&nu;) / C<sub>0</sub>(&nu;) [The wavenumber dependence in not explicitly stated when C<sub>0</sub>, C<sub>1</sub> and C<sub>2</sub> are discussed in the following text. ]  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
 
 - In the first step, (C<sub>0</sub> / C<sub>1</sub>) correction are determined using the wavenumber axis and the spectrum of a broad band white light source.
 - C<sub>2</sub> is determined from the observed Raman intensities, where the reference or true intensities are known or can be computed.
@@ -67,9 +67,9 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
  + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
-  + Pure rotational Raman intensities as reference: [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/pure_rotation/t_dependent/Example/example.ipynb)
-  + Vibration-rotation Raman intensities as reference: [(See example)]()
-  + Vibrational Raman intensities of liquids as reference: [(See example)]()
+     + Pure rotational Raman intensities as reference: [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/pure_rotation/t_dependent/Example/example.ipynb)
+     + Vibration-rotation Raman intensities as reference: [(See example)]()
+     + Vibrational Raman intensities of liquids as reference: [(See example)]()
 
  In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work [See https://doi.org/10.1063/1.5011433 ].)
 
