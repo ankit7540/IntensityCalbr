@@ -10,6 +10,8 @@ Repository containing programs implementing the procedure for obtaining waveleng
 
 In order to determine the final correction (C<sub>2</sub>) the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
 
+---
+
 ## Why we are doing this?
 
 In any Raman spectrometer, light scattered by the molecules travels to the detector while passing through/by some optical components (for example, lens, mirrors, grating, etc..) In this process, the scattered light intensity is modulated by the non-uniform reflectance/transmission of the optical components. Reflectance and transmission of the optics are wavelength dependent.
