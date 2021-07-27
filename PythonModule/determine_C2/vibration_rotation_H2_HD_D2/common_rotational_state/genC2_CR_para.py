@@ -20,7 +20,7 @@ from common import utils
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./run_parallel/logfile.txt', 'w+')
+fileh = logging.FileHandler('logfile.txt', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -40,7 +40,6 @@ log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
 
 # LOAD EXPERIMENTAL BAND AREA DATA
-
 #  | band area | error |
 # without header in the following files
 
@@ -237,11 +236,11 @@ def clean_and_scale_elements(array, index_array, factor):
     return array
 
 # ------------------------------------------------
-# ------------------------------------------------    
+# ------------------------------------------------
 # ------------------------------------------------
 
 
-# ------------------------------------------------    
+# ------------------------------------------------
 
 def T_independent_index():
 
@@ -249,9 +248,9 @@ def T_independent_index():
     sosD2 = compute_series_para.sumofstate_D2(TK)
     sosHD = compute_series_para.sumofstate_HD(TK)
 
-    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     calc_298_D2 = gen_intensity_mat(computed_D2, 2)
@@ -261,9 +260,9 @@ def T_independent_index():
     sosD2 = compute_series_para.sumofstate_D2(TK)
     sosHD = compute_series_para.sumofstate_HD(TK)
 
-    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     calc_600_D2=gen_intensity_mat (computed_D2, 2)
@@ -274,12 +273,12 @@ def T_independent_index():
 
     cr_D2 = clean_mat(diff_D2)
     cr_HD = clean_mat(diff_HD)
-    
-    index_D2 = np.nonzero(np.abs(cr_D2) >1e-10) 
-    index_HD = np.nonzero(np.abs(cr_HD) >1e-10) 
-    
-    return index_D2, index_HD 
-# ------------------------------------------------       
+
+    index_D2 = np.nonzero(np.abs(cr_D2) >1e-10)
+    index_HD = np.nonzero(np.abs(cr_HD) >1e-10)
+
+    return index_D2, index_HD
+# ------------------------------------------------
 
 
 def gen_s_linear(computed_data, param):
@@ -424,14 +423,14 @@ def residual_linear(param):
     I_HD = np.divide(expt_HD, trueR_HD)
     #I_HD = clean_mat(I_HD)
     # ----------------
-    
+
     #I_D2[indexD2] = 0
     #I_HD[indexHD] = 0
-    
+
     # generate the RHS : sensitivity factor
     sD2 = gen_s_linear(computed_D2, param)
     sHD = gen_s_linear(computed_HD, param)
-    
+
     # weight
     #errD2 = gen_weight(expt_D2)
     #errHD = gen_weight(expt_HD)
@@ -450,14 +449,14 @@ def residual_linear(param):
     eHD = clean_mat(eHD)
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
-    
+
     eD2[indexD2] = 0
     eHD[indexHD] = 0
     np.savetxt("errD2_test", eD2, fmt='%3.3f')
     np.savetxt("errHD_test", eHD, fmt='%3.3f')
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
 
     return(E)
 
@@ -515,12 +514,12 @@ def residual_quadratic(param):
     eHD = clean_mat(eHD)
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
-    
+
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
 
     return(E)
 
@@ -578,12 +577,12 @@ def residual_cubic(param):
     eHD = clean_mat(eHD)
 
     # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
-    
+
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
 
     return(E)
 
@@ -606,7 +605,7 @@ def residual_quartic(param):
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     # ------ D2 ------
@@ -642,7 +641,7 @@ def residual_quartic(param):
     eHD[indexHD] = 0
 
     #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))    
+    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
 
     return(E)
 
@@ -852,7 +851,7 @@ def plot_curves(residual_array="None"):
           \nGitHub Repository: IntensityCalbr ")
 
     # FIGURE 0 INITIALIZED
-    
+
     plt.figure(0)
     ax0 = plt.axes()
     plt.title('Fitting result', fontsize=22)
@@ -868,7 +867,7 @@ def plot_curves(residual_array="None"):
 
     # change following as needed
     ax0.tick_params(axis='both', labelsize =20)
-    
+
     xmin = np.amin(xaxis-10)
     xmax = np.amax(xaxis+10)
 
@@ -878,14 +877,14 @@ def plot_curves(residual_array="None"):
     ax0.minorticks_on()
     ax0.tick_params(which='minor', right='on')
     ax0.tick_params(axis='y', labelleft='on', labelright='on')
-    plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey", 
+    plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
-    
-    
-    # markers for the band which are analyzed at present 
-    plt.plot(freqD2, dummyD2, 'kD' )    
-    plt.plot(freqHD, dummyHD, 'ms' )    
+
+
+    # markers for the band which are analyzed at present
+    plt.plot(freqD2, dummyD2, 'kD' )
+    plt.plot(freqHD, dummyHD, 'ms' )
 
     if type(residual_array) != str:
         if isinstance(residual_array, (list,np.ndarray)):
@@ -948,7 +947,7 @@ if (computed_H2.shape[0] != dataH2.shape[0]):
 
 # ------------------------------------------------
 
-# TESTS        
+# TESTS
 
 trueR_D2 = gen_intensity_mat(computed_D2, 2)
 expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -1015,85 +1014,84 @@ dummyH2 = np.full(len(computed_H2), val)
 freqD2 = computed_D2[:,1]
 freqHD = computed_HD[:,1]
 
-# ------------------------------------------------    
+# ------------------------------------------------
 # For setting the bands which are not analyzed to nan in dummy array
-#  dummy array used for plot 
+#  dummy array used for plot
 def T_independent_D2_set_nan(array):
     '''
-    elements in 'array' which correspond to frequencies not 
+    elements in 'array' which correspond to frequencies not
     analyzed are set to nan, for D2
     '''
     TK = 298  #  --------------------------------
     sosD2 = compute_series_para.sumofstate_D2(TK)
 
-    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
     calc_298_D2 = gen_intensity_mat(computed_D2, 2)
 
     TK = 1000  #  -------------------------------
     sosD2 = compute_series_para.sumofstate_D2(TK)
-    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2, 
+    computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
     calc_600_D2=gen_intensity_mat (computed_D2, 2)
 
     diff_D2 = calc_298_D2 - calc_600_D2
     cr_D2 = clean_mat(diff_D2)
-    
+
     return set_nan_if_foundzero(cr_D2, array)
 # ------------------------------------------------
-# ------------------------------------------------    
+# ------------------------------------------------
 # For setting the bands which are not analyzed to nan in dummy array
-#  dummy array used for plot 
+#  dummy array used for plot
 def T_independent_HD_set_nan( array):
     '''
-    elements in 'array' which correspond to frequencies not 
+    elements in 'array' which correspond to frequencies not
     analyzed are set to nan, for HD
     '''
     TK = 298  #  --------------------------------
 
     sosHD = compute_series_para.sumofstate_HD(TK)
-    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     calc_298_HD = gen_intensity_mat(computed_HD, 2)
     TK = 1000  #  -------------------------------
     sosHD = compute_series_para.sumofstate_HD(TK)
-    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD, 
+    computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     calc_600_HD=gen_intensity_mat (computed_HD, 2)
     diff_HD = calc_298_HD - calc_600_HD
     cr_HD = clean_mat(diff_HD)
-    
+
     return set_nan_if_foundzero(cr_HD, array)
-    
-# ------------------------------------------------      
+
+# ------------------------------------------------
 
 def set_nan_if_foundzero(matrix, output):
     # check over cols
-    
+
     # scheme: check over for max in a col, if max is zero
     #   then that freq was unused in the analysis
     #and similarly for rows
-    
+
     for i in range(len(output)):
         col=matrix[:,i]
         val=np.amax(col)
         if (np.abs(val)<1e-7):
             output[i]=np.nan
-            
-    # check over rows        
+
+    # check over rows
     for i in range(len(output)):
         val=np.amax(matrix[i, :])
         if (np.abs(val)<1e-7):
-            output[i]=np.nan       
-    return output      
-# -----------------------------------------------------      
-#print (freqD2, T_independent_HD(  freqD2  )  )        
+            output[i]=np.nan
+    return output
+# -----------------------------------------------------
+#print (freqD2, T_independent_HD(  freqD2  )  )
 dummyHD = T_independent_HD_set_nan( dummyHD )
 #print(freqHD,  T_independent_HD( dummyHD ))
 print(freqHD.shape[0], dummyHD.shape[0])
 
 dummyD2 = T_independent_D2_set_nan( dummyD2 )
-print(freqD2, dummyD2, dummyD2.shape[0])  
-        
+print(freqD2, dummyD2, dummyD2.shape[0])
