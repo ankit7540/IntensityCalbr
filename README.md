@@ -14,12 +14,12 @@ In order to determine the final correction (C<sub>2</sub>) the relative band int
 
 In any Raman spectrometer, light scattered by the molecules travels to the detector while passing through/by some optical components (for example, lens, mirrors, grating, etc..) In this process, the scattered light intensity is modulated by the non-uniform reflectance/transmission of the optical components. Reflectance and transmission of the optics are wavelength dependent.
 The net modulation to the light intensity, defined as $M(\nu)$, over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the $i^{th}$ optical component, as :
-<a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{200}&space;\large&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\dpi{200}&space;\large&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" title="\large \large M(\nu) = \Pi c_{i}w_{i}(\nu)" /></a>
+<a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" title="\large M(\nu) = \Pi c_{i}w_{i}(\nu)" /></a>
 
 $$
 M(\nu) = \Pi c_{i}w_{i}(\nu)
 $$
-In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of $M(\nu)$, from experimental data. By relative form, it is meant that $M(\nu)$ is normalized to unity within the studied spectral range. If $M(\nu)$ is known, then we can correct the observed intensities in the Raman spectrum by dividing those by $M(\nu)$.
+In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of $M(\nu)$, from experimental data. By relative form, it is meant that $M(\nu)$ is normalized to unity within the studied spectral range. If <img src="https://render.githubusercontent.com/render/math?math=M(\nu)"> is known, then we can correct the observed intensities in the Raman spectrum by dividing those by $M(\nu)$.
 
 In our work, we assume $M(\nu)\sim\frac{C_{1}(\nu)C_{2}(\nu)}{C_{0}(\nu)}$.  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
 
