@@ -13,20 +13,18 @@ In order to determine the final correction (C<sub>2</sub>) the relative band int
 ## Why we are doing this?
 
 In any Raman spectrometer, light scattered by the molecules travels to the detector while passing through/by some optical components (for example, lens, mirrors, grating, etc..) In this process, the scattered light intensity is modulated by the non-uniform reflectance/transmission of the optical components. Reflectance and transmission of the optics are wavelength dependent.
-The net modulation to the light intensity, defined as M(&nu;), over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the $i^{th}$ optical component, as :
+The net modulation to the light intensity, defined as <i>M</i>(&nu;), over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the i<sup>th</sup> optical component, as :
+
 <a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" title="\large M(\nu) = \Pi c_{i}w_{i}(\nu)" /></a>
 
-$$
-M(\nu) = \Pi c_{i}w_{i}(\nu)
-$$
-In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of $M(\nu)$, from experimental data. By relative form, it is meant that $M(\nu)$ is normalized to unity within the studied spectral range. If <img src="https://render.githubusercontent.com/render/math?math=M(\nu)"> is known, then we can correct the observed intensities in the Raman spectrum by dividing those by $M(\nu)$.
+In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of <i>M</i>(&nu;), from experimental data. By relative form, it is meant that <i>M</i>(&nu;) is normalized to unity within the studied spectral range. If <i>M</i>(&nu;) is known, then we can correct the observed intensities in the Raman spectrum by dividing those by <i>M</i>(&nu;).
 
-In our work, we assume $M(\nu)\sim\frac{C_{1}(\nu)C_{2}(\nu)}{C_{0}(\nu)}$.  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
+In our work, we assume <i>M</i>(&nu;) &‌asymp; C<sub>1</sub>(&nu;) C<sub>2</sub>(&nu;) / C<sub>0</sub>(&nu;) [The wavenumber dependence in not explicitly stated when C<sub>0</sub>, C<sub>1</sub> and C<sub>2</sub> are discussed in the following text. ]  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
 
-- In the first step, $\frac{C_{0}}{C_{1]}$ correction are determined using the wavenumber axis and the spectrum of a broad band white light source.
+- In the first step, (C<sub>0</sub> / C<sub>1</sub>) correction are determined using the wavenumber axis and the spectrum of a broad band white light source.
 - $C_{2}$ is determined from the observed Raman intensities, where the reference or true intensities are known or can be computed.
 
-The multiplicative correction to the Raman spectrum is then : $\frac{C_{0}(\nu)}{C_{1}(\nu)C_{2}(\nu)}$
+The multiplicative correction to the Raman spectrum is then : (C<sub>0</sub> / C<sub>1</sub>C<sub>2</sub>)
 
 
 
