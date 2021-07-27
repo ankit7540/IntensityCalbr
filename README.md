@@ -13,7 +13,7 @@ In order to determine the final correction (C<sub>2</sub>) the relative band int
 ## Why we are doing this?
 
 In any Raman spectrometer, light scattered by the molecules travels to the detector while passing through/by some optical components (for example, lens, mirrors, grating, etc..) In this process, the scattered light intensity is modulated by the non-uniform reflectance/transmission of the optical components. Reflectance and transmission of the optics are wavelength dependent.
-The net modulation to the light intensity, defined as $M(\nu)$, over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the $i^{th}$ optical component, as :
+The net modulation to the light intensity, defined as M(&nu;), over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the $i^{th}$ optical component, as :
 <a href="https://www.codecogs.com/eqnedit.php?latex=\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" target="_blank"><img src="https://latex.codecogs.com/gif.latex?\dpi{200}&space;\large&space;M(\nu)&space;=&space;\Pi&space;c_{i}w_{i}(\nu)" title="\large M(\nu) = \Pi c_{i}w_{i}(\nu)" /></a>
 
 $$
