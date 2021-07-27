@@ -189,7 +189,9 @@ print('\t**********************************************************')
 
 print('\n\t\t\t  Example:')
 
-print('\t\t\t  gen_C0_C1 (Ramanshift, 532, wl_spectra, 500 )')
+print('\t\t\t  run_fit_linear ( 299, 0.0 )')
+
+print('\t\t\t  run_fit_quadratic ( 299, 0.05 ,0.02 )')
 
 
 print('\t**********************************************************')
