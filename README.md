@@ -2,12 +2,31 @@
 
 Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)
 
+
 Repository containing programs implementing the procedure for obtaining wavelength-dependent sensitivity for calibration of Raman spectrometers based on multi-channel detectors. The present scheme is a multi-step procedure based on following three steps:
 - C<sub>0</sub> : Correction for non-linear sampling of photons in the wavenumber scale.
 - C<sub>1</sub> : Correction for channel-to-channel variation in the sensitivity of the spectrometer.
 - C<sub>2</sub> : Final correction derived from Raman spectroscopic intensities.
 
 In order to determine the final correction (C<sub>2</sub>) the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
+
+## Why we are doing this?
+
+In any Raman spectrometer, light scattered by the molecules travels to the detector while passing through/by some optical components (for example, lens, mirrors, grating, etc..) In this process, the scattered light intensity is modulated by the non-uniform reflectance/transmission of the optical components. Reflectance and transmission of the optics are wavelength dependent.
+The net modulation to the light intensity, defined as $M(\nu)$, over the studied spectral range can be expressed as products of the function of the wavenumber dependent performance of the $i^{th}$ optical component, as :
+$$
+M(\nu) = \Pi c_{i}w_{i}(\nu)
+$$
+In most cases, determining the individual performance of each optical element is a cumbersome task. Hence, we limit our focus to approximately determine the relative form of $M(\nu)$, from experimental data. By relative form, it is meant that $M(\nu)$ is normalized to unity within the studied spectral range. If $M(\nu)$ is known, then we can correct the observed intensities in the Raman spectrum by dividing those by $M(\nu)$.
+
+In our work, we assume $M(\nu)\sim\frac{C_{1}(\nu)C_{2}(\nu)}{C_{0}(\nu)}$.  The three contributions, $C_{0}-C_{2}$ are determined in two steps in this work.
+
+- In the first step, $\frac{C_{0}}{C_{1]}$ correction are determined using the wavenumber axis and the spectrum of a broad band white light source.
+- $C_{2}$ is determined from the observed Raman intensities, where the reference or true intensities are known or can be computed.
+
+The multiplicative correction to the Raman spectrum is then : $\frac{C_{0}(\nu)}{C_{1}(\nu)C_{2}(\nu)}$
+
+
 
 ## Methodology
 Observed intensities from selected bands are analyzed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the coefficients for the wavelength/wavenumber dependent sensitivity curve, modelled as a polynomial function, is obtained via non-linear minimization technique.
@@ -44,10 +63,13 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
 **Intensity calibration**
 
- - Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work). [See example](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb)
+ + Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work). [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb)
 
- - General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
- -    Pure rotation [See example](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/pure_rotation/t_dependent/Example/example.ipynb)
+ + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
+
+  + Pure rotational Raman intensities as reference: [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/pure_rotation/t_dependent/Example/example.ipynb)
+  + Vibration-rotation Raman intensities as reference: [(See example)]()
+  + Vibrational Raman intensities of liquids as reference: [(See example)]()
 
  In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work [See https://doi.org/10.1063/1.5011433 ].)
 

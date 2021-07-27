@@ -1,4 +1,4 @@
-## Python module for pure rotational Raman intensities
+# Python module for generating C2 correction from pure rotational Raman intensities
 
 **This module is for:**
 
@@ -12,12 +12,11 @@ Requirements
 Python 2.7 or Python 3.x with NumPy, SciPy and math modules
 
 
+## Temperature dependent analysis
 
-# Temperature dependent analysis
-
-This analysis has temperature as a fit parameter, which is determined during the analysis.
+This analysis has temperature as a fit parameter, which is optimized during the analysis along with the coefficients used to model the C2 correction. [(See here)](https://github.com/ankit7540/IntensityCalbr/tree/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_dependent)
 
 
-# Temperature fixed analysis
+## Temperature fixed analysis
 
-This analysis has temperature as a fixed parameter, which is provided by the user and doesnot change during the analysis.
+This analysis has temperature as a fixed parameter, which is provided by the user and doesn't change during the analysis. [(See here)](https://github.com/ankit7540/IntensityCalbr/tree/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_independent)
