@@ -13,3 +13,9 @@ User supplied band area data arranged in 1D arrays are required. These should co
 Requirements
 ----------------
 Python 2.7 or Python 3.x with NumPy, SciPy and math modules
+
+
+Module details
+----------------
+
+The main modules are `genC2_CR_para` and `genC2_CR_perp`.
