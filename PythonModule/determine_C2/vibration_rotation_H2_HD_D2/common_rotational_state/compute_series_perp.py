@@ -5,18 +5,17 @@
 import math
 import numpy as np
 
-from common import boltzmann_popln as bp
 
-# FOR PARALLEL POLARIZATION
+# FOR PERPENDICULAR POLARIZATION
 
 # Constants ------------------------------
-K = np.float64(1.38064852e-23)   # J/K
+K = np.float64(1.38064852e-23) # J/K
 H = np.float64(6.626070040e-34)  # J.s
 C = np.float64(2.99792458e+10)   # cm/s
 # ----------------------------------------
 
 # Laser properties------------------------
-omega = 18789.9850    # absolute cm-1
+omega = 18789.9850    #absolute cm-1
 omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
 # ----------------------------------------
 
@@ -76,7 +75,7 @@ header_str = 'J_val\tfreq\tintensity\tabs_wavenum'
 #                      COMPUTING SPECTRAL INTENSITIES
 # *****************************************************************************
 #  OUTPUT : nx4 array (where n is the number of rows)
-#   For every band 4 parameters are computed,
+#   For every band 4 parameters are given,
 #       J           = rotational quantum number
 #       freq        = frequency (Ramanshift)
 #       intensity   = intensity, arbitrary units
@@ -100,18 +99,17 @@ def HD_S1(T, JMax, sos):
         gamma = ME_gamma_HD_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2 / 15) * (gamma**2)
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
 
         specHD[i][0] = i
         specHD[i][1] = position
         specHD[i][2] = factor  # unnormalized intensity, arbitrary unit
-        specHD[i][3] = omega - position
+        specHD[i][3] = omega-position
 
     return specHD
 
 # *****************************************************************************
-
 
 def HD_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given JMax and T
@@ -129,8 +127,8 @@ def HD_O1(T, JMax, sos):
         position = (eJHDv1[i-2]-eJHDv0[i])
         gamma = ME_gamma_HD_532_O1[i-2][4]
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
 
         #print(JMax-i)
 
@@ -158,10 +156,10 @@ def HD_Q1(T, JMax, sos):
         position = (eJHDv1[i]-eJHDv0[i])
         alpha = ME_alpha_HD_532_Q1[i][4]
         gamma = ME_gamma_HD_532_Q1[i][4]
-        # print(i, E, popn, position, alpha, gamma)
+        #print(i, E, popn, position, alpha, gamma)
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(4/45)*(gamma**2)+ alpha**2)
+                (bj*(1/15)*(gamma**2)+ alpha**2)
 
         specHD[JMax-i][0] = i
         specHD[JMax-i][1] = position
@@ -211,12 +209,10 @@ def D2_S1(T, JMax, sos):
     '''compute the intensity for D2, S1 bands upto given JMax and T '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
     # ----------------------------------------
-
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
@@ -227,15 +223,12 @@ def D2_S1(T, JMax, sos):
         gamma = ME_gamma_D2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)
-
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
         if i % 2 == 0:
             factor = factor*g_even
         else:
             factor = factor*g_odd
-
-
         specD2[i][0] = i
         specD2[i][1] = position
         specD2[i][2] = factor  # unnormalized intensity, arbitrary unit
@@ -250,12 +243,10 @@ def D2_O1(T, JMax, sos):
     given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
     # ----------------------------------------
-
     # O1 bands ----------------------------------
 
     for i in range(JMax, 1, -1):
@@ -266,34 +257,29 @@ def D2_O1(T, JMax, sos):
         position = (eJD2v1[i-2]-eJD2v0[i])
         gamma = ME_gamma_D2_532_O1[i-2][4]
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)
-
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
         if i % 2 == 0:
             factor = factor*g_even
         else:
             factor = factor*g_odd
-
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specD2[JMax-i][3] = omega - position
+        specD2[JMax-i][3] = omega-position
 
     return specD2
 # *****************************************************************************
 
 
 def D2_Q1(T, JMax, sos):
-    '''compute the intensity for D2, Q1 bands upto given JMax
-    and sum of state '''
+    '''compute the intensity for D2, Q1 bands upto given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 6        # deuterium molecule
     g_odd = 3
     # ----------------------------------------
-
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
         E = eJD2v0[i]
@@ -305,17 +291,15 @@ def D2_Q1(T, JMax, sos):
         gamma = ME_gamma_D2_532_Q1[i][4]
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(4/45)*(gamma**2)+ alpha**2)
-
+                (bj*(1/15)*(gamma**2)+ alpha**2)
         if i % 2 == 0:
             factor = factor*g_even
         else:
             factor = factor*g_odd
-
         specD2[JMax-i][0] = i
         specD2[JMax-i][1] = position
         specD2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specD2[JMax-i][3] = (omega - position)
+        specD2[JMax-i][3] = (omega-position)
 
     return specD2
 # *****************************************************************************
@@ -336,6 +320,7 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
     out = np.concatenate((O1, Q1, S1))
     return out
     # --------------------------------------------------
+
 # *****************************************************************************
 
 
@@ -364,12 +349,10 @@ def H2_S1(T, JMax, sos):
     '''compute the intensity for H2, S1 bands upto given JMax and T '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 1 	# hydrogen molecule
     g_odd = 3
     # ---------------------------------------
-
     # S1 bands ----------------------------------
     for i in range(0, JMax+1):
         E = eJH2v0[i]
@@ -380,18 +363,16 @@ def H2_S1(T, JMax, sos):
         gamma = ME_gamma_H2_532_S1[i][4]
         #print(i, E, popn, position ,gamma)
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)
-
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
         if i % 2 == 0:
             factor = factor*g_even
         else:
             factor = factor*g_odd
-
         specH2[i][0] = i
         specH2[i][1] = position
         specH2[i][2] = factor  # unnormalized intensity, arbitrary unit
-        specH2[i][3] = omega - position
+        specH2[i][3] = omega-position
 
     return specH2
 
@@ -399,15 +380,13 @@ def H2_S1(T, JMax, sos):
 
 def H2_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given
-    JMax and sum of state '''
+     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax-1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 1 	# hydrogen molecule
     g_odd = 3
     # ---------------------------------------
-
     # O1 bands ----------------------------------
 
     for i in range(JMax, 1, -1):
@@ -418,9 +397,8 @@ def H2_O1(T, JMax, sos):
         position = (eJH2v1[i-2]-eJH2v0[i])
         gamma = ME_gamma_H2_532_O1[i-2][4]
 
-        factor = (popn/sos)*bj*omega_sc*(((omega-position)/1e4)**3)\
-            *(2/15)*(gamma**2)
-
+        factor = popn*bj*omega_sc*(((omega-position)/1e4)**3)\
+            *(1/10)*(gamma**2)/sos
         if i % 2 == 0:
             factor = factor*g_even
         else:
@@ -431,7 +409,7 @@ def H2_O1(T, JMax, sos):
         specH2[JMax-i][0] = i
         specH2[JMax-i][1] = position
         specH2[JMax-i][2] = factor  # unnormalized intensity, arbitrary unit
-        specH2[JMax-i][3] = omega - position
+        specH2[JMax-i][3] = omega-position
 
     return specH2
 # *****************************************************************************
@@ -439,28 +417,25 @@ def H2_O1(T, JMax, sos):
 
 def H2_Q1(T, JMax, sos):
     '''compute the intensity for H2 Q-branch upto given
-    JMax and sum of state '''
+     JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
-
     # --- nuclear spin statistics ------------
     g_even = 1 	# hydrogen molecule
     g_odd = 3
     # ---------------------------------------
-
     # Q-branch ----------------------------------
     for i in range(0, JMax+1):
         E = eJH2v0[i]
         energy = (-1*E*H*C)
         popn = (2*i+1)*math.exp(energy/(K*T))
         bj = (i*(i+1))/((2*i-1)*(2*i+3))
-        position = (eJH2v1[i] - eJH2v0[i])
+        position = (eJH2v1[i]-eJH2v0[i])
         alpha = ME_alpha_H2_532_Q1[i][4]
         gamma = ME_gamma_H2_532_Q1[i][4]
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(4/45)*(gamma**2)+ alpha**2)
-
+                (bj*(1/15)*(gamma**2)+ alpha**2)
         if i % 2 == 0:
             factor = factor*g_even
         else:
@@ -502,10 +477,8 @@ def spectra_H2_c(T, OJ, QJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-
               This does not include S1 bands, specific for the spectral
               range where no S1 bands observed.
-
      """
     # call individual functions ------------------------
 

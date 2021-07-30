@@ -15,7 +15,9 @@ import numpy as np
 
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
-from common import compute_series_para
+import compute_series_para
+import boltzmann_popln as bp
+
 from common import utils
 # ------------------------------------------------------
 
@@ -38,12 +40,20 @@ log.warning(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 log.warning('\n',)
 log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
+# ------------------------------------------------------
+#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
+#                   OPTIMIZATION
+# ------------------------------------------------------
 
 # LOAD EXPERIMENTAL BAND AREA DATA
 #  | band area | error |
+#  | value | value |
+#  | value | value |
+#  | value | value |
+
 # without header in the following files
 
-# Change following paths
+# Change following paths to load expt data
 dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt")
 dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
 dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
@@ -65,6 +75,22 @@ OJ_D2 = 4
 QJ_D2 = 6
 SJ_D2 = 3
 # ------------------------------------------------------
+# ------------------------------------------------------
+#                COMMON SETTINGS
+# ------------------------------------------------------
+
+# Constants ------------------------------
+# these are used for scaling the coefs
+scale1 = 1e3
+scale2 = 1e6
+scale3 = 1e9
+scale4 = 1e12
+# ----------------------------------------
+scenter = 3316.3  # center of the spectra
+# used to scale the xaxis
+
+
+
 print('Dimension of input data')
 print('\t', dataH2.shape)
 print('\t', dataHD.shape)
@@ -94,11 +120,11 @@ param_quartic[3] = -0.000001
 
 # initial run will be with above parameters
 # ------------------------------------------------
+#                COMMON FUNCTIONS
+# ------------------------------------------------
+# ------------------------------------------------
 
-# ------------------------------------------------------
-#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
-#                   FINAL OPTIMIZATION
-# ------------------------------------------------------
+
 
 # AVAILABLE FUNCTIONS TO USER :
 
@@ -140,23 +166,7 @@ def run_all_fit():
 # *******************************************************************
 
 # ------------------------------------------------------
-# ------------------------------------------------------
-#                COMMON SETTINGS
-# ------------------------------------------------------
 
-# Constants ------------------------------
-# these are used for scaling the coefs
-scale1 = 1e3
-scale2 = 1e6
-scale3 = 1e9
-scale4 = 1e12
-# ----------------------------------------
-scenter = 3316.3  # center of the spectra
-# used to scale the xaxis
-
-# ------------------------------------------------
-#                COMMON FUNCTIONS
-# ------------------------------------------------
 
 
 def gen_intensity_mat(arr, index):
@@ -245,8 +255,8 @@ def clean_and_scale_elements(array, index_array, factor):
 def T_independent_index():
 
     TK = 298  #  --------------------------------
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -257,8 +267,8 @@ def T_independent_index():
     calc_298_HD = gen_intensity_mat(computed_HD, 2)
 
     TK = 1000  #  -------------------------------
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -402,8 +412,8 @@ def residual_linear(param):
 
     TK = 298
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -474,8 +484,8 @@ def residual_quadratic(param):
     '''
     TK = 298
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2,
                                                  sosD2)
@@ -537,8 +547,8 @@ def residual_cubic(param):
     '''
     TK = 298
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -600,8 +610,8 @@ def residual_quartic(param):
     '''
     TK = 298
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -921,9 +931,9 @@ wMat_H2 = 1
 
 # generate calculated data for the entered J values
 TK=299
-sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)
-sosH2 = compute_series_para.sumofstate_H2(TK)
+sosD2 = bp.sumofstate_D2(TK)
+sosHD = bp.sumofstate_HD(TK)
+sosH2 = bp.sumofstate_H2(TK)
 
 computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
 computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
@@ -1023,14 +1033,14 @@ def T_independent_D2_set_nan(array):
     analyzed are set to nan, for D2
     '''
     TK = 298  #  --------------------------------
-    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
 
     computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
     calc_298_D2 = gen_intensity_mat(computed_D2, 2)
 
     TK = 1000  #  -------------------------------
-    sosD2 = compute_series_para.sumofstate_D2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
     computed_D2 = compute_series_para.spectra_D2( TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
     calc_600_D2=gen_intensity_mat (computed_D2, 2)
@@ -1050,13 +1060,13 @@ def T_independent_HD_set_nan( array):
     '''
     TK = 298  #  --------------------------------
 
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosHD = bp.sumofstate_HD(TK)
     computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 
     calc_298_HD = gen_intensity_mat(computed_HD, 2)
     TK = 1000  #  -------------------------------
-    sosHD = compute_series_para.sumofstate_HD(TK)
+    sosHD = bp.sumofstate_HD(TK)
     computed_HD = compute_series_para.spectra_HD( TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 

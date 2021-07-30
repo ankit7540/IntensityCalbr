@@ -5,7 +5,6 @@
 import math
 import numpy as np
 
-from common import boltzmann_popln as bp
 
 # FOR PARALLEL POLARIZATION
 

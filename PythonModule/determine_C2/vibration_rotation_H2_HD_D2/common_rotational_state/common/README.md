@@ -3,7 +3,7 @@
 Python submodules which take in data from the folder 'energy_levels_and_ME' and
 output computed spectra are included here.
 
-Included scripts include,
+Included scripts:
 
  - `compute_pureRotation ` Calculating pure rotation spectra for a given T,
    normalized to unity
@@ -18,3 +18,5 @@ Included scripts include,
 
  - `sumofstates` Calculating the sum of states required for Boltzmann population
  for a given T for H2, HD and D2.
+
+[See example]() for more details.

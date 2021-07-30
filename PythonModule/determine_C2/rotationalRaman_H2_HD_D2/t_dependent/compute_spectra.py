@@ -292,19 +292,13 @@ def spectra_D2(T, Js, Jas):
 #********************************************************************
 #********************************************************************
 
-<<<<<<< HEAD
+
 #print(" Sum of state for  H2 at 333 K : ", bp.sumofstate_H2(333))
 
 #print(" Sum of state for  HD at 375 K : ", bp.sumofstate_HD(375))
 
 #print(" Sum of state for  D2 at 298 K : ", bp.sumofstate_D2(298))
-=======
-print(" Sum of state for  H2 at 333 K : ", bp.sumofstate_H2(333))
 
-print(" Sum of state for  HD at 375 K : ", bp.sumofstate_HD(375))
-
-print(" Sum of state for  D2 at 298 K : ", bp.sumofstate_D2(298))
->>>>>>> ecd14e1366c48d37e22109abdf6df54b7f3399cd
 
 #********************************************************************
 #print ("\n")
@@ -316,55 +310,6 @@ print(" Sum of state for  D2 at 298 K : ", bp.sumofstate_D2(298))
 
 #  Spectra can  be plotted using matplotlib simply using the band posn and the spectra
 
-<<<<<<< HEAD
-=======
-#********************************************************************
 
-# Plotting the data :  MATPLOTLIB REQUIRED
-
-txt = ("*Generated from 'compute_spectra.py' on the\
-      \nGitHub Repository: RamanSpecCalibration ")
-
-# FIGURE 0 INITIALIZED
-
-wavenumH2= np.loadtxt("./posnH2.txt")
-wavenumHD= np.loadtxt("./posnHD.txt")
-wavenumD2= np.loadtxt("./posnD2.txt")
-
-spectraH2= np.loadtxt("./spectraH2.txt")
-spectraHD= np.loadtxt("./spectraHD.txt")
-spectraD2= np.loadtxt("./spectraD2.txt")
-
-plt.figure(0)
-ax0 = plt.axes()
-plt.title('Calculated  pure rotational Raman spectra', fontsize=17)
-
-plt.stem( wavenumH2,  spectraH2, 'r', label='$H_2$' , \
-         markerfmt='ro' , basefmt='k-', use_line_collection='true')
-plt.stem( wavenumHD,  spectraHD, 'g', label='$HD$', \
-         markerfmt='go', basefmt='k-',  use_line_collection='true')
-plt.stem( wavenumD2,  spectraD2, 'b', label='$D_2$', \
-         markerfmt='bo', basefmt='k-', use_line_collection='true')
-
-
-#plt.plot( wavenumH2,  spectraH2, 'r|',  label='wavenumber (ref)')
-#plt.plot( wavenumHD,  spectraHD, 'go',  label='wavenumber (ref)')
-#plt.plot( wavenumD2,  spectraD2, 'bo',  label='wavenumber (ref)')
-
-plt.xlabel('Wavenumber / cm-1', fontsize=16)
-plt.ylabel('Relative intensity', fontsize=16)
-plt.grid(True)
-ax0.tick_params(axis='both', labelsize =15)
-
-ax0.set_xlim([1700, -1065])
-
-ax0.minorticks_on()
-ax0.tick_params(which='minor', right='on')
-ax0.tick_params(axis='y', labelleft='on', labelright='on')
-plt.text(0.05, 0.00001, txt, fontsize=5, color="dimgrey",\
-         transform=plt.gcf().transFigure)
-plt.legend(loc='upper left', fontsize=14)
-
-#plt.savefig('spectra.png', bbox_inches='tight', dpi=300)
 
 #********************************************************************
