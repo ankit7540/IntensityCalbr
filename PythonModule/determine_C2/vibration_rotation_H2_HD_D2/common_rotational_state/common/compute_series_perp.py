@@ -29,33 +29,34 @@ omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
 #   b) K. Pachucki and J. Komasa, Phys. Chem. Chem. Phys. 12, 9188 (2010).
 # ----------------------------------------
 
-eJH2v0 = np.loadtxt("./energy_levels_and_ME/H2eV0.txt")
-eJH2v1 = np.loadtxt("./energy_levels_and_ME/H2eV1.txt")
-eJHDv0 = np.loadtxt("./energy_levels_and_ME/HDeV0.txt")
-eJHDv1 = np.loadtxt("./energy_levels_and_ME/HDeV1.txt")
-eJD2v0 = np.loadtxt("./energy_levels_and_ME/D2eV0.txt")
-eJD2v1 = np.loadtxt("./energy_levels_and_ME/D2eV1.txt")
+eJH2v0 = np.loadtxt("./energy_levels_and_ME/H2eV0.dat")
+eJH2v1 = np.loadtxt("./energy_levels_and_ME/H2eV1.dat")
+eJHDv0 = np.loadtxt("./energy_levels_and_ME/HDeV0.dat")
+eJHDv1 = np.loadtxt("./energy_levels_and_ME/HDeV1.dat")
+eJD2v0 = np.loadtxt("./energy_levels_and_ME/D2eV0.dat")
+eJD2v1 = np.loadtxt("./energy_levels_and_ME/D2eV1.dat")
 
 #   Data on the matrix elements of polarizability anisotropy has been taken
 #    from our previous work.
 #   c) A. Raj, H. Hamaguchi, and H. A. Witek, J. Chem. Phys. 148, 104308 (2018)
 
-ME_alpha_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_mp_Q1.txt")
-ME_alpha_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_mp_Q1.txt")
-ME_alpha_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_mp_Q1.txt")
+ME_alpha_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_mp_Q1.dat")
+ME_alpha_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_mp_Q1.dat")
+ME_alpha_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_mp_Q1.dat")
 
-ME_gamma_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_Q1.txt")
-ME_gamma_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_Q1.txt")
-ME_gamma_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_Q1.txt")
+ME_gamma_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_Q1.dat")
+ME_gamma_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_Q1.dat")
+ME_gamma_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_Q1.dat")
 
-ME_gamma_H2_532_O1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_O1.txt")
-ME_gamma_H2_532_S1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_S1.txt")
+ME_gamma_H2_532_O1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_O1.dat")
+ME_gamma_H2_532_S1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_S1.dat")
 
-ME_gamma_HD_532_O1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_O1.txt")
-ME_gamma_HD_532_S1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_S1.txt")
+ME_gamma_HD_532_O1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_O1.dat")
+ME_gamma_HD_532_S1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_S1.dat")
 
-ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.txt")
-ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.txt")
+ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.dat")
+ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.dat")
+
 
 
 # ********************************************************************
