@@ -81,7 +81,7 @@ mask = np.loadtxt("mask.txt")
 
 mask = mask.astype(bool)    # conversion to boolean
 
-mask_array =  np.invert(mask)   # inverting bool, scipy required masked region to be true
+mask_array =  np.invert(mask)   # inverting bool, scipy requires masked region to be true
 
 ```
 
