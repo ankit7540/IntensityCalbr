@@ -1,0 +1,230 @@
+2021-08-02 14:33:05
+
+
+------------ Run log ------------
+
+
+	 Input data
+
+	 OK
+
+	 Input data shape:
+		 H2:	 (7, 2)
+
+		 HD:	 (9, 2)
+
+		 D2:	 (14, 2)
+
+
+	 Parameters:
+		 Norm:	 Frobenius
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 0.01000000
+
+
+	  final_simplex: (array([[-0.63421216],
+       [-0.63421216]]), array([0.45824502, 0.45824502]))
+           fun: 0.45824501837682957
+       message: 'Optimization terminated successfully.'
+          nfev: 76
+           nit: 38
+        status: 0
+       success: True
+             x: array([-0.63421216])
+
+
+ Optimized result : c1 = -0.63421216
+
+ *******************************************
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 1.04586000
+
+
+	  final_simplex: (array([[-0.63421216],
+       [-0.63421216]]), array([0.45824502, 0.45824502]))
+           fun: 0.4582450183768296
+       message: 'Optimization terminated successfully.'
+          nfev: 71
+           nit: 35
+        status: 0
+       success: True
+             x: array([-0.63421216])
+
+
+ Optimized result : c1 = -0.63421216
+
+ *******************************************
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04586000
+
+
+	  final_simplex: (array([[-0.63421216],
+       [-0.63421216]]), array([0.45824502, 0.45824502]))
+           fun: 0.4582450183768295
+       message: 'Optimization terminated successfully.'
+          nfev: 64
+           nit: 32
+        status: 0
+       success: True
+             x: array([-0.63421216])
+
+
+ Optimized result : c1 = -0.63421216
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = -0.28500000, c2 = 0.05200000
+
+
+	  final_simplex: (array([[-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084]]), array([0.4416722, 0.4416722, 0.4416722]))
+           fun: 0.44167220282116976
+       message: 'Optimization terminated successfully.'
+          nfev: 157
+           nit: 79
+        status: 0
+       success: True
+             x: array([-0.56648963, -0.08621084])
+
+
+ Optimized result : c1 = -0.56648963, c2 = -0.08621084
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = -0.54350000, c2 = -0.35200000
+
+
+	  final_simplex: (array([[-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084]]), array([0.4416722, 0.4416722, 0.4416722]))
+           fun: 0.4416722028211696
+       message: 'Optimization terminated successfully.'
+          nfev: 134
+           nit: 68
+        status: 0
+       success: True
+             x: array([-0.56648963, -0.08621084])
+
+
+ Optimized result : c1 = -0.56648963, c2 = -0.08621084
+
+ *******************************************
+
+ *******  Optimization run : Cubic  *******
+
+	 Initial : c1 = -0.53600000, c2 = -0.31920000, c3 = 0.01500000
+
+
+	  final_simplex: (array([[-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061]]), array([0.40985987, 0.40985987, 0.40985987, 0.40985987]))
+           fun: 0.40985987395345924
+       message: 'Optimization terminated successfully.'
+          nfev: 331
+           nit: 179
+        status: 0
+       success: True
+             x: array([-0.4265769 ,  0.03446935, -0.31650061])
+
+
+ Optimized result : c1 = -0.42657690, c2 = 0.03446935, c3 = -0.31650061
+
+ *******************************************
+
+ *******  Optimization run : Cubic  *******
+
+	 Initial : c1 = -0.48400000, c2 = -0.35500000, c3 = 0.02050000
+
+
+	  final_simplex: (array([[-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061],
+       [-0.4265769 ,  0.03446935, -0.31650061]]), array([0.40985987, 0.40985987, 0.40985987, 0.40985987]))
+           fun: 0.40985987395345913
+       message: 'Optimization terminated successfully.'
+          nfev: 306
+           nit: 165
+        status: 0
+       success: True
+             x: array([-0.4265769 ,  0.03446935, -0.31650061])
+
+
+ Optimized result : c1 = -0.42657690, c2 = 0.03446935, c3 = -0.31650061
+
+ *******************************************
+
+ *******  Optimization run : Quartic  *******
+
+	 Initial : c1 = -0.48300000, c2 = -0.38000000, c3 = 0.19500000, c4 = 0.02000000
+
+
+	  final_simplex: (array([[-0.3916304 , -0.08516976, -0.4240788 ,  0.23143797],
+       [-0.3916304 , -0.08516976, -0.4240788 ,  0.23143797],
+       [-0.3916304 , -0.08516976, -0.42407881,  0.23143797],
+       [-0.3916304 , -0.08516976, -0.4240788 ,  0.23143797],
+       [-0.3916304 , -0.08516976, -0.42407881,  0.23143797]]), array([0.40557024, 0.40557024, 0.40557024, 0.40557024, 0.40557024]))
+           fun: 0.40557023599863307
+       message: 'Optimization terminated successfully.'
+          nfev: 502
+           nit: 281
+        status: 0
+       success: True
+             x: array([-0.3916304 , -0.08516976, -0.4240788 ,  0.23143797])
+
+
+ Optimized result : c1 = -0.39163040, c2 = -0.08516976, c3 = -0.42407880, c4 = 0.23143797
+
+ *******************************************
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 0.01000000
+
+
+	  final_simplex: (array([[-0.63421216],
+       [-0.63421216]]), array([0.45824502, 0.45824502]))
+           fun: 0.45824501837682957
+       message: 'Optimization terminated successfully.'
+          nfev: 76
+           nit: 38
+        status: 0
+       success: True
+             x: array([-0.63421216])
+
+
+ Optimized result : c1 = -0.63421216
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = -0.55000000, c2 = 0.07000000
+
+
+	  final_simplex: (array([[-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084],
+       [-0.56648963, -0.08621084]]), array([0.4416722, 0.4416722, 0.4416722]))
+           fun: 0.44167220282116965
+       message: 'Optimization terminated successfully.'
+          nfev: 142
+           nit: 71
+        status: 0
+       success: True
+             x: array([-0.56648963, -0.08621084])
+
+
+ Optimized result : c1 = -0.56648963, c2 = -0.08621084
+
+ *******************************************
