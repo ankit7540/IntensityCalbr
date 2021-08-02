@@ -58,9 +58,8 @@ ME_gamma_HD_532_S1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_S1.dat")
 ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.dat")
 ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.dat")
 
-# ********************************************************************
 
-print("\t\t Laser wavelength set to:", omega, " cm-1, ", 1e7/omega, " nm" )
+
 # ********************************************************************
 # ********************************************************************
 
@@ -71,7 +70,18 @@ header_str = 'J_val\tfreq\tintensity\tabs_wavenum'
 
 # ********************************************************************
 # ********************************************************************
+#********************************************************************
 
+def normalize1d(array_name):
+    """Normalize a 1D array using the max value"""
+    max_val = np.max(array_name)
+    size = len(array_name)
+    for i in range(0, size, 1):
+        array_name[i] = array_name[i]/max_val
+    
+    return array_name
+
+#********************************************************************
 # *****************************************************************************
 #                      COMPUTING SPECTRAL INTENSITIES
 # *****************************************************************************
@@ -86,7 +96,7 @@ header_str = 'J_val\tfreq\tintensity\tabs_wavenum'
 
 def HD_S1(T, JMax, sos):
     '''compute the intensity for HD, S1 bands upto given JMax for T
-    sum of states has to be supplied as argument (parallel polarized)'''
+    sum of states has to be supplied as argument '''
 
     specHD = np.zeros(shape=(JMax + 1, 4))
 
@@ -106,8 +116,8 @@ def HD_S1(T, JMax, sos):
         specHD[i][0] = i
         specHD[i][1] = position
         specHD[i][2] = factor  # unnormalized intensity, arbitrary unit
-        specHD[i][3] = omega - position
-
+        specHD[i][3] = omega - position                    
+    
     return specHD
 
 # *****************************************************************************
@@ -115,7 +125,7 @@ def HD_S1(T, JMax, sos):
 
 def HD_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given JMax and T
-    sum of states has to be supplied as argument  (parallel polarized)'''
+    sum of states has to be supplied as argument  '''
 
     specHD = np.zeros(shape=(JMax - 1, 4))
 
@@ -145,7 +155,7 @@ def HD_O1(T, JMax, sos):
 
 def HD_Q1(T, JMax, sos):
     '''compute the intensity for HD Q1 bands upto given JMax and given T
-    sum of states has to be supplied as argument  (parallel polarized)'''
+    sum of states has to be supplied as argument  '''
 
     specHD = np.zeros(shape=(JMax+1, 4))
 
@@ -176,7 +186,6 @@ def spectra_HD(T, OJ, QJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-        (parallel polarized)
      """
 
     # call individual functions ------------------------
@@ -185,6 +194,7 @@ def spectra_HD(T, OJ, QJ, SJ, sos):
     S1 = HD_S1(T, SJ, sos)
     #---------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+    
     return out  # return the output
     # --------------------------------------------------
 # *****************************************************************************
@@ -193,7 +203,6 @@ def spectra_HD_o1s1(T, OJ, SJ, sos):
     """Compute in intensities and position for rotational Raman bands of HD
         where OJ = max J state for O(v = 1) bands
               SJ = max J state for S(v = 1) bands
-        (parallel polarized)
      """
 
     # call individual functions ------------------------
@@ -210,9 +219,7 @@ def spectra_HD_o1s1(T, OJ, SJ, sos):
 # *****************************************************************************
 
 def D2_S1(T, JMax, sos):
-    '''compute the intensity for D2, S1 bands upto given JMax and T
-    (parallel polarized)
-    '''
+    '''compute the intensity for D2, S1 bands upto given JMax and T '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
 
@@ -251,8 +258,7 @@ def D2_S1(T, JMax, sos):
 
 def D2_O1(T, JMax, sos):
     '''compute the intensity for D2, O1 bands upto
-    given JMax and sum of state
-    (parallel polarized)'''
+    given JMax and sum of state '''
 
     specD2 = np.zeros(shape=(JMax-1, 4))
 
@@ -290,8 +296,7 @@ def D2_O1(T, JMax, sos):
 
 def D2_Q1(T, JMax, sos):
     '''compute the intensity for D2, Q1 bands upto given JMax
-    and sum of state
-    (parallel polarized)'''
+    and sum of state '''
 
     specD2 = np.zeros(shape=(JMax+1, 4))
 
@@ -332,7 +337,6 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-        (parallel polarized)
      """
     # call individual functions ------------------------
 
@@ -341,6 +345,7 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
     S1 = D2_S1(T, SJ, sos)
     # --------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+    
     return out
     # --------------------------------------------------
 # *****************************************************************************
@@ -351,7 +356,6 @@ def spectra_D2_o1s1(T, OJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-        (parallel polarized)
      """
 
     # call individual functions ------------------------
@@ -369,9 +373,7 @@ def spectra_D2_o1s1(T, OJ, SJ, sos):
 
 
 def H2_S1(T, JMax, sos):
-    '''compute the intensity for H2, S1 bands upto given JMax and T
-    (parallel polarized)
-    '''
+    '''compute the intensity for H2, S1 bands upto given JMax and T '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
 
@@ -409,8 +411,7 @@ def H2_S1(T, JMax, sos):
 
 def H2_O1(T, JMax, sos):
     '''compute the intensity for HD O1 bands upto given
-    JMax and sum of state
-    (parallel polarized)'''
+    JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax-1, 4))
 
@@ -450,8 +451,7 @@ def H2_O1(T, JMax, sos):
 
 def H2_Q1(T, JMax, sos):
     '''compute the intensity for H2 Q-branch upto given
-    JMax and sum of state
-    (parallel polarized)'''
+    JMax and sum of state '''
 
     specH2 = np.zeros(shape=(JMax+1, 4))
 
@@ -494,7 +494,6 @@ def spectra_H2(T, OJ, QJ, SJ, sos):
         where OJ = max J state for O(v = 1) bands
               QJ = max J state for Q(v = 1) bands
               SJ = max J state for S(v = 1) bands
-        (parallel polarized)
      """
     # call individual functions ------------------------
 
@@ -503,6 +502,7 @@ def spectra_H2(T, OJ, QJ, SJ, sos):
     S1 = H2_S1(T, SJ, sos)
     # --------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+
     return out
     # --------------------------------------------------
 
@@ -518,7 +518,6 @@ def spectra_H2_c(T, OJ, QJ, sos):
 
               This does not include S1 bands, specific for the spectral
               range where no S1 bands observed.
-    (parallel polarized)      
 
      """
     # call individual functions ------------------------
@@ -532,3 +531,4 @@ def spectra_H2_c(T, OJ, QJ, sos):
     # --------------------------------------------------
 # *****************************************************************************
 # *****************************************************************************
+

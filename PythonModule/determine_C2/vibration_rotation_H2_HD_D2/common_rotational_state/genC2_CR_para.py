@@ -19,10 +19,195 @@ import compute_series_para
 import boltzmann_popln as bp
 
 from common import utils
+
+# ------------------------------------------------------
+#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
+#                   OPTIMIZATION
+# ------------------------------------------------------
+
+# LOAD EXPERIMENTAL BAND AREA DATA
+#  | band area | error |
+#  | value | value |
+#  | value | value |
+#  | value | value |
+
+# without header in the following files
+
+# Change following paths to load expt data
+# data for H2 is loaded but not used
+dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt") 
+
+dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
+dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
+xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
+# ------------------------------------------------------
+# PARALLEL POLARIZATION
+
+# set indices for OJ,QJ and SJ for HD and D2
+# these are required for computing spectra for given T
+
+
+OJ_H2 = 3
+QJ_H2 = 4
+
+OJ_HD = 3
+QJ_HD = 3
+SJ_HD = 2
+
+OJ_D2 = 4
+QJ_D2 = 6
+SJ_D2 = 3
+
+# ----------------------------------------
+
+print('Dimension of input data')
+#print('\t', dataH2.shape)
+print('\t', dataHD.shape)
+print('\t', dataD2.shape)
+# ------------------------------------------------------
+
+# ------------------------------------------------------
+
+scenter = 3316.3  # center of the spectra
+# used to scale the xaxis
+
+# ----------------------------------------
+
+# norm type 
+# Do not change the variable name on the LHS 
+# available norm types : Frobenius, Frobenius_sq, absolute
+# lower case :           frobenius, frobenius_sq, absolute
+# or abbreviations:      F  , FS , A
+
+norm =  'Frobenius'
+
+# if norm is not set then the default is sum of absolute values 
+# See readme for more details
+
+# ----------------------------------------
+
+
+# ------------------------------------------------------
+#                COMMON SETTINGS
+# ------------------------------------------------------
+
+# Constants ------------------------------
+# these are used for scaling the coefs
+scale1 = 1e3
+scale2 = 1e6
+scale3 = 1e9
+scale4 = 1e12
+# ----------------------------------------
+
+
+
+
+
+
+# SET  DEFAULT COEFS FOR TESTING  ----------
+# initial run will be with above parameters
+param_linear = np.zeros((2))
+param_linear[0] = -1.045
+
+# ----------------------------
+param_quadratic = np.zeros((3))
+param_quadratic[0] = -0.931
+param_quadratic[1] = -0.242
+
+# ----------------------------
+param_cubic = np.zeros((4))
+param_cubic[0] = -0.9340
+param_cubic[1] = -0.2140
+param_cubic[2] = -0.00100
+
+# ----------------------------
+param_quartic = np.zeros((5))
+param_quartic[0] = -0.9340
+param_quartic[1] = -0.2140
+param_quartic[2] = -0.00100
+param_quartic[3] = -0.000001
+
+# ------------------------------------------
+
+
+
+
+print('\t**********************************************************')
+
+print('\t ')
+print('\t This module is for generating the wavenumber-dependent')
+print('\t intensity correction curve termed as C2 from ')
+print('\t  experimental Raman intensities using intensity ratios ')
+
+print('\n\t >> Transitions from common initial states are treated here. << ')
+print('\n\t >> Parallel polarized Raman intensities (relative to ' )
+print('\t\t       incident linearly polarized beam)  << ')
+
+
+print('\n\t This modeule requires edit on line 17 to 54 to ')
+print('\n\t  load and set parameters for the analysis.')
+print('\t ')
+print('\t**********************************************************')
+print('\n\t\t Checking imported data and set params')
+
+data_error=0
+
+if isinstance(dataH2, np.ndarray):
+    print("\t\t ", "dataH2 found, OK")
+else:
+    print("\t\t ", "dataH2 not found.")
+    data_error=1
+    
+if isinstance(dataHD, np.ndarray):
+    print("\t\t ", "dataHD found, OK")
+else:
+    print("\t\t ", "dataHD not found.")
+    data_error=1
+    
+if isinstance(dataD2, np.ndarray):
+    print("\t\t ", "dataD2 found, OK")
+else:
+    print("\t\t ", "dataD2 not found.")
+    data_error=1
+    
+if isinstance(xaxis, np.ndarray):
+    print("\t\t ", "xaxis found, OK")
+else:
+    print("\t\t ", "xaxis not found.")
+    data_error=1
+    
+
+
+print('\n\t\t  Analysis parameters:')
+
+print("\t\t scaling factors (for c1 to c3)", scale1, scale2, scale3)
+print("\t\t Norm (defn of residual): ", norm)
+
+
+
+print('\t**********************************************************')
+print('\n\t REQUIRED DATA')
+print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
+print('\t\t\t band area and error = 2D (2 columns), for H2, HD and D2')
+print('\n\t\t\t J_max = scalar, for H2, HD and D2 (to compute reference spectra)')
+
+
+
+print('\t**********************************************************')
+
+print('\n\t\t\t  Example:')
+
+print('\t\t\t  run_fit_linear (  0.0 )')
+
+print('\t\t\t  run_fit_quadratic (  0.05 ,0.02 )')
+
+
+print('\t**********************************************************')
+
 # ------------------------------------------------------
 
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('logfile.txt', 'w+')
+fileh = logging.FileHandler('logfile_parallel', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -40,85 +225,32 @@ log.warning(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 log.warning('\n',)
 log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
-# ------------------------------------------------------
-#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
-#                   OPTIMIZATION
-# ------------------------------------------------------
-
-# LOAD EXPERIMENTAL BAND AREA DATA
-#  | band area | error |
-#  | value | value |
-#  | value | value |
-#  | value | value |
-
-# without header in the following files
-
-# Change following paths to load expt data
-dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt")
-dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
-dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
-xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
-# ------------------------------------------------------
-# PARALLEL POLARIZATION
-
-# set indices for OJ,QJ and SJ for H2, HD and D2
-# these are required for computing spectra for given T
-
-OJ_H2 = 3
-QJ_H2 = 4
-
-OJ_HD = 3
-QJ_HD = 3
-SJ_HD = 2
-
-OJ_D2 = 4
-QJ_D2 = 6
-SJ_D2 = 3
-# ------------------------------------------------------
-# ------------------------------------------------------
-#                COMMON SETTINGS
-# ------------------------------------------------------
-
-# Constants ------------------------------
-# these are used for scaling the coefs
-scale1 = 1e3
-scale2 = 1e6
-scale3 = 1e9
-scale4 = 1e12
-# ----------------------------------------
-scenter = 3316.3  # center of the spectra
-# used to scale the xaxis
 
 
 
-print('Dimension of input data')
-print('\t', dataH2.shape)
-print('\t', dataHD.shape)
-print('\t', dataD2.shape)
-# ------------------------------------------------------
-# SET  INIT COEFS
+#############################################################################
 
-param_linear = np.zeros((2))
-param_linear[0] = -1.045
+# write analysis data to log
+log.info('\n\t Input data')
+if data_error==0 :
+    log.info('\n\t OK')
+else:
+    log.info('\n\t Some data is missing. Exiting...')
+    sys.exit()
+    
+log.info('\n\t Input data shape:')
+log.info('\t\t H2:\t %s\n', dataH2.shape )
+log.info('\t\t HD:\t %s\n', dataHD.shape )
+log.info('\t\t D2:\t %s\n', dataD2.shape )
 
-# ----------------------------
-param_quadratic = np.zeros((3))
-param_quadratic[0] = -0.931
-param_quadratic[1] = -0.242
 
-# ----------------------------
-param_cubic = np.zeros((4))
-param_cubic[0] = -0.9340
-param_cubic[1] = -0.2140
-param_cubic[2] = -0.00100
+log.info('\n\t Parameters:')
+log.info('\t\t Norm:\t %s', norm)
 
-param_quartic = np.zeros((5))
-param_quartic[0] = -0.9340
-param_quartic[1] = -0.2140
-param_quartic[2] = -0.00100
-param_quartic[3] = -0.000001
+#############################################################################
 
-# initial run will be with above parameters
+
+
 # ------------------------------------------------
 #                COMMON FUNCTIONS
 # ------------------------------------------------
@@ -141,13 +273,15 @@ param_quartic[3] = -0.000001
 # ------------------------------------------------------
 def run_all_fit():
     '''
-    Runs the fitting up to quartic polynomial
+    Runs the fitting from linear to quartic polynomial
     Returns : np array of residuals, with 4 elements
     '''
     resd_1 = 0
     resd_2 = 0
     resd_3 = 0
     resd_4 = 0
+    
+    # modify the input coefs as required
 
     run_fit_linear( 1.04586)
     resd_1 = run_fit_linear( -1.04586)
@@ -249,10 +383,14 @@ def clean_and_scale_elements(array, index_array, factor):
 # ------------------------------------------------
 # ------------------------------------------------
 
-
 # ------------------------------------------------
 
 def T_independent_index():
+    '''
+    Compute the spectra fror D2 and HD at two temperatures, then 
+    analyse the unchanged intensity ratios ->> then get the indices 
+    for these intensity ratios (i.e. the t-independent terms)
+    '''
 
     TK = 298  #  --------------------------------
     sosD2 = bp.sumofstate_D2(TK)
@@ -406,7 +544,7 @@ def residual_linear(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x )
 
-    param : T, c1
+    param :  c1
 
     '''
 
@@ -462,11 +600,19 @@ def residual_linear(param):
 
     eD2[indexD2] = 0
     eHD[indexHD] = 0
-    np.savetxt("errD2_test", eD2, fmt='%3.3f')
-    np.savetxt("errHD_test", eHD, fmt='%3.3f')
+    
+    #np.savetxt("errD2_test", eD2, fmt='%4.4f')
+    #np.savetxt("errHD_test", eHD, fmt='%4.4f')
 
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))      
 
     return(E)
 
@@ -479,7 +625,7 @@ def residual_quadratic(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x + c2*x**2 )
 
-    param : T, c1, c2
+    param :  c1, c2
 
     '''
     TK = 298
@@ -523,13 +669,20 @@ def residual_quadratic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+    
 
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))      
 
     return(E)
 
@@ -542,7 +695,7 @@ def residual_cubic(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 )
 
-    param : T, c1, c2, c3
+    param :  c1, c2, c3
 
     '''
     TK = 298
@@ -586,13 +739,23 @@ def residual_cubic(param):
     eD2 = clean_mat(eD2)
     eHD = clean_mat(eHD)
 
-    # E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+    
 
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+
+    
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))        
+    
 
     return(E)
 
@@ -605,7 +768,7 @@ def residual_quartic(param):
     ratio of expt to theoretical intensity ratio to the sensitivity  profile
     modelled as  a line, ( 1+ c1*x + c2*x**2 + c3*x**3 + c4*x**4 )
 
-    param : T, c1, c2, c3, c4
+    param :  c1, c2, c3, c4
 
     '''
     TK = 298
@@ -650,8 +813,15 @@ def residual_quartic(param):
     eD2[indexD2] = 0
     eHD[indexHD] = 0
 
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD))
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))      
 
     return(E)
 
@@ -922,7 +1092,8 @@ def plot_curves(residual_array="None"):
 
 
 # ------------------------------------------------
-
+print("\t\t\t*****************")
+print("\t\t\tTesting computed spectra for dimension match.")
 wMat_D2 = 1
 wMat_HD = 1.2
 wMat_H2 = 1
@@ -944,20 +1115,26 @@ if (computed_D2.shape[0] != dataD2.shape[0]):
     print('D2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
+else:
+    print("\tDimension ok for D2.")
 
 if (computed_HD.shape[0] != dataHD.shape[0]):
     print('H2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
+else:
+    print("\tDimension ok for HD.")    
 
 if (computed_H2.shape[0] != dataH2.shape[0]):
     print('H2 : Dimension of input data does not match with the calculated\
            spectra. Check input expt data or the J-indices entered.')
     sys.exit("\tError: Quitting.")
+else:
+    print("\tDimension ok for H2.")    
 
 # ------------------------------------------------
 
-# TESTS
+# INTERNAL TESTING BASED ON LOADED DATA 
 
 trueR_D2 = gen_intensity_mat(computed_D2, 2)
 expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -968,7 +1145,7 @@ expt_HD = gen_intensity_mat(dataHD, 0)
 I_D2 = np.divide(expt_D2, trueR_D2)
 I_HD = np.divide(expt_HD, trueR_HD)
 
-print(I_D2.shape)
+ 
 #I_D2 = clean_mat(I_D2)
 #I_HD = clean_mat(I_HD)
 
@@ -983,7 +1160,6 @@ a=I_D2
 
 errD2_output = gen_weight(dataD2)
 errHD_output = gen_weight(dataHD)
-
 
 
 sD2 = gen_s_linear(computed_D2, param_linear)
@@ -1002,11 +1178,12 @@ resd_quad = residual_quadratic(param_quadratic)
 resd_cubic = residual_cubic(param_cubic)
 resd_quar = residual_quartic(param_quartic)
 
-print('Value of residuals with default coefs are')
-print('\t linear \t:', resd_lin)
-print('\t quadratic \t:', resd_quad)
-print('\t cubic  \t:', resd_cubic)
-print('\t quartic \t:', resd_quar)
+print('\t\tValue of residuals with test coefs are listed below:')
+print('\t\t linear \t:', resd_lin)
+print('\t\t quadratic \t:', resd_quad)
+print('\t\t cubic  \t:', resd_cubic)
+print('\t\t quartic \t:', resd_quar)
+
 # ********************************************************************
 
 test_mat = np.arange(196).reshape(14,14)
@@ -1079,12 +1256,11 @@ def T_independent_HD_set_nan( array):
 # ------------------------------------------------
 
 def set_nan_if_foundzero(matrix, output):
-    # check over cols
+    ''' check over cols
 
-    # scheme: check over for max in a col, if max is zero
-    #   then that freq was unused in the analysis
-    #and similarly for rows
-
+     scheme: check over for max in a col, if max is zero
+       then that freq was unused in the analysis
+       and similarly for rows '''
     for i in range(len(output)):
         col=matrix[:,i]
         val=np.amax(col)
@@ -1098,10 +1274,5 @@ def set_nan_if_foundzero(matrix, output):
             output[i]=np.nan
     return output
 # -----------------------------------------------------
-#print (freqD2, T_independent_HD(  freqD2  )  )
-dummyHD = T_independent_HD_set_nan( dummyHD )
-#print(freqHD,  T_independent_HD( dummyHD ))
-print(freqHD.shape[0], dummyHD.shape[0])
 
-dummyD2 = T_independent_D2_set_nan( dummyD2 )
-print(freqD2, dummyD2, dummyD2.shape[0])
+
