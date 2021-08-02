@@ -56,9 +56,9 @@ Explanation for the steps of the scheme are following :
 ## References
 In the following works, the ratio of intensities from common rotational states are compared to the corresponding theoretical ratio to obtain the wavelength dependent sensitivity curve.
 
-  - H. Okajima, H. Hamaguchi, J. Raman Spectrosc. 2015, 46, 1140. [10.1002/jrs.4731](https://doi.org/10.1002/jrs.4731)
-  - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405. [cl.1974.1405](https://www.journal.csj.jp/doi/pdf/10.1246/cl.1974.1405)
-  - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020, 51, 2066. [10.1002/jrs.5955]( https://doi.org/10.1002/jrs.5955)
+  - H. Okajima, H. Hamaguchi, J. Raman Spectrosc. 2015, 46, 1140. [(10.1002/jrs.4731)](https://doi.org/10.1002/jrs.4731)
+  - H. Hamaguchi, I. Harada, T. Shimanouchi, Chem. Lett. 1974, 3, 1405. [(cl.1974.1405)](https://www.journal.csj.jp/doi/pdf/10.1246/cl.1974.1405)
+  - A. Raj, C. Kato, H.A. Witek. H. Hamaguchi, J. Raman Spec 2020, 51, 2066. [(10.1002/jrs.5955)]( https://doi.org/10.1002/jrs.5955)
 
 This principle of comparing intensities (pure rotational Raman and rotation-vibration Raman) is extended to all bands in present work, requiring parametrizing of temperature in the scheme. Set of intensity ratios are then conveniently framed as a matrix, as shown in the above figure. The reference matrix can be computed if equations and required parameters are available, or,  if known intensities are available then they can work as reference (for given conditions).
 
@@ -71,11 +71,11 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
  + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called).
 
-     + Pure rotational Raman intensities as reference: [(See example, t-dependent analysis)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_dependent/Example/example.ipynb) [See example, t_independent analysis](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_independent/Example/example.ipynb)
-     + Vibration-rotation Raman intensities as reference: [(Computation of reference spectra)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/vibration_rotation_H2_HD_D2/common_rotational_state/Examples/example_compute_series.ipynb)  [(See example using common initial states)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/vibration_rotation_H2_HD_D2/common_rotational_state/Examples/example_genC2.ipynb) [(See example for temperature dependent analysis, all bands)]()  [(See example for temperature independent i.e. fixed analysis, all bands)]()
+     + Pure rotational Raman intensities as reference: [(See example, t-dependent analysis)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_dependent/Example/example.ipynb) [(See example, t_independent analysis) ](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/rotationalRaman_H2_HD_D2/t_independent/Example/example.ipynb)
+     + Vibration-rotation Raman intensities as reference: [(Computation of reference spectra) ](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/vibration_rotation_H2_HD_D2/common_rotational_state/Examples/example_compute_series.ipynb)  [(See example using common initial states) ](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C2/vibration_rotation_H2_HD_D2/common_rotational_state/Examples/example_genC2.ipynb) [(See example for temperature dependent analysis, all bands) ]()    [(See example for temperature independent i.e. fixed analysis, all bands) ]()
      + Vibrational Raman intensities of liquids as reference: [(See example)]()
 
- In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work {A. Raj, H. Hamaguchi, and H. A. Witek , J. Chem. Phys. 148, 104308 (2018) [10.1063/1.5011433](https://doi.org/10.1063/1.5011433) })
+ In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work:   A. Raj, H. Hamaguchi, and H. A. Witek , J. Chem. Phys. 148, 104308 (2018) [10.1063/1.5011433]([https://doi.org/10.1063/1.5011433]) )
 
  - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, x-axis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotational-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
 
