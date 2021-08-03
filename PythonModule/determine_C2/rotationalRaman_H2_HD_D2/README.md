@@ -1,4 +1,4 @@
-# Python module for generating C2 correction from pure rotational Raman intensities
+# Python module for generating C<sub>2</sub> correction from pure rotational Raman intensities
 
 **This module is for:**
 
