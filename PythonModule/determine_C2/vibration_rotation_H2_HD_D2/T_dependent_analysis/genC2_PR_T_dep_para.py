@@ -15,13 +15,225 @@ import numpy as np
 
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
-from common import compute_series_para
+
+import compute_series_para
+import boltzmann_popln as bp
 
 from common import utils
 # ------------------------------------------------------
 
+# ------------------------------------------------------
+#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
+#                   OPTIMIZATION
+# ------------------------------------------------------
+
+# LOAD EXPERIMENTAL BAND AREA DATA
+#  | band area | error |
+#  | value | value |
+#  | value | value |
+#  | value | value |
+
+# without header in the following files
+
+# Change following paths to load expt data
+
+dataH2 = np.loadtxt("BA_H2_1") 
+dataHD = np.loadtxt("BA_HD_1")
+dataD2 = np.loadtxt("BA_D2_1")
+xaxis = np.loadtxt("Ramanshift_axis")
+# ------------------------------------------------------
+# PARALLEL POLARIZATION
+
+# set indices for OJ,QJ and SJ for HD and D2
+# these are required for computing spectra at a temperature T
+
+OJ_H2 = 3
+QJ_H2 = 4
+
+OJ_HD = 3
+QJ_HD = 3
+SJ_HD = 2
+
+OJ_D2 = 4
+QJ_D2 = 6
+SJ_D2 = 3
+
+# ----------------------------------------
+
+print('Dimension of input data')
+print('\t', dataH2.shape)
+print('\t', dataHD.shape)
+print('\t', dataD2.shape)
+# ------------------------------------------------------
+
+# ------------------------------------------------------
+
+scenter = 3316.3  # center of the spectra
+# used to scale the xaxis
+
+scaled_xaxis = ( xaxis - scenter ) 
+magn = orderOfMagnitude(np.amax(scaled_xaxis))
+
+# for example,
+# magn = 2 for 100 
+
+# scaling_factor=(10**magn)
+# scaling factor below is thus deduced from the magnitude
+
+scale1 = (10**magn)
+scale2 = (10**magn)**2
+scale3 = (10**magn)**3
+scale4 = (10**magn)**4
+scale5= (10**magn)**5
+
+# or use fixed constants as scale
+
+#scale1 = 1e3
+#scale2 = 1e6
+#scale3 = 1e9
+#scale4 = 1e12
+#scale5= 1e13
+# ----------------------------------------
+
+# ----------------------------------------
+
+# norm type 
+# Do not change the variable name on the LHS 
+# available norm types : Frobenius, Frobenius_sq, absolute
+# lower case :           frobenius, frobenius_sq, absolute
+# or abbreviations:      F  , FS , A
+
+norm =  'Frobenius'
+
+# if norm is not set then the default is sum of absolute values 
+# See readme for more details
+
+# ----------------------------------------
+
+
+# ------------------------------------------------------
+#                COMMON SETTINGS
+# ------------------------------------------------------
+
+
+# SET  DEFAULT COEFS FOR TESTING  ----------
+# initial run will be with above parameters
+param_linear = np.zeros((2))
+param_linear[0] = 299
+param_linear[1] = -0.045
+
+# ----------------------------
+param_quadratic = np.zeros((3))
+param_quadratic[0] = 299
+param_quadratic[1] = -0.042
+param_quadratic[2] = 0.0
+
+# ----------------------------
+param_cubic = np.zeros((4))
+param_cubic[0] = 299
+param_cubic[1] = -0.2140
+param_cubic[2] = -0.00100
+param_cubic[3] = 0.0
+
+# ----------------------------
+param_quartic = np.zeros((5))
+param_quartic[0] = 299
+param_quartic[1] = -0.2140
+param_quartic[2] = -0.0010
+param_quartic[3] = -0.0000
+param_quartic[4] = -0.0000
+
+# ----------------------------
+param_quintuple = np.zeros((6))
+param_quintuple[0] = 299
+param_quintuple[1] = -0.2140
+param_quintuple[2] = -0.0010
+param_quintuple[3] = -0.0000
+param_quintuple[4] = -0.0000
+param_quintuple[5] = -0.0000
+
+# ------------------------------------------
+
+
+
+
+print('\t**********************************************************')
+
+print('\t ')
+print('\t This module is for generating the wavenumber-dependent')
+print('\t intensity correction curve termed as C2 from ')
+print('\t  experimental Raman intensities using intensity ratios ')
+
+print('\n\t >> Ratios of all observed Raman intensities are treated here. << ')
+print('\n\t >> Parallel polarized Raman intensities (relative to ' )
+print('\t\t       incident linearly polarized beam)  << ')
+
+print('\n\t >> Temperature is a fit parameter << ')
+
+print('\n\t This modeule requires edit on line 17 to 54 to ')
+print('\n\t  load and set parameters for the analysis.')
+print('\t ')
+print('\t**********************************************************')
+print('\n\t\t Checking imported data and set params')
+
+data_error=0
+
+if isinstance(dataH2, np.ndarray):
+    print("\t\t ", "dataH2 found, OK")
+else:
+    print("\t\t ", "dataH2 not found.")
+    data_error=1
+    
+if isinstance(dataHD, np.ndarray):
+    print("\t\t ", "dataHD found, OK")
+else:
+    print("\t\t ", "dataHD not found.")
+    data_error=1
+    
+if isinstance(dataD2, np.ndarray):
+    print("\t\t ", "dataD2 found, OK")
+else:
+    print("\t\t ", "dataD2 not found.")
+    data_error=1
+    
+if isinstance(xaxis, np.ndarray):
+    print("\t\t ", "xaxis found, OK")
+else:
+    print("\t\t ", "xaxis not found.")
+    data_error=1
+    
+
+
+print('\n\t\t  Analysis parameters:')
+
+print("\t\t scaling factors (for c1 to c3)", scale1, scale2, scale3)
+print("\t\t Norm (defn of residual): ", norm)
+
+
+
+print('\t**********************************************************')
+print('\n\t REQUIRED DATA')
+print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
+print('\t\t\t band area and error = 2D (2 columns), for H2, HD and D2')
+print('\n\t\t\t J_max = scalar, for H2, HD and D2 (to compute reference spectra)')
+
+
+
+print('\t**********************************************************')
+
+print('\n\t\t\t  Example:')
+
+print('\t\t\t  run_fit_linear (  300 , 0.0 )')
+
+print('\t\t\t  run_fit_quadratic ( 300 , 0.05 ,0.02 )')
+
+
+print('\t**********************************************************')
+
+# ------------------------------------------------------
+
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./run_parallel/logfile_para.txt', 'w+')
+fileh = logging.FileHandler('logfile_parallel', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -40,85 +252,32 @@ log.warning('\n',)
 log.error("------------ Run log ------------\n")
 # ------------------------------------------------------
 
-# LOAD EXPERIMENTAL BAND AREA DATA
-
-#  | band area | error |
-# without header in the following files
-
-# Change following paths
-
-dataH2 = np.loadtxt("./run_parallel_0531/BA_H2_1.txt")
-dataHD = np.loadtxt("./run_parallel_0531/BA_HD_1.txt")
-dataD2 = np.loadtxt("./run_parallel_0531/BA_D2_1.txt")
-xaxis = np.loadtxt("./run_parallel_0531/Ramanshift_axis_para.txt")
-# ------------------------------------------------------
-# PARALLEL POLARIZATION
-
-# set indices for OJ,QJ and SJ for H2, HD and D2
-# these are required for computing spectra for given T
-
-OJ_H2 = 3
-QJ_H2 = 3
-
-OJ_HD = 3
-QJ_HD = 3
-SJ_HD = 1
-
-OJ_D2 = 4
-QJ_D2 = 6
-SJ_D2 = 2
-# ------------------------------------------------------
-print('Dimension of input data')
-print('\t', dataH2.shape)
-print('\t', dataHD.shape)
-print('\t', dataD2.shape)
-# ------------------------------------------------------
-# SET  INIT COEFS
-
-param_linear = np.zeros((2))
-param_linear[0] = 298
-param_linear[1] = -1.045
-
-# ----------------------------
-param_quadratic = np.zeros((3))
-param_quadratic[0] = 298
-param_quadratic[1] = -0.931
-param_quadratic[2] = -0.242
-
-# ----------------------------
-param_cubic = np.zeros((4))
-param_cubic[0] = 298
-param_cubic[1] = -0.9340
-param_cubic[2] = -0.2140
-param_cubic[3] = -0.00100
-
-# ----------------------------
-
-param_quartic = np.zeros((5))
-param_quartic[0] = 298
-param_quartic[1] = -0.9340
-param_quartic[2] = -0.2140
-param_quartic[3] = -0.00100
-param_quartic[4] = -0.000001
-
-# ----------------------------
-
-param_quintuple = np.zeros((6))
-param_quintuple[0] = 298
-param_quintuple[1] = -0.9340
-param_quintuple[2] = -0.2140
-param_quintuple[3] = -0.00100
-param_quintuple[4] = -0.000001
-param_quintuple[5] = -0.000001
 
 
-# initial run will be with above parameters
+#############################################################################
+
+# write analysis data to log
+log.info('\n\t Input data')
+if data_error==0 :
+    log.info('\n\t OK')
+else:
+    log.info('\n\t Some data is missing. Exiting...')
+    sys.exit()
+    
+log.info('\n\t Input data shape:')
+log.info('\t\t H2:\t %s\n', dataH2.shape )
+log.info('\t\t HD:\t %s\n', dataHD.shape )
+log.info('\t\t D2:\t %s\n', dataD2.shape )
+
+
+log.info('\n\t Parameters:')
+log.info('\t\t Norm:\t %s', norm)
+
+#############################################################################
+
 # ------------------------------------------------
-
-# ------------------------------------------------------
-#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
-#                   FINAL OPTIMIZATION
-# ------------------------------------------------------
+#                COMMON FUNCTIONS
+# ------------------------------------------------
 
 # AVAILABLE FUNCTIONS TO USER :
 
@@ -132,63 +291,35 @@ param_quintuple[5] = -0.000001
 #   and plot the residuals over the number of unknown variables
 #   np array of residuals to be passed for plot of residuals
 
-# Example :
-#    resd = run_all_fit()
-#    plot_curves(resd)
-#
-#    resd = run_all_fit() ; plot_curves(resd) ;
-#
 # ------------------------------------------------------
 def run_all_fit():
     '''
-    Runs the fitting up to quartic polynomial
+    Runs the fitting from linear to quartic polynomial
     Returns : np array of residuals, with 4 elements
     '''
     resd_1 = 0
     resd_2 = 0
     resd_3 = 0
     resd_4 = 0
-    resd_5 = 0
+    
+    # modify the input coefs as required
 
-    run_fit_linear(299, 1.04586)
-    resd_1 = run_fit_linear(299, -1.04586)
+    run_fit_linear( 299, 1.045)
+    resd_1 = run_fit_linear( 299, -1.045)
 
-    resd_2 = run_fit_quadratic(299, -0.285, 0.052)
-    resd_2 = run_fit_quadratic(299, 0.835, -0.052)
+    resd_2 = run_fit_quadratic( 299, -0.285, 0.052)
+    resd_2 = run_fit_quadratic( 299, -0.5435, -0.352)
 
-    run_fit_cubic(299, -1.036, -0.2192, 0.0025)
-    resd_3 = run_fit_cubic(299, -0.249, -0.215, +0.00215)
+    run_fit_cubic( 299, -0.536, -0.3192, 0.015)
+    resd_3 = run_fit_cubic( 299, -0.4840, -0.355, +0.0205)
 
-    resd_4 = run_fit_quartic(299, -0.24966, -0.358, 0.05, +0.0012)
-    resd_5 = run_fit_quintuple(296, -0.24966, -0.368, 0.05, +0.0012, +0.0001)
+    resd_4 = run_fit_quartic( 299, -0.483, -0.38, 0.195, +0.02)
 
-    out = np.array([resd_1, resd_2, resd_3, resd_4, resd_5])
+    out = np.array([resd_1, resd_2, resd_3, resd_4])
     return out
 
 # *******************************************************************
-
 # ------------------------------------------------------
-# ------------------------------------------------------
-#                COMMON SETTINGS
-# ------------------------------------------------------
-
-# Constants ------------------------------
-# these are used for scaling the coefs
-
-
-scale1 = 1e3
-scale2 = 1e6
-scale3 = 1e9
-scale4 = 1e12
-scale5 = 1e14
-# ----------------------------------------
-scenter = 3316.3  # center of the spectra
-# used to scale the xaxis
-
-# ------------------------------------------------
-#                COMMON FUNCTIONS
-# ------------------------------------------------
-
 
 def gen_intensity_mat(arr, index):
     """To obtain the intensity matrix for the numerator or denominator\
@@ -378,10 +509,10 @@ def gen_s_quintuple(computed_data, param):
             # param[4] = c4
 
             mat[i, j] = (1+(param[1]/scale1)*v1 + (param[2]/scale2)*v1**2 +\
-                       (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4 
+                       (param[3]/scale3)*v1**3 + (param[4]/scale4)*v1**4
                        +  (param[5]/scale5)*v1**5 )/ \
                 (1+(param[1]/scale1)*v2 + (param[2]/scale2)*v2**2 \
-                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4 
+                 + (param[3]/scale3)*v2**3 + (param[4]/scale4)*v2**4
                  + (param[5]/scale5)*v2**5 )
 
     return mat
@@ -404,9 +535,9 @@ def residual_linear(param):
 
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
+    sosH2 = bp.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -454,11 +585,15 @@ def residual_linear(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-        + np.sum(np.square(eH2))
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return E
 
@@ -476,9 +611,9 @@ def residual_quadratic(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
+    sosH2 = bp.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -526,15 +661,15 @@ def residual_quadratic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-        + np.sum(np.square(eH2))
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
-
-    np.savetxt("errorD2_2.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    np.savetxt("errorHD_2.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    np.savetxt("errorH2_2.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')      
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return E
 
@@ -551,9 +686,9 @@ def residual_cubic(param):
 
     '''
     TK = param[0]
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
+    sosH2 = bp.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -603,15 +738,15 @@ def residual_cubic(param):
     E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
         + np.sum(np.square(eH2))
 
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
-    
-    #np.savetxt("errorD2_cubic.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_cubic.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_cubic.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return E
 
@@ -629,9 +764,9 @@ def residual_quartic(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
+    sosH2 = bp.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -679,18 +814,15 @@ def residual_quartic(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-        + np.sum(np.square(eH2))
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
-
-    #np.savetxt("errorD2_4.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_4.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_4.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t') 
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return E
 
@@ -708,9 +840,9 @@ def residual_quintuple(param):
     '''
     TK = param[0]
 
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    sosH2 = compute_series_para.sumofstate_H2(TK)
+    sosD2 = bp.sumofstate_D2(TK)
+    sosHD = bp.sumofstate_HD(TK)
+    sosH2 = bp.sumofstate_H2(TK)
 
     computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -758,18 +890,15 @@ def residual_quintuple(param):
     eHD = clean_mat(eHD)
     eH2 = clean_mat(eH2)
 
-    E = np.sum(np.square(eD2)) + np.sum(np.square(eHD))\
-        + np.sum(np.square(eH2))
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
-
-    #np.savetxt("errorD2_5.txt", np.abs(eD2), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorHD_5.txt", np.abs(eHD), fmt="%4.4f", delimiter='\t')
-    #np.savetxt("errorH2_5.txt", np.abs(eH2), fmt="%4.4f", delimiter='\t')    
-
-    #E = np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) +\
-    #    np.sum(np.abs(eH2))
+    #  choosing norm 
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(eD2)) + np.sum(np.abs(eHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(eD2))) + np.sqrt(np.sum(np.square(eHD))) 
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(eD2)) + np.sum(np.square(eHD))   
 
     return E
 
@@ -835,7 +964,7 @@ def run_fit_quadratic(init_T, init_k1, init_k2):
          init_k2, (residual_quadratic(param_init))))
 
     print("\nOptimization run: Quadratic     \n")
-    res = opt.minimize(residual_quadratic, param_init, method='powell', \
+    res = opt.minimize(residual_quadratic, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -880,7 +1009,7 @@ def run_fit_cubic(init_T, init_k1, init_k2, init_k3):
 
 
     print("\nOptimization run : Cubic     \n")
-    res = opt.minimize(residual_cubic, param_init, method='powell', \
+    res = opt.minimize(residual_cubic, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':2500})
 
     print(res)
@@ -929,7 +1058,7 @@ def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
 
 
     print("\nOptimization run : Quartic     \n")
-    res = opt.minimize(residual_quartic, param_init, method='powell', \
+    res = opt.minimize(residual_quartic, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -982,7 +1111,7 @@ def run_fit_quintuple(init_T, init_k1, init_k2, init_k3, init_k4, init_k5):
 
 
     print("\nOptimization run : Quintuple  \n")
-    res = opt.minimize(residual_quintuple, param_init, method='powell', \
+    res = opt.minimize(residual_quintuple, param_init, method='Nelder-Mead', \
                               options={'xatol': 1e-9, 'fatol': 1e-9, 'maxiter':1500})
 
     print(res)
@@ -1067,7 +1196,7 @@ def plot_curves(residual_array="None"):
 
     xmin = np.amin(xaxis - 10)
     xmax = np.amax(xaxis + 10)
-    
+
     plt.xlim((xmax, 2500)) #  setting xaxis range
     ax0.set_ylim([0, 2.1]) #  change this if the ylimit is not enough
 
@@ -1077,8 +1206,8 @@ def plot_curves(residual_array="None"):
     plt.text(0.05, 0.0095, txt, fontsize=6, color="dimgrey",
              transform=plt.gcf().transFigure)
     plt.legend(loc='upper left', fontsize=16)
-    
-    # markers showing the bands positions whose data is used for fit 
+
+    # markers showing the bands positions whose data is used for fit
     plt.plot(computed_D2[:,1], dummyD2, 'mo' )
     plt.plot(computed_HD[:,1], dummyHD, 'cv' )
     plt.plot(computed_H2[:,1], dummyH2, 'gD' )
@@ -1114,13 +1243,24 @@ wMat_D2 = 1
 wMat_HD = 1
 wMat_H2 = 1
 
+# ***************************************************************
+
+# weight matrix can be defined for specific elements of the 
+#   difference martrix 
+
+# in the present example the weight is unity for all the elements
+
+# ***************************************************************
+
+
+
 # checks for input done here
 
 # generate calculated data for the entered J values
 TK = 299
-sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)    
-sosH2 = compute_series_para.sumofstate_H2(TK)
+sosD2 = bp.sumofstate_D2(TK)
+sosHD = bp.sumofstate_HD(TK)
+sosH2 = bp.sumofstate_H2(TK)
 
 computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
@@ -1128,6 +1268,10 @@ computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
 computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
+
+print(computed_D2.shape, dataD2.shape)
+print(computed_H2.shape, dataH2.shape)
+print(computed_HD.shape, dataHD.shape)
 
 # checks for dimension match done here
 if(len(computed_D2) != dataD2.shape[0]):
@@ -1171,6 +1315,8 @@ errH2_output = gen_weight(dataH2)
 errHD_output = gen_weight(dataHD)
 errD2_output = gen_weight(dataD2)
 
+
+
 sD2 = gen_s_linear(computed_D2, param_linear)
 sHD = gen_s_linear(computed_HD, param_linear)
 sH2 = gen_s_linear(computed_H2, param_linear)
@@ -1179,10 +1325,10 @@ eD2 = (np.multiply(errD2_output, I_D2) - sD2)
 eHD = (np.multiply(errHD_output, I_HD) - sHD)
 eH2 = (np.multiply(errH2_output, I_H2) - sH2)
 
+
+# set right upper and diagonal to zero
 eD2 = clean_mat(eD2)
-
 eHD = clean_mat(eHD)
-
 eH2 = clean_mat(eH2)
 
 resd_lin = residual_linear(param_linear)
@@ -1207,4 +1353,3 @@ dummyHD = np.full(len(computed_HD), val)
 dummyH2 = np.full(len(computed_H2), val)
 
 # -----------------------------------------------------
-print("For actual run, execeute following,\n\tresd = run_all_fit() ; plot_curves(resd) ;")
