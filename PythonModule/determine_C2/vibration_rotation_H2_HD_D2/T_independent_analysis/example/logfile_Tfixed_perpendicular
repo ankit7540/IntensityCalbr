@@ -1,0 +1,43 @@
+<logging.Logger object at 0x151e626ffda0>
+2021-08-10 21:22:50
+
+
+------------ Run log ------------
+
+
+	 Input data
+
+	 OK
+
+	 Input data shape:
+		 H2:	 (6, 2)
+
+		 HD:	 (8, 2)
+
+		 D2:	 (13, 2)
+
+		 Temperature (fixed):	 298
+
+
+	 Parameters:
+		 Norm:	 Frobenius
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04586000
+
+
+	  final_simplex: (array([[-0.48886601],
+       [-0.48886601]]), array([306.24882582, 306.24882582]))
+           fun: 306.24882581672404
+       message: 'Optimization terminated successfully.'
+          nfev: 70
+           nit: 33
+        status: 0
+       success: True
+             x: array([-0.48886601])
+
+
+ Optimized result : c1 = -0.48886601
+
+ *******************************************

@@ -1,0 +1,42 @@
+2021-08-10 21:22:42
+
+
+------------ Run log ------------
+
+
+	 Input data
+
+	 OK
+
+	 Input data shape:
+		 H2:	 (7, 2)
+
+		 HD:	 (9, 2)
+
+		 D2:	 (14, 2)
+
+		 Temperature (fixed):	 298
+
+
+	 Parameters:
+		 Norm:	 Frobenius
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = -1.04586000
+
+
+	  final_simplex: (array([[-0.58019652],
+       [-0.58019652]]), array([21.3597083, 21.3597083]))
+           fun: 21.359708301255825
+       message: 'Optimization terminated successfully.'
+          nfev: 67
+           nit: 32
+        status: 0
+       success: True
+             x: array([-0.58019652])
+
+
+ Optimized result : c1 = -0.58019652
+
+ *******************************************
