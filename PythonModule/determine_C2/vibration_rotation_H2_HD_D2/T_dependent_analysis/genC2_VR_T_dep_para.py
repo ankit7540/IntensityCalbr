@@ -17,12 +17,13 @@ import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
 import compute_series_para
-import compute_series_perp
 import boltzmann_popln as bp
 
 from common import utils
 # ------------------------------------------------------
-
+def orderOfMagnitude(number):
+    return math.floor(math.log(number, 10))
+# ------------------------------------------------------
 # ------------------------------------------------------
 #      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
 #                   OPTIMIZATION
@@ -38,9 +39,9 @@ from common import utils
 
 # Change following paths to load expt data
 
-dataH2 = np.loadtxt("BA_H2_perp") 
-dataHD = np.loadtxt("BA_HD_perp")
-dataD2 = np.loadtxt("BA_D2_perp")
+dataH2 = np.loadtxt("BA_H2_1") 
+dataHD = np.loadtxt("BA_HD_1")
+dataD2 = np.loadtxt("BA_D2_1")
 xaxis = np.loadtxt("Ramanshift_axis")
 # ------------------------------------------------------
 # PARALLEL POLARIZATION
@@ -540,28 +541,13 @@ def residual_linear(param):
     sosHD = bp.sumofstate_HD(TK)
     sosH2 = bp.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
 
-    # remove row for Q(J=0) --
-    i, = np.where(computed_D2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-    i, = np.where(computed_HD[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-    i, = np.where(computed_H2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-    # ------------------------
-    
-    
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -631,28 +617,13 @@ def residual_quadratic(param):
     sosHD = bp.sumofstate_HD(TK)
     sosH2 = bp.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
 
-
-    # remove row for Q(J=0) --
-    i, = np.where(computed_D2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-    i, = np.where(computed_HD[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-    i, = np.where(computed_H2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-    # ------------------------    
-    
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -721,28 +692,12 @@ def residual_cubic(param):
     sosHD = bp.sumofstate_HD(TK)
     sosH2 = bp.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
-
-    # remove row for Q(J=0) --
-    i, = np.where(computed_D2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-    i, = np.where(computed_HD[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-    i, = np.where(computed_H2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-    # ------------------------    
-    
-    
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -815,29 +770,13 @@ def residual_quartic(param):
     sosHD = bp.sumofstate_HD(TK)
     sosH2 = bp.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
 
-
-    # remove row for Q(J=0) --
-    i, = np.where(computed_D2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-    i, = np.where(computed_HD[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-    i, = np.where(computed_H2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-    # ------------------------    
-    
-    
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -907,28 +846,13 @@ def residual_quintuple(param):
     sosHD = bp.sumofstate_HD(TK)
     sosH2 = bp.sumofstate_H2(TK)
 
-    computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+    computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-    computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+    computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-    computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+    computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
 
-
-    # remove row for Q(J=0) --
-    i, = np.where(computed_D2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-    i, = np.where(computed_HD[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-    i, = np.where(computed_H2[:,0] == 0.0)
-    row_index = np.amin(i)
-    computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-    # ------------------------    
-    
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2, 0)
@@ -995,6 +919,8 @@ def run_fit_linear(init_T, init_k1):
 
     param_init = np.array([init_T, init_k1])
     print("**********************************************************")
+    print("\t\t -- Linear fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)    
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1} output = {2}".format(init_T, init_k1, \
           (residual_linear(param_init))))
@@ -1037,6 +963,8 @@ def run_fit_quadratic(init_T, init_k1, init_k2):
 
     param_init = np.array([init_T, init_k1 , init_k2])
     print("**********************************************************")
+    print("\t\t -- Quadratic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2} output = {3}".format(init_T, init_k1, \
          init_k2, (residual_quadratic(param_init))))
@@ -1081,6 +1009,8 @@ def run_fit_cubic(init_T, init_k1, init_k2, init_k3):
 
     param_init = np.array([init_T, init_k1 , init_k2 , init_k3])
     print("**********************************************************")
+    print("\t\t -- Cubic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, output = {4}".\
           format(init_T, init_k1, init_k2, init_k3, (residual_cubic(param_init))))
@@ -1129,6 +1059,8 @@ def run_fit_quartic(init_T, init_k1, init_k2, init_k3, init_k4):
 
     param_init = np.array([init_T, init_k1 , init_k2 , init_k3, init_k4])
     print("**********************************************************")
+    print("\t\t -- Quartic fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4} output = {5}".\
           format(init_T, init_k1, init_k2, init_k3, init_k4,
@@ -1182,6 +1114,8 @@ def run_fit_quintuple(init_T, init_k1, init_k2, init_k3, init_k4, init_k5):
 
     param_init = np.array([init_T, init_k1 , init_k2 , init_k3, init_k4, init_k5])
     print("**********************************************************")
+    print("\t\t -- Quintuple fit -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0}, k1={1}, k2={2}, k3={3}, k4={4}, k5={5} output = {6}".\
           format(init_T, init_k1, init_k2, init_k3, init_k4, init_k5,
@@ -1340,31 +1274,16 @@ sosD2 = bp.sumofstate_D2(TK)
 sosHD = bp.sumofstate_HD(TK)
 sosH2 = bp.sumofstate_H2(TK)
 
-computed_D2 = compute_series_perp.spectra_D2(TK, OJ_D2, QJ_D2,
+computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2,
                                                  SJ_D2, sosD2)
-computed_HD = compute_series_perp.spectra_HD(TK, OJ_HD, QJ_HD,
+computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD,
                                                  SJ_HD, sosHD)
-computed_H2 = compute_series_perp.spectra_H2_c(TK, OJ_H2,
+computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2,
                                                    QJ_H2, sosH2)
 
-
-# remove row for Q(J=0) --
-i, = np.where(computed_D2[:,0] == 0.0)
-row_index = np.amin(i)
-computed_D2 = np.delete(computed_D2, (row_index), axis=0)
-    
-i, = np.where(computed_HD[:,0] == 0.0)
-row_index = np.amin(i)
-computed_HD = np.delete(computed_HD, (row_index), axis=0)
-    
-i, = np.where(computed_H2[:,0] == 0.0)
-row_index = np.amin(i)
-computed_H2 = np.delete(computed_H2, (row_index), axis=0)    
-# ------------------------
-print('\t Printing dimensions of computed and loaded data')
-print('\t H2 : ', computed_H2.shape, dataH2.shape)
-print('\t HD : ', computed_HD.shape, dataHD.shape)
-print('\t D2 : ', computed_D2.shape, dataD2.shape)
+print(computed_D2.shape, dataD2.shape)
+print(computed_H2.shape, dataH2.shape)
+print(computed_HD.shape, dataHD.shape)
 
 # checks for dimension match done here
 if(len(computed_D2) != dataD2.shape[0]):
