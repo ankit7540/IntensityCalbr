@@ -1,0 +1,53 @@
+2021-08-11 13:49:24
+
+
+------------ Run log ------------
+
+---Temperature determination from Raman intensities---
+
+---Parallel polarization---
+
+
+ *******  Optimization run : D2  *******
+
+ ***** temperature determination *****
+
+	 Initial : T = 298.00000000 
+
+
+	  final_simplex: (array([[300.07824169],
+       [300.0782417 ]]), array([0.00011041, 0.00011041]))
+           fun: 0.00011041339779366796
+       message: 'Optimization terminated successfully.'
+          nfev: 75
+           nit: 36
+        status: 0
+       success: True
+             x: array([300.07824169])
+
+
+ Optimized result : T = 300.07824169 
+
+ *******************************************
+
+ *******  Optimization run : D2, O2S0  *******
+
+ ***** temperature determination *****
+
+	 Initial : T = 300.00000000 
+
+
+	  final_simplex: (array([[297.61900702],
+       [297.61900701]]), array([1.02805142e-25, 1.11171467e-24]))
+           fun: 1.0280514202930748e-25
+       message: 'Optimization terminated successfully.'
+          nfev: 70
+           nit: 35
+        status: 0
+       success: True
+             x: array([297.61900702])
+
+
+ Optimized result : T = 297.61900702 
+
+ *******************************************

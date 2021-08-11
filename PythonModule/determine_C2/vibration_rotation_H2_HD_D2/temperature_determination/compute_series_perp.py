@@ -5,6 +5,7 @@
 import math
 import numpy as np
 
+
 # FOR PERPENDICULAR POLARIZATION
 
 # Constants ------------------------------
@@ -29,33 +30,34 @@ omega_sc = omega / 1e4  # scaled frequency (for better numerical accuracy)
 #   b) K. Pachucki and J. Komasa, Phys. Chem. Chem. Phys. 12, 9188 (2010).
 # ----------------------------------------
 
-eJH2v0 = np.loadtxt("./energy_levels_and_ME/H2eV0.txt")
-eJH2v1 = np.loadtxt("./energy_levels_and_ME/H2eV1.txt")
-eJHDv0 = np.loadtxt("./energy_levels_and_ME/HDeV0.txt")
-eJHDv1 = np.loadtxt("./energy_levels_and_ME/HDeV1.txt")
-eJD2v0 = np.loadtxt("./energy_levels_and_ME/D2eV0.txt")
-eJD2v1 = np.loadtxt("./energy_levels_and_ME/D2eV1.txt")
+eJH2v0 = np.loadtxt("./energy_levels_and_ME/H2eV0.dat")
+eJH2v1 = np.loadtxt("./energy_levels_and_ME/H2eV1.dat")
+eJHDv0 = np.loadtxt("./energy_levels_and_ME/HDeV0.dat")
+eJHDv1 = np.loadtxt("./energy_levels_and_ME/HDeV1.dat")
+eJD2v0 = np.loadtxt("./energy_levels_and_ME/D2eV0.dat")
+eJD2v1 = np.loadtxt("./energy_levels_and_ME/D2eV1.dat")
 
 #   Data on the matrix elements of polarizability anisotropy has been taken
 #    from our previous work.
 #   c) A. Raj, H. Hamaguchi, and H. A. Witek, J. Chem. Phys. 148, 104308 (2018)
 
-ME_alpha_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_mp_Q1.txt")
-ME_alpha_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_mp_Q1.txt")
-ME_alpha_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_mp_Q1.txt")
+ME_alpha_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_mp_Q1.dat")
+ME_alpha_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_mp_Q1.dat")
+ME_alpha_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_mp_Q1.dat")
 
-ME_gamma_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_Q1.txt")
-ME_gamma_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_Q1.txt")
-ME_gamma_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_Q1.txt")
+ME_gamma_H2_532_Q1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_Q1.dat")
+ME_gamma_HD_532_Q1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_Q1.dat")
+ME_gamma_D2_532_Q1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_Q1.dat")
 
-ME_gamma_H2_532_O1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_O1.txt")
-ME_gamma_H2_532_S1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_S1.txt")
+ME_gamma_H2_532_O1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_O1.dat")
+ME_gamma_H2_532_S1 = np.loadtxt("./energy_levels_and_ME/H2_532.2_gamma_S1.dat")
 
-ME_gamma_HD_532_O1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_O1.txt")
-ME_gamma_HD_532_S1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_S1.txt")
+ME_gamma_HD_532_O1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_O1.dat")
+ME_gamma_HD_532_S1 = np.loadtxt("./energy_levels_and_ME/HD_532.2_gamma_S1.dat")
 
-ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.txt")
-ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.txt")
+ME_gamma_D2_532_O1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_O1.dat")
+ME_gamma_D2_532_S1 = np.loadtxt("./energy_levels_and_ME/D2_532.2_gamma_S1.dat")
+
 
 
 # ********************************************************************
@@ -68,143 +70,18 @@ header_str = 'J_val\tfreq\tintensity\tabs_wavenum'
 
 # ********************************************************************
 # ********************************************************************
-
-# set of functions for computing the Sum of states of molecular hydrogen and
-#   its isotopologues at given temperature.
-# Data on energy levels is needed for the specific molecule
-
-
-def sumofstate_H2(T):
-    """calculate the sum of state for H2 molecule at T """
-
-    Q = np.float64(0.0)
-
-    # --- nuclear spin statistics ------------
-    g_even = 1 	# hydrogen molecule
-    g_odd = 3
-    # ---------------------------------------
-
-    jmaxv0 = len(eJH2v0)
-    jmaxv1 = len(eJH2v1)
-
-    # contribution from the ground vibrational state
-    for i in range(0, jmaxv0):
-        E = eJH2v0[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-    # contribution from the first vibrational state
-    for i in range(0, jmaxv1):
-        E = eJH2v1[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-#   return the sum of states for H2
-    return Q
-
-#********************************************************************
 #********************************************************************
 
-# compute the temperature dependent sum of state for HD which includes
-#  contributions from the ground and first vibrational state of electronic
-#  ground state.
+def normalize1d(array_name):
+    """Normalize a 1D array using the max value"""
+    max_val = np.max(array_name)
+    size = len(array_name)
+    for i in range(0, size, 1):
+        array_name[i] = array_name[i]/max_val
+    
+    return array_name
 
-
-def sumofstate_HD(T):
-    """calculate the sum of state for HD molecule at T """
-
-    Q = np.float64(0.0)
-
-    # --- nuclear spin statistics ------------
-    g_even = 1        # hydrogen deuteride
-    g_odd = 1
-    # ---------------------------------------
-
-    jmaxv0 = len(eJHDv0)
-    jmaxv1 = len(eJHDv1)
-
-    # contribution from the ground vibrational state
-    for i in range(0, jmaxv0):
-        E = eJHDv0[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-    # contribution from the first vibrational state
-    for i in range(0, jmaxv1):
-        E = eJHDv1[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-#   return the sum of states for HD
-    return Q
-
-# *****************************************************************************
-# *****************************************************************************
-
-# compute the temperature dependent sum of state for D2 which
-#  includes contributions from the ground and first vibrational state
-#  of electronic ground state.
-
-
-def sumofstate_D2(T):
-    """calculate the sum of state for D2 molecule at T """
-
-    Q = np.float64(0.0)
-
-    # --- nuclear spin statistics ------------
-    g_even = 6        # deuterium molecule
-    g_odd = 3
-    # ----------------------------------------
-
-    jmaxv0 = len(eJD2v0)
-    jmaxv1 = len(eJD2v1)
-
-    # contribution from the ground vibrational state
-    for i in range(0, jmaxv0):
-        E = eJD2v0[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-    # contribution from the first vibrational state
-    for i in range(0, jmaxv1):
-        E = eJD2v1[i]
-        energy = (-1*E*H*C)
-        factor = (2*i+1)*math.exp(energy/(K*T))
-        if i % 2 == 0:
-            factor = factor*g_even
-        else:
-            factor = factor*g_odd
-        Q = Q+factor
-
-#   return the sum of states for D2
-    return Q
-
-
+#********************************************************************
 # *****************************************************************************
 #                      COMPUTING SPECTRAL INTENSITIES
 # *****************************************************************************
@@ -293,7 +170,7 @@ def HD_Q1(T, JMax, sos):
         #print(i, E, popn, position, alpha, gamma)
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(1/15)*(gamma**2)+ alpha**2)
+                (bj*(1/15)*(gamma**2) )
 
         specHD[JMax-i][0] = i
         specHD[JMax-i][1] = position
@@ -316,6 +193,7 @@ def spectra_HD(T, OJ, QJ, SJ, sos):
     S1 = HD_S1(T, SJ, sos)
     #---------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+  
     return out  # return the output
     # --------------------------------------------------
 # *****************************************************************************
@@ -425,7 +303,7 @@ def D2_Q1(T, JMax, sos):
         gamma = ME_gamma_D2_532_Q1[i][4]
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(1/15)*(gamma**2)+ alpha**2)
+                (bj*(1/15)*(gamma**2) )
         if i % 2 == 0:
             factor = factor*g_even
         else:
@@ -452,6 +330,7 @@ def spectra_D2(T, OJ, QJ, SJ, sos):
     S1 = D2_S1(T, SJ, sos)
     # --------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+  
     return out
     # --------------------------------------------------
 
@@ -569,7 +448,7 @@ def H2_Q1(T, JMax, sos):
         gamma = ME_gamma_H2_532_Q1[i][4]
 
         factor = (popn/sos)*omega_sc*(((omega-position)/1e4)**3)*\
-                (bj*(1/15)*(gamma**2)+ alpha**2)
+                (bj*(1/15)*(gamma**2) )
         if i % 2 == 0:
             factor = factor*g_even
         else:
@@ -599,6 +478,7 @@ def spectra_H2(T, OJ, QJ, SJ, sos):
     S1 = H2_S1(T, SJ, sos)
     # --------------------------------------------------
     out = np.concatenate((O1, Q1, S1))
+  
     return out
     # --------------------------------------------------
 

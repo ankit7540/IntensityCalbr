@@ -1,0 +1,32 @@
+<logging.Logger object at 0x1457e82c6208>
+2021-08-11 13:49:33
+
+
+------------ Run log ------------
+
+---Temperature determination from Raman intensities---
+
+---Perpendicular polarization---
+
+
+ *******  Optimization run : D2  *******
+
+ ***** temperature determination *****
+
+	 Initial : T = 325.00000000 
+
+
+	  final_simplex: (array([[296.76686178],
+       [296.76686177]]), array([0.00261198, 0.00261198]))
+           fun: 0.0026119813973771466
+       message: 'Optimization terminated successfully.'
+          nfev: 79
+           nit: 38
+        status: 0
+       success: True
+             x: array([296.76686178])
+
+
+ Optimized result : T = 296.76686178 
+
+ *******************************************

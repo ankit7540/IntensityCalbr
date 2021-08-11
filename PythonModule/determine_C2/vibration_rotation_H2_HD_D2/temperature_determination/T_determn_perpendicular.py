@@ -1,6 +1,5 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-# pylint: disable=method-hidden,C0103,E265,E303,R0914,W0621,W503
 
 """Module describing the weighted non-linear optimization scheme used to
 determine the wavelength sensitivity of the spectrometer using a  polynomial
@@ -16,11 +15,149 @@ import numpy as np
 import scipy.optimize as opt
 import matplotlib.pyplot as plt
 
-from common import compute_series_para
+import compute_series_perp
+import boltzmann_popln as bp
 # ------------------------------------------------------
 
+# ------------------------------------------------------
+#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
+#                   OPTIMIZATION
+# ------------------------------------------------------
+
+# LOAD EXPERIMENTAL BAND AREA DATA
+#  | band area | error |
+#  | value | value |
+#  | value | value |
+#  | value | value |
+
+# without header in the following files
+
+# Change following paths to load expt data
+
+# Q(J) band intensities --------------------------------
+
+dataD2Q = np.loadtxt("BA_D2_q1.txt")
+dataHDQ = np.loadtxt("BA_HD_q1.txt")
+dataH2Q = np.loadtxt("BA_H2_q1.txt")
+
+dataD2_Q2 = np.loadtxt("D2_Q2_testdata")
+
+dataD2Q4 = np.loadtxt("BA_D2_Q_J4_perp")
+#dataD2OS = np.loadtxt("BA_D2_O2S0_perp")
+# ------------------------------------------------------
+# PARALLEL POLARIZATION
+
+# set indices for OJ,QJ and SJ for H2, HD and D2 in the  residual functions below
+
+# ------------------------------------------------------
+# ----------------------------------------
+
+# norm type 
+# Do not change the variable name on the LHS 
+# available norm types : Frobenius, Frobenius_sq, absolute
+# lower case :           frobenius, frobenius_sq, absolute
+# or abbreviations:      F  , FS , A
+
+norm =  'Frobenius'
+
+# if norm is not set then the default is sum of absolute values 
+# See readme for more details
+
+# ----------------------------------------
+
+print('Dimension of input data of Q bands')
+print('\t', dataH2Q.shape)
+print('\t', dataHDQ.shape)
+print('\t', dataD2Q.shape)
+
+#print('\t', dataD2_Q2.shape)
+#print('\t', dataD2Q4.shape)
+#print('\t', dataD2OS.shape)
+
+# ------------------------------------------------------
+# SET  INIT COEFS
+
+temp_init = np.zeros((1))
+temp_init[0] = 296
+
+# initial run will be with above parameters
+# ------------------------------------------------
+
+# ------------------------------------------------------
+
+
+
+print('\t**********************************************************')
+
+print('\t ')
+print('\t This module is for determining the temperature from ')
+print('\t observed vibration-rotation Raman intensities of H2, HD and D2. ')
+print('\t  This module is useful for testing the accuracy of the intensity ')
+print('\t  calibration procedure. ')
+
+print('\n\t >> Ratios of all observed Raman intensities are treated here as a matrix. << ')
+print('\n\t >> This function deals with perpendicularly polarized Raman intensities. << ')
+
+print('\n\t >> Temperature is the only fit parameter here << ')
+
+print('\n\t This modeule requires edit on line 32 to 74 to ')
+print('\n\t  load and set parameters for the analysis.')
+print('\t ')
+print('\t**********************************************************')
+print('\n\t\t Checking imported data and set params')
+
+data_error=0
+
+if isinstance(dataH2Q, np.ndarray):
+    print("\t\t ", "dataH2Q found, OK")
+else:
+    print("\t\t ", "dataH2Q not found.")
+    data_error=1
+    
+if isinstance(dataHDQ, np.ndarray):
+    print("\t\t ", "dataHDQ found, OK")
+else:
+    print("\t\t ", "dataHDQ not found.")
+    data_error=1
+    
+if isinstance(dataD2Q, np.ndarray):
+    print("\t\t ", "dataD2Q found, OK")
+else:
+    print("\t\t ", "dataD2Q not found.")
+    data_error=1
+    
+
+
+print('\n\t\t  Analysis parameters:')
+
+print("\t\t Norm (defn of residual): ", norm)
+
+
+
+print('\t**********************************************************')
+print('\n\t REQUIRED DATA')
+print('\t\t\t Ramanshift = vector, the x-axis in relative wavenumbers')
+print('\t\t\t band area and error = 2D (2 columns), for H2, HD and D2')
+print('\n\t\t\t J_max = scalar, for H2, HD and D2 (to compute reference')
+print('\t\t\t\t    spectra), See residual functions')
+
+
+
+print('\t**********************************************************')
+
+print('\n\t\t\t  Example:')
+
+print('\t\t\t  run_fit_D2_O2S0 (298 )')
+
+print('\t**********************************************************')
+
+# ------------------------------------------------------
+# ------------------------------------------------------
+
+# *******************************************************************
+
 # Set logging ------------------------------------------
-fileh = logging.FileHandler('./log.txt', 'w+')
+fileh = logging.FileHandler('./log_temperature_determination', 'w+')
 formatter = logging.Formatter('%(message)s')
 fileh.setFormatter(formatter)
 
@@ -37,92 +174,11 @@ logging.getLogger().setLevel(logging.INFO)
 log.warning(datetime.now().strftime('%Y-%m-%d %H:%M:%S'))
 log.warning('\n',)
 log.error("------------ Run log ------------\n")
-# ------------------------------------------------------
-
-# LOAD EXPERIMENTAL BAND AREA DATA
-
-#  | band area | error |
-# without header in the following files
-
-# Change following paths
-dataH2 = np.loadtxt("./run_parallel/BA_H2_1.txt")
-dataHD = np.loadtxt("./run_parallel/BA_HD_1.txt")
-dataD2 = np.loadtxt("./run_parallel/BA_D2_1.txt")
-xaxis = np.loadtxt("./run_parallel/Ramanshift_axis_para.txt")
-
-# Q(J) band intensities --------------------------------
-
-dataD2Q = np.loadtxt("./run_parallel/BA_D2_q1.txt")
-dataHDQ = np.loadtxt("./run_parallel/BA_HD_q1.txt")
-dataH2Q = np.loadtxt("./run_parallel/BA_H2_q1.txt")
-
-#dataD2Q4 = np.loadtxt("./run_parallel/BA_D2_q1_J4.txt")
-dataD2Q4 = np.loadtxt("./run_parallel_afterC2/BA_D2_q1_J4.txt")
-dataD2OS = np.loadtxt("./run_parallel/BA_D2_O_2_S_0.txt")
-# ------------------------------------------------------
-# PARALLEL POLARIZATION
-
-# set indices for OJ,QJ and SJ for H2, HD and D2
-# these are required for computing spectra for given T
-
-OJ_H2 = 3
-QJ_H2 = 4
-
-OJ_HD = 3
-QJ_HD = 3
-SJ_HD = 2
-
-OJ_D2 = 4
-QJ_D2 = 6
-SJ_D2 = 3
-# ------------------------------------------------------
-print('Dimension of input data')
-print('\t', dataH2.shape)
-print('\t', dataHD.shape)
-print('\t', dataD2.shape)
-
-
-print('Dimension of input data of Q bands')
-print('\t', dataH2Q.shape)
-print('\t', dataHDQ.shape)
-print('\t', dataD2Q.shape)
-# ------------------------------------------------------
-# SET  INIT COEFS
-
-temp_init = np.zeros((1))
-temp_init[0] = 298
-
-# initial run will be with above parameters
-# ------------------------------------------------
+log.error("---Temperature determination from Raman intensities---\n")
+log.error("---Parallel polarization---\n")
 
 # ------------------------------------------------------
-#      RUN PARAMETERS (CHANGE THESE BEFORE RUNNING
-#                   FINAL OPTIMIZATION
-# ------------------------------------------------------
 
-# AVAILABLE FUNCTIONS TO USER :
-
-# run_all_fit()
-#    Runs the fitting up to quartic polynomial
-#    Returns : np array of residuals, with 4 elements
-
-
-# plot_curves(residual_array="None")
-#   Plotting the curves (from fit)
-#   and plot the residuals over the number of unknown variables
-#   np array of residuals to be passed for plot of residuals
-
-# ------------------------------------------------------
-def run_fit():
-    '''
-    Runs the fitting up to quartic polynomial
-    Returns : np array of residuals, with 4 elements
-    '''
-    inputT = 300
-    run_fit_D2(inputT)
-    run_fit_HD(inputT)
-    run_fit_H2(inputT)
-# *******************************************************************
 # ------------------------------------------------
 #                COMMON FUNCTIONS
 # ------------------------------------------------
@@ -194,6 +250,12 @@ def inverse(array):
 # ------------------------------------------------
 # *******************************************************************
 #     RESIDUAL FUNCTIONS DEFINED BELOW
+
+#     These functions will require edit based on the name of the numpy 
+#     array containing the experimental data.
+#     Also, the J-index for the rotational level also requires edit 
+#     depending on the length of the data ( number of states included).
+
 # *******************************************************************
 
 
@@ -207,19 +269,31 @@ def residual_Q_D2(param):
     '''
 
     TK = param
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    QJ_D2 = 2  # max J value of analyzed Q-bands
-    computed_D2 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
+    sosD2 = bp.sumofstate_D2(TK)
+    QJ_D2 = 4  # max J value of analyzed Q-bands (change this value depending
+    #            on the experimental data
+    
+    #             compute_series_para.D2_Q1(temperature, J-level, sumofstates)
+    computed_D2 = compute_series_perp.D2_Q1(TK, QJ_D2, sosD2)
+
+    # remove row for Q(J=0) --
+    i, = np.where(computed_D2[:,0] == 0.0)
+    row_index = np.amin(i)
+    computed_D2 = np.delete(computed_D2, (row_index), axis=0)    
+    # ------------------------
 
     # ------ D2 ------
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
-    expt_D2 = gen_intensity_mat(dataD2Q, 0)
 
-    errD2_output = gen_weight(dataD2Q)
+    # experimental data is used in the following two lines
+    #  modify these lines as required (make sure to edit the 
+    #                 JMax level defined above as well)
+    expt_D2 = gen_intensity_mat(dataD2Q4, 0)
+    errD2_output = gen_weight(dataD2Q4)
+    
+    #print(computed_D2.shape, dataD2Q.shape)
+    
     errorP = errD2_output
-
-    #np.savetxt("exptD2",clean_mat(expt_D2),fmt='%2.4f')
-    #np.savetxt("errD2",clean_mat(errorP),fmt='%2.4f')
 
     calc_D2 = clean_mat(trueR_D2)
     expt_D2 = clean_mat(expt_D2)
@@ -228,15 +302,24 @@ def residual_Q_D2(param):
 
     diffD2 = expt_D2 - calc_D2
 
-    # scale by weights
+    # scale by weights 
     #diffD2 = (np.multiply(errorP , diffD2))
 
     # remove redundant terms
     diffD2 = clean_mat(diffD2)
-    np.savetxt("diff_D2", diffD2,fmt='%2.4f')
+    #np.savetxt("diff_D2", diffD2,fmt='%2.4f')
 
-    # return the residual
-    E=np.sum(np.square(diffD2))
+
+    #  choosing norm ----------
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(diffD2)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(diffD2)))  
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(diffD2)) 
+    # -------------------------
 
     return E
 
@@ -254,9 +337,11 @@ def residual_Q_D2_234(param):
     '''
 
     TK = param
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    QJ_D2 = 4  # max J value of analyzed Q-bands
-    computed_D2 = compute_series_para.D2_Q1(TK, QJ_D2, sosD2)
+    sosD2 = bp.sumofstate_D2(TK)
+    QJ_D2 = 4  # max J value of analyzed Q-bands (change this value depending
+    #            on the experimental data
+    
+    computed_D2 = compute_series_perp.D2_Q1(TK, QJ_D2, sosD2)
 
     # ------ D2 ------
     
@@ -264,8 +349,13 @@ def residual_Q_D2_234(param):
     computed_D2=computed_D2[:-2, :]
     #print(computed_D2)
     
-    dataD2Q = dataD2Q4[:-2, :]
-    print(computed_D2.shape, dataD2Q.shape)
+    # experimental data is used in the following two lines
+    #  modify these lines as required (make sure to edit the 
+    #                 JMax level defined above as well)    
+    
+    dataD2Q = dataD2Q4[:-2, :]  # subset of datapoints included here
+    
+    #print(computed_D2.shape, dataD2Q.shape)
     
     trueR_D2 = gen_intensity_mat(computed_D2, 2)
     expt_D2 = gen_intensity_mat(dataD2Q, 0)
@@ -288,10 +378,18 @@ def residual_Q_D2_234(param):
 
     # remove redundant terms
     diffD2 = clean_mat(diffD2)
-    np.savetxt("diff_D2", diffD2,fmt='%2.4f')
+    #np.savetxt("diff_D2", diffD2,fmt='%2.4f')
 
-    # return the residual
-    E=np.sum(np.square(diffD2))
+    #  choosing norm ----------
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(diffD2)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(diffD2)))  
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(diffD2)) 
+    # -------------------------
 
     return E
 
@@ -307,15 +405,28 @@ def residual_Q_HD(param):
 
     '''
     TK = param
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    QJ_HD = 3
-    computed_HD = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
+    sosHD = bp.sumofstate_HD(TK)
+    QJ_HD = 3  # max J value of analyzed Q-bands (change this value depending
+    #            on the experimental data
+    computed_HD = compute_series_perp.HD_Q1(TK, QJ_HD, sosHD)
+
+    # remove row for Q(J=0) --
+    i, = np.where(computed_D2[:,0] == 0.0)
+    row_index = np.amin(i)
+    computed_D2 = np.delete(computed_D2, (row_index), axis=0)    
+    # ------------------------    
+    
 
     # ------ HD ------
     trueR_HD = gen_intensity_mat(computed_HD, 2)
+    
+    # experimental data is used in the following two lines
+    #  modify these lines as required (make sure to edit the 
+    #                 JMax level defined above as well)      
     expt_HD = gen_intensity_mat(dataHDQ, 0)
 
     errHD_output = gen_weight(dataHDQ)
+    
     errorP = errHD_output
     # errorP = 1/(np.divide( errHD_output, expt_HD))
 
@@ -332,8 +443,16 @@ def residual_Q_HD(param):
     # remove redundant terms
     diffHD = clean_mat(diffHD)
 
-    # return the residual
-    E = np.sum(np.square(diffHD))
+    #  choosing norm ----------
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(diffHD)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(diffHD)))  
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(diffHD)) 
+    # -------------------------
     return E
 
 # *******************************************************************
@@ -348,15 +467,27 @@ def residual_Q_H2(param):
     '''
 
     TK = param
-    sosH2 = compute_series_para.sumofstate_H2(TK)
-    QJ_H2=3
-    computed_H2 = compute_series_para.H2_Q1(TK, QJ_H2, sosH2)
+    sosH2 = bp.sumofstate_H2(TK)
+    QJ_H2= 3   # max J value of analyzed Q-bands (change this value depending
+    #            on the experimental data
+    computed_H2 = compute_series_perp.H2_Q1(TK, QJ_H2, sosH2)
+
+    # remove row for Q(J=0) --
+    i, = np.where(computed_D2[:,0] == 0.0)
+    row_index = np.amin(i)
+    computed_D2 = np.delete(computed_D2, (row_index), axis=0)    
+    # ------------------------    
 
     # ------ H2 ------
     trueR_H2 = gen_intensity_mat(computed_H2, 2)
-    expt_H2 = gen_intensity_mat(dataH2Q, 0)
 
+    # experimental data is used in the following two lines
+    #  modify these lines as required (make sure to edit the 
+    #                 JMax level defined above as well)      
+    
+    expt_H2 = gen_intensity_mat(dataH2Q, 0)
     errH2_output = gen_weight(dataH2Q)
+    
     errorP = errH2_output
     #errorP = 1/(np.divide( errH2_output, expt_H2))
 
@@ -373,8 +504,16 @@ def residual_Q_H2(param):
     # remove redundant terms
     diffH2 = clean_mat(diffH2)
 
-    # return the residual
-    E = np.sum(np.square(diffH2))
+    #  choosing norm ----------
+    if norm=='' or norm.lower()=='absolute' or norm =='a' or norm =='A':
+        E=np.sum(np.abs(diffH2)) 
+        
+    elif norm.lower()=='frobenius' or norm =='F'  :
+        E=np.sqrt(np.sum(np.square(diffH2)))  
+        
+    elif norm.lower()=='frobenius_square' or norm =='FS' :
+        E=np.sum(np.square(diffH2)) 
+    # -------------------------
     return E
 
 
@@ -391,9 +530,9 @@ def residual_O2S0_D2(param):
     '''
 
     TK = param
-    sosD2 = compute_series_para.sumofstate_D2(TK)
-    O1 = compute_series_para.D2_O1(TK, 2, sosD2)
-    S1 = compute_series_para.D2_S1(TK, 0, sosD2)
+    sosD2 = bp.sumofstate_D2(TK)
+    O1 = compute_series_perp.D2_O1(TK, 2, sosD2)
+    S1 = compute_series_perp.D2_S1(TK, 0, sosD2)
     
     #print(O1,"\n",S1)
     
@@ -405,11 +544,9 @@ def residual_O2S0_D2(param):
     r_expt = (dataD2OS[0]/dataD2OS[1])
     #print(r_calc, r_expt)
 
-    diff = r_expt - r_calc
-
+    diff = r_expt - r_calc    
+    
     return diff**2
-
-
 
 
 # *******************************************************************
@@ -422,13 +559,20 @@ def residual_O2S0_D2(param):
 
 
 def run_fit_D2(init_T ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
+    '''Function performing the actual fit using the residual function
+    defined earlier.
+    Edit the name of the residual function to choose the different
+     residual functions defined above.
+     For example, residual_Q_D2 
+                  residual_Q_D2_234
+    '''
 
     # init_k1 : Intial guess
 
     param_init = np.array([ init_T  ])
     print("**********************************************************")
+    print("\t\t -- Temperature determination -- ")
+    print("\t\tNorm (defn of residual): ", norm)  
     #print("Testing the residual function with data")
     print("Initial coef :  T={0},   output = {1}".format(init_T, \
           (residual_Q_D2(param_init))))
@@ -446,6 +590,7 @@ def run_fit_D2(init_T ):
 
     # save log -----------
     log.info('\n *******  Optimization run : D2  *******')
+    log.info('\n ***** temperature determination *****')
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
@@ -457,8 +602,12 @@ def run_fit_D2(init_T ):
 
 
 def run_fit_HD(init_T ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
+    '''Function performing the actual fit using the residual function
+    defined earlier.
+    Edit the name of the residual function to choose the different
+     residual functions defined above.
+     For example, residual_Q_HD 
+    '''
 
     # init_k1 : Intial guess
 
@@ -481,6 +630,7 @@ def run_fit_HD(init_T ):
 
     # save log -----------
     log.info('\n *******  Optimization run : HD  *******')
+    log.info('\n ***** temperature determination *****')    
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
@@ -492,13 +642,19 @@ def run_fit_HD(init_T ):
 
 
 def run_fit_H2(init_T ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
+    '''Function performing the actual fit using the residual function
+    defined earlier.
+    Edit the name of the residual function to choose the different
+     residual functions defined above.
+     For example, residual_Q_H2 
+    '''
 
     # init_k1 : Intial guess
 
     param_init = np.array([ init_T  ])
     print("**********************************************************")
+    print("\t\t -- Temperature determination -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0},   output = {1}".format(init_T, \
           (residual_Q_H2(param_init))))
@@ -516,6 +672,7 @@ def run_fit_H2(init_T ):
 
     # save log -----------
     log.info('\n *******  Optimization run : H2  *******')
+    log.info('\n ***** temperature determination *****')    
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
@@ -527,13 +684,15 @@ def run_fit_H2(init_T ):
 
 
 def run_fit_D2_O2S0(init_T ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
+    '''Function performing the actual fit using the residual  function
+    defined earlier named as residual_O2S0_D2 '''
 
     # init_k1 : Intial guess
 
     param_init = np.array([ init_T  ])
     print("**********************************************************")
+    print("\t\t -- Temperature determination -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0},   output = {1}".format(init_T, \
           (residual_O2S0_D2(param_init))))
@@ -550,7 +709,8 @@ def run_fit_D2_O2S0(init_T ):
     print("**********************************************************")
 
     # save log -----------
-    log.info('\n *******  Optimization run : D2, o2s0  *******')
+    log.info('\n *******  Optimization run : D2, O2S0  *******')
+    log.info('\n ***** temperature determination *****')    
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
@@ -562,13 +722,16 @@ def run_fit_D2_O2S0(init_T ):
 
 
 def run_fit_D2_234(init_T ):
-    '''Function performing the actual fit using the residual_linear function
-    defined earlier '''
+    '''Function performing the actual fit using the residual function
+    defined earlier, named as residual_Q_D2_234 
+     which corresponds to Q-band intensities of J-level 2, 3 and 4 in D2'''
 
     # init_k1 : Intial guess
 
     param_init = np.array([ init_T  ])
     print("**********************************************************")
+    print("\t\t -- Temperature determination -- ")
+    print("\t\tNorm (defn of residual): ", norm)      
     #print("Testing the residual function with data")
     print("Initial coef :  T={0},   output = {1}".format(init_T, \
           (residual_Q_D2_234(param_init))))
@@ -586,6 +749,7 @@ def run_fit_D2_234(init_T ):
 
     # save log -----------
     log.info('\n *******  Optimization run : D2, o2s0  *******')
+    log.info('\n ***** temperature determination *****')    
     log.info('\n\t Initial : T = %4.8f \n', init_T  )
     log.info('\n\t %s\n', res )
     log.info('\n Optimized result : T = %4.8f \n', optT  )
@@ -594,98 +758,4 @@ def run_fit_D2_234(init_T ):
     # --------------------    
 
 # *******************************************************************
-# *******************************************************************
-
-# TESTS
-
-# ------------------------------------------------
-
-
-# checks for input done here
-
-# generate calculated data for the entered J values
-TK=299
-sosD2 = compute_series_para.sumofstate_D2(TK)
-sosHD = compute_series_para.sumofstate_HD(TK)
-sosH2 = compute_series_para.sumofstate_H2(TK)
-
-computed_D2 = compute_series_para.spectra_D2(TK, OJ_D2, QJ_D2, SJ_D2, sosD2)
-computed_HD = compute_series_para.spectra_HD(TK, OJ_HD, QJ_HD, SJ_HD, sosHD)
-computed_H2 = compute_series_para.spectra_H2_c(TK, OJ_H2, QJ_H2, sosH2)
-
-# ------------------------------------------
-# ratio
-trueR_D2 = gen_intensity_mat (computed_D2, 2)
-expt_D2 = gen_intensity_mat (dataD2, 0)
-
-
-trueR_HD = gen_intensity_mat (computed_HD, 2)
-expt_HD = gen_intensity_mat (dataHD, 0)
-
-
-trueR_H2 = gen_intensity_mat (computed_H2, 2)
-expt_H2 = gen_intensity_mat (dataH2, 0)
-
-# ------------------------------------------
-
-errH2_output = gen_weight(dataH2)
-errHD_output = gen_weight(dataHD)
-errD2_output = gen_weight(dataD2)
-
-diffD2 = trueR_D2 - expt_D2
-diffHD = trueR_HD - expt_HD
-diffH2 = trueR_H2 - expt_H2
-
-eD2 = (np.multiply(errD2_output, diffD2))
-eHD = (np.multiply(errHD_output, diffHD))
-eH2 = (np.multiply(errH2_output, diffH2))
-
-eD2 = clean_mat(eD2)
-eHD = clean_mat(eHD)
-eH2 = clean_mat(eH2)
-
-print(np.sum(np.square(eD2)))
-print(np.sum(np.square(eHD)))
-print(np.sum(np.square(eH2)))
-# ------------------------------------------
-test = np.loadtxt("./run_parallel/test_data.txt")
-
-def residual_Q_test(param):
-    '''Function which computes the residual (as sum of squares) comparing the
-    ratio of expt with the corresponding calculated ratios. The calculated
-    ratios are computed for given T.
-
-    Param : T
-
-    '''
-    TK = param
-    sosHD = compute_series_para.sumofstate_HD(TK)
-    QJ_HD=3
-    computed_HD = compute_series_para.HD_Q1(TK, QJ_HD, sosHD)
-
-    # ------ HD ------
-    trueR_HD = gen_intensity_mat(computed_HD, 2)
-    expt_HD = gen_intensity_mat(test, 0)
-
-    errHD_output = gen_weight(dataHDQ)
-    errorP = errHD_output
-
-
-    calc_HD = clean_mat(trueR_HD)
-    expt_HD = clean_mat(expt_HD)
-    errorP = clean_mat(errorP)
-    # ----------------
-
-    diffHD = expt_HD - calc_HD
-
-    # scale by weights
-    diffHD = (np.multiply(errorP , diffHD))
-
-    # remove redundant terms
-    diffHD = clean_mat(diffHD)
-
-    # return the residual
-    #E=np.sum(np.square(diffHD))/1e2
-    return(errorP)
-
 # *******************************************************************
