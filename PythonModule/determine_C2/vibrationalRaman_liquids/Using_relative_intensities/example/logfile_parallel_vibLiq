@@ -1,0 +1,54 @@
+2021-08-11 14:45:26
+
+
+------------ Run log ------------
+
+--- Determine C2 correction from vibrational Raman intensities---
+
+
+	 Input data
+
+	 Parameters:
+		 Norm:	 Frobenius
+		 scaling factors (c1 to c4):	 1000 1000000 1000000000 1000000000000
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 0.00000000
+
+
+	  final_simplex: (array([[-0.12909419],
+       [-0.12909419]]), array([0.26063987, 0.26063987]))
+           fun: 0.2606398704602216
+       message: 'Optimization terminated successfully.'
+          nfev: 71
+           nit: 35
+        status: 0
+       success: True
+             x: array([-0.12909419])
+
+
+ Optimized result : c1 = -0.12909419
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = -0.10000000, c2 = 0.00000000
+
+
+	  final_simplex: (array([[-0.03527267, -0.06639898],
+       [-0.03527267, -0.06639898],
+       [-0.03527267, -0.06639898]]), array([0.25617423, 0.25617423, 0.25617423]))
+           fun: 0.25617423235999437
+       message: 'Optimization terminated successfully.'
+          nfev: 150
+           nit: 74
+        status: 0
+       success: True
+             x: array([-0.03527267, -0.06639898])
+
+
+ Optimized result : c1 = -0.03527267, c2 = -0.06639898
+
+ *******************************************
