@@ -1,6 +1,6 @@
 # IntensityCalbr
 
-Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)
+Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)  |  [Link to article: jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
 
 ----
 This work has been published in the following article:<br><br>
@@ -77,7 +77,7 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
  + Determination of C<sub>0</sub> and C<sub>1</sub> requires the vector/array of relative wavenumbers (which is used as the x-axis) and the measured spectrum of a broadband white-light source (we assume here that this source is close to a black-body emitter, so tungsten lamps will work). [(See example)](https://github.com/ankit7540/IntensityCalbr/blob/master/PythonModule/determine_C0_C1_correction/Examples/Example_for_C0_C1.ipynb)
 
- + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called). The following table lists the examples for all the schemes available for determining the final correction (defined as C<sub>2</sub>).
+ + General scheme : experimental band area, reference data either available before hand or computable. (If computable then appropriate functions are required to be called). **The following table lists the examples for all the schemes available for determining the final correction (defined as C<sub>2</sub>).**
 
 | Raman transition type                |                                                                                                                                                                                                                |                                                                                                                                                                                                                                 |                                                                                                                                                                                               |                                                                                                                                                                                                                      |
 |--------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
