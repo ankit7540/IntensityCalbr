@@ -1,0 +1,54 @@
+2021-08-12 11:17:32
+
+
+------------ Run log ------------
+
+--- Generate C2 correction from anti-Stokes and Stokes ---
+--- Raman intensities  ---
+
+
+	 Input data
+
+	 Parameters:
+		 scaling factors (c1 to c4):	 10000.0 10000000.0 1000000000.0 1000000000000.0
+
+ *******  Optimization run : Linear  *******
+
+	 Initial : c1 = 0.95000000
+
+
+	  final_simplex: (array([[1.06838976],
+       [1.06838975]]), array([1.12282791, 1.12282791]))
+           fun: 1.1228279135500618
+       message: 'Optimization terminated successfully.'
+          nfev: 66
+           nit: 29
+        status: 0
+       success: True
+             x: array([1.06838976])
+
+
+ Optimized result : c1 = 1.06838976
+
+ *******************************************
+
+ *******  Optimization run : Quadratic  *******
+
+	 Initial : c1 = 1.00000000, c2 = -0.00250000
+
+
+	  final_simplex: (array([[ 1.05516429, -1.015829  ],
+       [ 1.05516429, -1.015829  ],
+       [ 1.05516429, -1.015829  ]]), array([1.1228278, 1.1228278, 1.1228278]))
+           fun: 1.1228278034276407
+       message: 'Optimization terminated successfully.'
+          nfev: 196
+           nit: 90
+        status: 0
+       success: True
+             x: array([ 1.05516429, -1.015829  ])
+
+
+ Optimized result : c1 = 1.05516429, c2 = -1.01582900
+
+ *******************************************
