@@ -4,7 +4,7 @@ Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](h
 
 ----
 This work has been published in the following article:<br><br>
-**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios>**<br> 
+**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios**<br> 
 Ankit Raj, Chihiro Kato, Henryk A. Witek and Hiro‐o Hamaguchi<br>
 *Journal of Raman Spectroscopy*<br>
 [10.1002/jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
