@@ -2,6 +2,14 @@
 
 Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](https://doi.org/10.5281/zenodo.4655294)
 
+----
+This work has been published in the following article:<br><br>
+**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios>**<br> 
+Ankit Raj, Chihiro Kato, Henryk A. Witek and Hiro‐o Hamaguchi<br>
+*Journal of Raman Spectroscopy*<br>
+[10.1002/jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
+
+----
 
 Repository containing programs implementing the procedure for obtaining wavelength-dependent sensitivity for calibration of Raman spectrometers based on multi-channel detectors. The present scheme is a multi-step procedure based on following three steps:
 - C<sub>0</sub> : Correction for non-linear sampling of photons in the wavenumber scale.
@@ -112,3 +120,13 @@ Clone the repository or download the zip file. As per your choice of the program
 
 ## Support/Questions/Issues
 Please use "Issues" section for asking questions and reporting issues.
+
+
+----
+This work has been published in the following article:<br><br>
+**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios>**<br> 
+Ankit Raj, Chihiro Kato, Henryk A. Witek and Hiro‐o Hamaguchi<br>
+*Journal of Raman Spectroscopy*<br>
+[10.1002/jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
+
+----
