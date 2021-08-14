@@ -2,11 +2,11 @@
 
 
 
-This module uses known temperature (provided from user) and the laser frequency (in absolute wavenumbers) to compute the reference intensity ratio. This intensity ratio is compared with the experimental data and the wavenumber-dependent sensitivity is determined as a polynomial via least-squares minimization.
+This module uses known temperature (provided from user) and the laser frequency (in absolute wavenumbers) to compute the reference intensity ratio. This intensity ratio is compared with the experimental data and the wavenumber-dependent sensitivity is determined as a polynomial, via least-squares minimization.
 
 
 # Usage
-User supplied band area data arranged as 2D arrays are required. These should contain the band positions and experimental band intensities. Theoretical intensity ratios will be computed within the program.
+User supplied band area data arranged as 2D arrays are required. These should contain the band positions and experimental band intensities. See sample data in `example` folder. Theoretical intensity ratios will be computed within the program for each of the wavenumber entry.
 
 Requirements
 ----------------
