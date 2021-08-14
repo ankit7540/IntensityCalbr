@@ -23,7 +23,7 @@ Following commands are run under the Python interpreter environment. (Alternativ
 
 ***When using Python interpreter in terminal***
 
-1. After cloning the repository and moving in the `python-module` directory,  refer to the `readme`.  Prepare the required data as mentioned above which should loaded in the module as numpy array. This would require changing the path to the data files in the script.  
+1. After cloning the repository and moving in the `python-module` directory,  refer to the `readme`.  Prepare the required data as mentioned above which should loaded in the module as NumPy array. This would require changing the path to the data files in the script.  
 
 2. Import the python module. If  using python 2.7 add the current folder to path allowing to import the module in the current folder.
 

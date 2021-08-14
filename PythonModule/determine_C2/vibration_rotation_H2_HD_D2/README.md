@@ -2,12 +2,12 @@
 # Python module for vibration-rotation intensities
 
 
-+ - Scheme for **vibration-rotation Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>.** This is the most detailed part of the repo and includes functions for :
++ - Scheme for **vibration-rotation Raman intensities from H<sub>2</sub>, HD and D<sub>2</sub>. The observed bands cover the spectral region from 2400 to 4200 cm<sup>-1</sup> (typical).** Measurements and corresponding analysis over extended region is also possible. This module is the most detailed part of the repository and includes functions for :
     + computing Raman intensities of sets of predefined transitions
     + use the computed intensities in a non-linear optimization analysis to determine the wavenumber dependent sensitivity
-    + and, perform the above analysis with/witout temperauture as a fixed parameter
+    + and, perform the above analysis with/without temperature as a fixed parameter
 + Apart from above,
-    + function is included for the determination of temperature by comparison of observed Raman intensities to computed ones.
+    + function is included for the determination of temperature by comparison of observed Raman intensities to computed ones (for validation purpose).
 
 
 
@@ -24,7 +24,7 @@ Following commands are run under the Python interpreter environment. (Alternativ
 
 ***When using Python interpreter in terminal***
 
-1. After cloning the repository and moving in the `python-module` directory,  refer to the readme.  Prepare the required data as mentioned above which will be loaded in the module  as numpy array. If required, change the path to the data files in the code.  
+1. After cloning the repository and moving in the `python-module` directory,  refer to the readme.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. If required, change the path to the data files in the code.  
 
 2. Import the python module. If  using python 2.7 add the current folder to path allowing to import the module in the current folder.
 
@@ -42,4 +42,4 @@ If using Python3, directly import as
 
 ***When using Python IDE like Spyder***
 
-1. After cloning the repository and moving in the `python-module` directory,  refer to the `readme`.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. Open the  file in the IDE and make changes  to the file path if required and run the code.
+After cloning the repository and moving in the `python-module` directory,  refer to the `readme`.  Prepare the required data as mentioned above which will be loaded in the module  as NumPy array. Open the  file in the IDE and make changes  to the file path if required and run the code.
