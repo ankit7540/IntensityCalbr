@@ -4,7 +4,7 @@ Repository : [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.4655294.svg)](h
 
 ----
 This work has been published in the following article:<br><br>
-**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios**<br> 
+**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios**<br>
 Ankit Raj, Chihiro Kato, Henryk A. Witek and Hiro‐o Hamaguchi<br>
 *Journal of Raman Spectroscopy*<br>
 [10.1002/jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
@@ -88,9 +88,9 @@ This principle of comparing intensities (pure rotational Raman and rotation-vibr
 
 
 
- In this work, compute code for intensities and reference matrix for pure rotation and rotational-vibrational Raman bands are given. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since polarizability invariants are available for these from our earlier work:   A. Raj, H. Hamaguchi, and H. A. Witek , J. Chem. Phys. 148, 104308 (2018) [10.1063/1.5011433]( https://doi.org/10.1063/1.5011433 )
+ In this software repository, modules for computing reference intensities using reference excitation wavelength-dependent (&lambda; = 532.2 nm) ro-vibrational matrix elements of polarizability for pure rotation and rotational-vibrational Raman transitions are included. (At present this is possible for H<sub>2</sub>, HD and D<sub>2</sub> since their polarizability invariants can be computed to high accuracy. For other excitation wavelengths and Raman transitions not included in this work, see our earlier work :   A. Raj, H. Hamaguchi, and H. A. Witek , J. Chem. Phys. 148, 104308 (2018) [10.1063/1.5011433]( https://doi.org/10.1063/1.5011433 )
 
- - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, x-axis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O,S,Q-bands for rotational-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
+ - List of data required for analysis of pure rotational/ rotation-vibration Raman bands : experimental band area, *x*-axis vector for the spectra (in cm<sup>-1</sup> or wavelength). Indices of J-states for pure rotation; O, S, Q-bands for rotational-vibration bands, temperature (K) as additional parameters. The reference data is computed on the fly.
 
 
 See specific program's readme regarding the use of the above data.
@@ -126,7 +126,7 @@ Please use "Issues" section for asking questions and reporting issues.
 
 ----
 This work has been published in the following article:<br><br>
-**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios>**<br> 
+**Accurate intensity calibration of multichannel spectrometers using Raman intensity ratios>**<br>
 Ankit Raj, Chihiro Kato, Henryk A. Witek and Hiro‐o Hamaguchi<br>
 *Journal of Raman Spectroscopy*<br>
 [10.1002/jrs.6221](https://analyticalsciencejournals.onlinelibrary.wiley.com/doi/10.1002/jrs.6221)
