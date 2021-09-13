@@ -1,0 +1,10 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it as below."
+authors:
+  - family-names: Raj
+    given-names: Ankit
+    orcid: https://orcid.org/0000-0002-2495-3354 
+title: "IntensityCalbr"
+version: 1.1
+doi: 10.5281/zenodo.4655294
+date-released: 2021-09-13
