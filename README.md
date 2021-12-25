@@ -16,7 +16,7 @@ Repository containing programs implementing the procedure for obtaining waveleng
 - C<sub>1</sub> : Correction for channel-to-channel variation in the sensitivity of the spectrometer.
 - C<sub>2</sub> : Final correction derived from Raman spectroscopic intensities.
 
-In order to determine the final correction (C<sub>2</sub>) the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
+In order to determine the final correction (C<sub>2</sub>), the relative band intensities between all pairs of bands are analyzed simultaneously by a comparison with the analogous reference intensities. Least squares minimization is used to determine the coefficients of a polynomial used to model the wavelength-dependent sensitivity representing the C<sub>2</sub> correction.
 
 ---
 
@@ -41,6 +41,9 @@ The multiplicative correction to the Raman spectrum is then : (C<sub>0</sub> / C
 ---
 
 ## Methodology
+
+This concerns the final correction (C<sub>2</sub>) which is derived from experimental Raman intensities. For the (C<sub>0</sub> / C<sub>1</sub>) correction see [(this page)](https://github.com/ankit7540/IntensityCalbr/tree/master/PythonModule/determine_C0_C1_correction).
+
 Observed intensities from selected bands are analyzed as pairs among all such bands, to form a matrix. A similar matrix of intensity ratios are compared to the true ratios, and the coefficients for the wavelength/wavenumber dependent sensitivity curve, modelled as a polynomial function, is obtained via non-linear minimization technique.
 
 The general scheme is given as follows.
