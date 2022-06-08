@@ -27,18 +27,18 @@ import scipy.optimize as opt
 # without header in the following files
 
 # Experimental data
-# Change following paths
+# Change following paths as per your directory structure and file name
 
-data_CCl4 = np.loadtxt("model_CCl4")
-data_C6H6 = np.loadtxt("model_C6H6")
-data_C6H12 = np.loadtxt("model_C6H12")
+data_CCl4 = np.loadtxt("BA_CCl4.dat")
+data_C6H6 = np.loadtxt("BA_C6H6.dat")
+data_C6H12 = np.loadtxt("BA_C6H12.dat")
 xaxis = np.loadtxt("Wavenumber_axis.dat")
 
 # ------------------------------------------------------
 
 # ------------------------------------------------------
 # ------------------------------------------------------
-print('Dimension of input data')
+#print('Dimension of input data')
 #print('\t', data_CCl4.shape)
 #print('\t', data_C6H6.shape)
 #print('\t', data_C6H12.shape)
@@ -155,7 +155,7 @@ def gen_s_linear(data, param ):
     corr = np.zeros( size)
 
     for i in range(size):
-        corr[i] = 1+(param[0]/scale1)*data[i, 0]
+        corr[i] = 1+(param[0]/scale1)*data[i, 1]
 
     return corr
 
@@ -169,8 +169,8 @@ def gen_s_quadratic( data, param ):
     corr = np.zeros( size)
 
     for i in range(size):
-        corr[i] = 1+((param[0]/scale1)*data[i, 0]) \
-            + (param[1]/scale2) * (data[i, 0]**2)
+        corr[i] = 1+((param[0]/scale1)*data[i, 1]) \
+            + (param[1]/scale2) * (data[i, 1]**2)
 
     return corr
 
@@ -184,9 +184,9 @@ def gen_s_cubic( data, param ):
     corr = np.zeros( size)
 
     for i in range(size):
-        corr[i] = 1 + ((param[0]/scale1)*data[i, 0]) \
-            + (param[1]/scale2) * (data[i, 0]**2) \
-                + (param[2]/scale3) * (data[i, 0]**3)
+        corr[i] = 1 + ((param[0]/scale1)*data[i, 1]) \
+            + (param[1]/scale2) * (data[i, 1]**2) \
+                + (param[2]/scale3) * (data[i, 1]**3)
 
     return corr
 
@@ -200,10 +200,10 @@ def gen_s_quartic( data, param ):
     corr = np.zeros( size)
 
     for i in range(size):
-        corr[i] = 1+(param[0]/scale1)*data[i, 0] \
-            + (param[1]/scale2) * (data[i, 0]**2) \
-                + (param[2]/scale3) * (data[i, 0]**3) \
-                    + (param[3]/scale4) * (data[i, 0]**4)
+        corr[i] = 1+(param[0]/scale1)*data[i, 1] \
+            + (param[1]/scale2) * (data[i, 1]**2) \
+                + (param[2]/scale3) * (data[i, 1]**3) \
+                    + (param[3]/scale4) * (data[i, 1]**4)
 
     return corr
 
